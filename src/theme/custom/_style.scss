@@ -1,0 +1,156 @@
+/* Empty. Add your own CSS if you like */
+
+.bg {
+    //background-image: url("../img/bg.jpg");
+    background-image: url('../assets/img/bg.jpg');
+    background-size: 100% auto;
+    background-position: center top;
+    background-attachment: fixed;
+}
+
+#formCliente input {
+    text-transform: uppercase;
+}
+
+.color-canDown-true,
+.color-canUp-true {
+    background-color: #eeeeee !important;
+}
+
+.box-icone {
+    max-width: 95px;
+    width: 100%;
+    height: auto;
+    margin: auto;
+    background-color: #FFF;
+    padding: 2px;
+    border-radius: 10px;
+}
+
+.box-icone img {
+    max-width: 256px;
+    /* Máximo da largura da imagem */
+    width: 100%;
+    height: auto;
+    /* Máximo da altura da imagem */
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.box-icone .legenda {
+    text-align: center;
+    font-size: 11px;
+    color: red;
+    font-weight: bold;
+}
+
+ion-scroll[direction=x] {
+    width: 100vw;
+}
+
+ion-scroll[direction=y] {
+    height: 100vh;
+}
+
+.logo-login {
+    width: 200px;
+    margin: auto;
+}
+
+input[type="number"] {
+    border: none;
+}
+
+.bar {
+    position: inherit;
+}
+
+#login {
+    text-transform: lowercase;
+}
+
+select {
+    width: 100%;
+    background: transparent !important;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 0px;
+    height: 30px;
+}
+
+.popover {
+    height: auto !important;
+}
+
+.popover ion-header-bar {
+    position: relative;
+}
+
+.popover ion-content {
+    top: 0;
+    position: relative;
+}
+
+.button-float {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    border-radius: 100%;
+}
+
+.slider {
+    height: 100%;
+}
+
+.cliente-bloqueado {
+    color: #cc0e0e;
+    font-weight: bold;
+}
+
+
+/** Styling for the username field **/
+
+label.item.has-error {
+    border-bottom: 2px solid red;
+}
+
+
+/** Styling for the password field when an error exists**/
+
+label.item.has-error-lr {
+    border-left: 2px solid red;
+    border-right: 2px solid red;
+}
+
+
+/** Styling for the password field when an error has been resolved**/
+
+label.item.valid-lr {
+    border-left: 2px solid green;
+    border-right: 2px solid green;
+}
+
+
+/** Styling for the error text and container **/
+
+.form-errors {
+    margin: 5px 0
+}
+
+.form-error {
+    padding: 2px 0 2px 16px;
+    color: red;
+}
+
+.item-complex .item-content,
+.item-radio .item-content {
+    padding: 20px 5px 10px 10px;
+}
+
+.preco-a-direita {
+    text-align: right;
+}
