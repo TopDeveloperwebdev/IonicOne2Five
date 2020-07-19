@@ -196,6 +196,11 @@
     }
 }
 
+@font-face {
+    font-family: 'Ionicons';
+    src: url('./fonts/ionicons.ttf');
+}
+
 @import "custom/ionic.app.min.scss";
 @import "custom/ionic.app.scss";
 @import "custom/style.scss";

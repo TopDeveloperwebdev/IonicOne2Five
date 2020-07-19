@@ -36,10 +36,6 @@ $dark:                            #444 !default;
 //   src: url("../lib/ionic/fonts/ionicons.eot?v=2.0.1#iefix") format("embedded-opentype"), url("../lib/ionic/fonts/ionicons.ttf?v=2.0.1") format("truetype"), url("../lib/ionic/fonts/ionicons.woff?v=2.0.1") format("woff"), url("../lib/ionic/fonts/ionicons.woff") format("woff"), url("../lib/ionic/fonts/ionicons.svg?v=2.0.1#Ionicons") format("svg");
 //   font-weight: normal;
 //   font-style: normal; }
-// @font-face {
-//     font-family: 'Ionicons';
-//     src: url('../fonts/ionicons.ttf');
-// }
 .ion,
 .ionicons,
 .ion-alert:before,
@@ -5131,6 +5127,10 @@ a.subdued:last-child {
     color: #fff;
 }
 
+.bar-assertive {
+    background-color: #ef473a;
+}
+
 .bar.bar-assertive .title {
     color: #fff;
 }
@@ -8086,6 +8086,7 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.activated {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding: 0px;
 }
 
 a.item {
@@ -12057,10 +12058,6 @@ a.button.icon-right:before {
 
 .button-bar.button-bar-inline:after {
     clear: both;
-}
-
-.bar-assertive {
-    background: red !important;
 }
 
 .button-bar.button-bar-inline>.button {

@@ -1,9 +1,50 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>inicio</ion-title>
-  </ion-toolbar>
+
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+    </button>
+    </ion-menu-button>  
 </ion-header>
-
-<ion-content>
-
+<ion-content class="bg">
+        <div style="text-align: center; padding: 5px;">
+            Bem vindo, <br> <b class="assertive">usuario.vendedor_nome</b>
+        </div>
+        <div class="row">
+            <div class="col box-icone" ng-click="redirect('app.clientes');">
+                <img src="../assets/img/cliente.png" />
+                <div class="legenda">Clientes</div>
+            </div>
+            <div class="col box-icone" ng-click="pedidos();">
+                <img src="../assets/img/pedido.png" />
+                <div class="legenda">Pedidos</div>
+            </div>
+            <div class="col box-icone" ng-click="redirect('app.metas');">
+                <img src="../assets/img/metas.png" />
+                <div class="legenda">Metas</div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 10px;">
+            <div class="col box-icone">
+                <img src="../assets/img/relatorios.png" ng-click="opcoesRelatorios();" />
+                <div class="legenda">Relatório</div>
+            </div>
+            <div class="col box-icone" ng-click="redirect('app.sincronizao');">
+                <img src="../assets/img/sincronismo.png" />
+                <div class="legenda">Sincronização</div>
+            </div>
+            <div class="col box-icone" ng-click="redirect('app.produtos');">
+                <img src="../assets/img/produto.png" />
+                <div class="legenda">Produtos</div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 10px;">
+            <div class="col"></div>
+            <div class="col box-icone" ng-click="sair();">
+                <img src="../assets/img/sair.png" />
+                <div class="legenda">Sair</div>
+            </div>
+            <div class="col"></div>
+        </div>
 </ion-content>
+
+

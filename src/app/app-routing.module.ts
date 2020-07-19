@@ -4,7 +4,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'folder/Inbox',
+    redirectTo: '/titulos',
     pathMatch: 'full'
   },
   {
@@ -50,6 +50,10 @@ const routes: Routes = [
   {
     path: 'metas',
     loadChildren: () => import('./metas/metas.module').then( m => m.MetasPageModule)
+  },
+  {
+    path: 'produtos',
+    loadChildren: () => import('./produtos/produtos.module').then( m => m.ProdutosPageModule)
   }
 ];
 
@@ -60,3 +64,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule {}
+
