@@ -1,3 +1,48 @@
-<p>
-  lista works!
-</p>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+    </button>
+    </ion-menu-button>
+    <ion-menu-button side="primary">
+        <button class="button" ng-click="modal.show();">
+      <i class="ion-funnel"></i>
+    </button>
+    </ion-menu-button>
+</ion-header>
+
+<ion-content view-title="Produtos">
+    <ion-list>
+        <ion-item class="item" ng-click="detalhes(produto);" *ngFor="let produto of produtos">
+            <p>
+                <span ng-class="{'balanced': produto.produtoempromocao == 'S', 'assertive': produto.produtoemfalta == 'S', 'positive': produto.produtonovo == 'S'}">{{produto.descricaoproduto}}</span>
+                <br>
+                <small>
+            {{produto.dados_adicionais}}
+          </small>
+            </p>
+
+            <span class="item-note-left" style="font-size: 18px; color: #aaa !important;" ng-show="produto.produtoembalagem && produto.produtoembalagem > 1">
+          <small class="item-note-label">Unitário: </small>
+          <small ng-show="produto.produtoempromocao == 'S'">
+            {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) }}
+          </small>
+          <b
+            ng-class="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) }}</b>
+        </span>
+
+            <span class="item-note" style="font-size: 18px; text-align: right;">
+          <small style="color: red; text-decoration: line-through; font-size: 12px;"
+            ng-show="produto.produtoempromocao == 'S'">
+            {{produto.precopadrao}}
+          </small>
+          <b
+            ng-class="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela }}</b>
+        </span>
+            <ion-item-options class="button-assertive" ng-click="comissoes(produto.produto_id);">
+                Comissões
+            </ion-item-options>
+        </ion-item>
+        <ion-infinite-scroll ng-if="carregarMaisProdutos" on-infinite="loadMore()">
+        </ion-infinite-scroll>
+    </ion-list>
+</ion-content>

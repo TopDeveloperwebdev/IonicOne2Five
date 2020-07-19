@@ -1,9 +1,60 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>sincronizar</ion-title>
-  </ion-toolbar>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+  </button>
+    </ion-menu-button>
+   
 </ion-header>
 
-<ion-content>
 
-</ion-content>
+	<ion-content class="padding">
+
+		<div class="row">
+				<div class="col box-icone" ng-click="sincronizarEntrada();">
+						<img src="../assets/img/btn_sincro_receber.png" />
+						<div class="legenda">Entradas</div>
+				</div>
+				<div class="col box-icone" ng-click="sincronizarSaida();">
+						<img src="../assets/img/btn_sincro_enviar.png" />
+						<div class="legenda">Saídas</div>
+				</div>
+				<div class="col box-icone" ng-click="sincronizarUsuario();">
+						<img src="../assets/img/btn_sincro_usuario.png" />
+						<div class="legenda">Usuário</div>
+				</div>
+		</div>
+		<div class="row">
+				<div class="col box-icone" ng-click="sincronizarClientes();">
+						<img src="../assets/img/btn_sincro_clientes.png" />
+						<div class="legenda">Clientes</div>
+				</div>
+				<div class="col box-icone" ng-click="sincronizarProdutos();">
+						<img src="../assets/img/btn_sincro_produtos.png" />
+						<div class="legenda">Produtos</div>
+				</div>
+				<div class="col box-icone" ng-click="sincronizarTitulos();">
+						<img src="../assets/img/btn_sincro_titulos.png" />
+						<div class="legenda">Titulos</div>
+				</div>
+		</div>
+    <div class="row">
+      <div class="col"></div>
+      <div class="col box-icone" ng-click="sincronizarCompras();">
+        <img src="../assets/img/btn_sincro_compras.png" />
+        <div class="legenda">Compras</div>
+      </div>
+      <div class="col"></div>
+		</div>
+		<!-- <div class="row">
+      <div class="col"></div>
+      <div class="col box-icone" ng-click="sincronizarTudo();">
+        <img src="../assets/img/btn_sincro_compras.png" />
+        <div class="legenda">Tudo</div>
+      </div>
+      <div class="col"></div>
+    </div> -->
+
+  </ion-content>
+
+
+

@@ -6,9 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./mensagens.page.scss'],
 })
 export class MensagensPage implements OnInit {
-
+  mensagens = [];
   constructor() { }
-
+ 
   ngOnInit() {
   }
 

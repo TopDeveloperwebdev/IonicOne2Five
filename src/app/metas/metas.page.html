@@ -5,6 +5,23 @@
     </ion-menu-button>  
 </ion-header>
 
-<ion-content>
-dafdsafadsfasfsasf
-</ion-content>
+  <ion-content class="padding">
+    <div class="item">
+      <select ng-model="meta_id"
+              ng-change="grafico(meta_id);"
+              ng-options="m.meta_id as m.descricaometa for m in metas">
+        <option value="">Selecione uma meta</option>
+      </select>
+    </div>
+    <div class="item item-text-wrap">
+      <canvas id="bar"
+              class="chart chart-bar"
+              chart-data="data"
+              chart-labels="labels"
+              chart-colors="colors"
+              chart-series="series">
+      </canvas>
+    </div>
+  </ion-content>
+
+
