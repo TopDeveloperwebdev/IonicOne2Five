@@ -1,3 +1,155 @@
-<p>
-  cadastro works!
-</p>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+    </button>
+    </ion-menu-button>
+    <ion-title>Clientes</ion-title>
+
+
+</ion-header>
+
+<ion-content style="--background: #f0f0f0;">
+    <form name="formCliente" id="formCliente">
+        <h4 class="assertive padding">Dados Principais</h4>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Nome Fantasia" ng-model="cliente.cli_fantasia" ng-required="true">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Razão Social" ng-model="cliente.cli_razaosocial" ng-required="true">
+     
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <select ng-required="true" ng-model="cliente.atividade_id"
+          ng-options="atividade.atividade_id as atividade.descricaoatividade for atividade in atividades | orderBy:'descricaoatividade'">
+          <option value="">Selecione uma atividade</option>
+        </select>
+      </label>
+
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="tel" placeholder="CPF/CNPJ" ng-model="cliente.cli_cnpjcpf" ng-required="true" ui-br-cpfcnpj-mask>
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Inscrição Estadual" ng-model="cliente.cli_inscricaoestadual">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Inscrição Municipal" ng-model="cliente.cli_inscricaomunicipal">
+      </label>
+        </div>
+        <h4 class="assertive padding">Dados Cadastrais</h4>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Endereço" ng-model="cliente.cli_endereco" ng-required="true">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Bairro" ng-model="cliente.cli_bairro" ng-required="true">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="CEP" ng-model="cliente.cli_cep" ng-required="true">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <select ng-model="cliente.cli_codigocidade" ng-required="true"
+          ng-options="cidade.cidade_id as cidade.descricaocidade for cidade in cidades| orderBy:'descricaocidade'">
+          <option value="">Selecione uma cidade</option>
+        </select>
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Fax" ng-model="cliente.cli_fax">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="email" placeholder="E-mail" ng-model="cliente.cli_email">
+      </label>
+        </div>
+        <h4 class="assertive padding">Dados de Contato</h4>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Contato 1" ng-model="cliente.cli_contato1" ng-required="true">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="tel" placeholder="Telefone 1" ng-model="cliente.cli_telefone1" ng-required="true">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Contato 2" ng-model="cliente.cli_contato2">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="tel" placeholder="Telefone 2" ng-model="cliente.cli_telefone2">
+      </label>
+        </div>
+        <h4 class="assertive padding">Dados de Entrega</h4>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Endereço" ng-model="cliente.cli_enderecoentrega">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="Bairro" ng-model="cliente.cli_bairroentrega">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <input type="text" placeholder="CEP" ng-model="cliente.cli_cepentrega">
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <select ng-model="cliente.cli_codigocidadeentrega"
+          ng-options="cidade.cidade_id as cidade.descricaocidade for cidade in cidades| orderBy:'descricaocidade'">
+          <option value="">Selecione uma cidade</option>
+        </select>
+      </label>
+        </div>
+    </form>
+    <div class="padding">
+        <button class="button button-full button-assertive" ng-disabled="formCliente.$invalid" ng-click="salvar(cliente);">
+      Salvar
+    </button>
+
+    </div>
+</ion-content>

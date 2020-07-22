@@ -1,3 +1,42 @@
-<p>
-  pedidos works!
-</p>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+  </button>
+    </ion-menu-button>
+    <ion-title>Clientes</ion-title>
+    <ion-menu-button side="primary">
+        <button class="button" ng-click="modal.show();">
+    <i class="ion-funnel"></i>
+  </button>
+    </ion-menu-button>
+</ion-header>
+<ion-content class="padding">
+    <h4 class="assertive">
+        {{nomecliente}}
+        <br />
+        <small>Quantidade de Pedidos: {{filtro.length}}</small>
+        <br />
+        <small>Total de Pedidos: R$ </small>
+    </h4>
+    <ion-list>
+        <ion-item ng-click="alterar(pedido, nomecliente);" *ngFor="let pedido of pedidos">
+
+            Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido | currency:'R$':2}}
+
+            <p>
+                {{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}
+            </p>
+            <p>Tipo: {{pedido.tipo_pedido}}</p>
+            <ion-item-options class="button-positive" ng-click="duplicarPedido(pedido)">
+                Duplicar
+            </ion-item-options>
+            <button class="button-assertive" ng-click="apagarPedido(pedido)">
+                Apagar
+            </button>
+        </ion-item>
+        <ion-item class="assertive" ng-show="pedidos.length == 0">Não existem pedidos para este cliente.</ion-item>
+    </ion-list>
+</ion-content>
+<button ng-click="cadastro(cliente_id, nomecliente);" class="button button-assertive button-float">
+    <i class="icon ion-plus-round"></i>
+</button>

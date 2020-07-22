@@ -2,16 +2,22 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { TitulosPage } from './titulos.page';
+import { ListaComponent } from './lista/lista.component'
 
 const routes: Routes = [
   {
     path: '',
-    component: TitulosPage
-  }
+    redirectTo: 'lista',
+    pathMatch: 'full'
+  },
+  {
+    path: 'lista',
+    component: ListaComponent
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class TitulosPageRoutingModule {}
+export class TitulosPageRoutingModule { }

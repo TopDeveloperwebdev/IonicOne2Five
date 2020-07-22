@@ -5,8 +5,10 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './pedidos.page.html',
   styleUrls: ['./pedidos.page.scss'],
 })
-export class PedidosPage implements OnInit {
 
+export class PedidosPage implements OnInit {
+  pedidos = [];
+  filtro = [];
   constructor() { }
 
   ngOnInit() {

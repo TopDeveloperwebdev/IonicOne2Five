@@ -6,9 +6,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./titulos.component.scss'],
 })
 export class TitulosComponent implements OnInit {
-
+  items = [];
+  filtro = [];
+  nomeCliente = "ADONAL RACOES E BAZAR LTDA ME";
   constructor() { }
 
-  ngOnInit() {}
+
+  ngOnInit() { }
 
 }

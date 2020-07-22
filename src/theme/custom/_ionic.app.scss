@@ -3993,7 +3993,7 @@ pre {
  */
 
 q {
-    quotes: "\201C" "\201D" "\2018" "\2019";
+    quotes: "\201C""\201D""\2018""\2019";
 }
 
 
@@ -5129,6 +5129,15 @@ a.subdued:last-child {
 
 .bar-assertive {
     background-color: #ef473a;
+    display: flex;
+    justify-content: space-between;
+    ion-title {
+        margin: 0;
+        text-align: left;
+        padding: 0px;
+        padding-left: 16%;
+        color: white;
+    }
 }
 
 .bar.bar-assertive .title {
@@ -5487,9 +5496,11 @@ a.subdued:last-child {
 }
 
 .bar-assertive .button {
+    border: none !important;
     border-color: #e42112;
     background-color: #ef473a;
     color: #fff;
+    padding: 0px;
 }
 
 .bar-assertive .button:hover {
@@ -5508,7 +5519,8 @@ a.subdued:last-child {
     background: none;
     box-shadow: none;
     color: #fff;
-    font-size: 17px;
+    font-size: 38px;
+    width: 100%;
 }
 
 .bar-assertive .button.button-icon {
@@ -7728,6 +7740,13 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.activated {
  * --------------------------------------------------
  */
 
+.title {
+    font-size: 21px;
+    padding: 11px;
+    margin: 0px;
+    color: white;
+}
+
 .item {
     border-color: #ddd;
     background-color: #fff;
@@ -7735,7 +7754,7 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.activated {
     position: relative;
     z-index: 2;
     display: block;
-    margin: -1px;
+    margin: 0px;
     padding: 16px;
     border-width: 1px;
     border-style: solid;
@@ -7872,9 +7891,10 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.activated {
 .item-complex.active .item-content,
 .item-complex.activated .item-content,
 .item .item-content.active,
-.item .item-content.activated {
+.item .item-content.activated,
+.ion-activated {
     border-color: #ccc;
-    background-color: #D9D9D9;
+    background: #00000040 !important;
 }
 
 .item.active.item-complex>.item-content,
@@ -8688,9 +8708,12 @@ button.item.item-button-right {
 }
 
 .item-note-left {
-    float: left;
-    color: #aaa;
-    font-size: 12px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 9px;
+    font-size: 23px;
+    font-weight: bold;
 }
 
 .item-note-label {
@@ -8990,6 +9013,11 @@ button.item.item-button-right {
 
 .card .item:last-child {
     border-bottom: 0;
+}
+
+.padding {
+    --padding-start: 10px;
+    --padding-end: 10px
 }
 
 .padding .card,

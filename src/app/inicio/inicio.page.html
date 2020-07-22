@@ -10,29 +10,29 @@
             Bem vindo, <br> <b class="assertive">usuario.vendedor_nome</b>
         </div>
         <div class="row">
-            <div class="col box-icone" ng-click="redirect('app.clientes');">
+            <div class="col box-icone" (click)="navigate('clientes')">
                 <img src="../assets/img/cliente.png" />
                 <div class="legenda">Clientes</div>
             </div>
-            <div class="col box-icone" ng-click="pedidos();">
+            <div class="col box-icone" (click)="navigate('pedidos')">
                 <img src="../assets/img/pedido.png" />
                 <div class="legenda">Pedidos</div>
             </div>
-            <div class="col box-icone" ng-click="redirect('app.metas');">
+            <div class="col box-icone" (click)="navigate('metas')">
                 <img src="../assets/img/metas.png" />
                 <div class="legenda">Metas</div>
             </div>
         </div>
         <div class="row" style="margin-top: 10px;">
             <div class="col box-icone">
-                <img src="../assets/img/relatorios.png" ng-click="opcoesRelatorios();" />
+                <img src="../assets/img/relatorios.png" (click)="opcoesRelatorios()" />
                 <div class="legenda">Relatório</div>
             </div>
-            <div class="col box-icone" ng-click="redirect('app.sincronizao');">
+            <div class="col box-icone"  (click)="navigate('sincronizar')">
                 <img src="../assets/img/sincronismo.png" />
                 <div class="legenda">Sincronização</div>
             </div>
-            <div class="col box-icone" ng-click="redirect('app.produtos');">
+            <div class="col box-icone"  (click)="navigate('produtos')">
                 <img src="../assets/img/produto.png" />
                 <div class="legenda">Produtos</div>
             </div>

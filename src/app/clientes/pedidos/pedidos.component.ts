@@ -6,7 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./pedidos.component.scss'],
 })
 export class PedidosComponent implements OnInit {
-
+  pedidos = [];
+  
+  filtro = [];
+  nomecliente = "NOVA OPACAO E REPRESENTACAO DE RECOES LID";
   constructor() { }
 
   ngOnInit() {}

@@ -7,7 +7,10 @@ import { IonicModule } from '@ionic/angular';
 import { ClientesPageRoutingModule } from './clientes-routing.module';
 
 import { ClientesPage } from './clientes.page';
-import { ListaComponent } from './lista/lista.component'
+import { ListaComponent } from './lista/lista.component';
+import {PedidosComponent } from './pedidos/pedidos.component';
+import { CadastroComponent } from './cadastro/cadastro.component';
+import { TitulosComponent } from './titulos/titulos.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -15,6 +18,6 @@ import { ListaComponent } from './lista/lista.component'
     IonicModule,
     ClientesPageRoutingModule
   ],
-  declarations: [ClientesPage ,ListaComponent]
+  declarations: [ClientesPage ,ListaComponent ,PedidosComponent ,CadastroComponent ,TitulosComponent]
 })
 export class ClientesPageModule {}

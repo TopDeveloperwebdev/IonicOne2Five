@@ -8,6 +8,37 @@
     background-attachment: fixed;
 }
 
+.action-sheet-container.sc-ion-action-sheet-ios {
+    padding: 0 !important;
+    .action-sheet-title.sc-ion-action-sheet-ios {
+        text-align: left;
+        padding-left: 15px !important;
+    }
+    .action-sheet-button.sc-ion-action-sheet-ios {
+        height: 42px;
+        font-size: 16px;
+        contain: strict;
+        color: black !important;
+        .action-sheet-button-inner.sc-ion-action-sheet-ios {
+            justify-content: left;
+        }
+    }
+}
+
+.action-sheet-group.sc-ion-action-sheet-ios:last-child {
+    margin: 0px !important;
+    border-radius: 0px !important;
+}
+
+.action-sheet-group.sc-ion-action-sheet-md:last-child {
+    margin: 0px !important;
+}
+
+.ripple-parent {
+    position: relative;
+    overflow: hidden;
+}
+
 #formCliente input {
     text-transform: uppercase;
 }
@@ -113,6 +144,14 @@ select {
 
 
 /** Styling for the username field **/
+
+.item-inner {
+    border: none !important;
+}
+
+ion-row {
+    padding: 13px 10px !important;
+}
 
 label.item.has-error {
     border-bottom: 2px solid red;

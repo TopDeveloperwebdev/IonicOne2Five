@@ -1,9 +1,20 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-
-</ion-content>
+<ion-content class="bg">
+    <div class="list list-inset" style="background: transparent;">
+			<div class="logo-login">
+				<img src="../assets/img/LOGO_APP.png" />
+			</div>
+			<form name="formLogin" class="padding">
+	      <label class="item item-input">
+	        <input type="text" placeholder="Usuário"  ng-required="true" autofocus="true" [(ngModel)]="login" name="login">
+	      </label>
+	      <label class="item item-input">
+	        <input type="password" placeholder="Senha"  ng-required="true" [(ngModel)]="Senha" name="Senha">
+	      </label>
+				<button class="button button-block button-assertive"
+							  (click)="Login()"
+								ng-disabled="formLogin.$invalid">
+	        Login
+	      </button>
+			</form>
+    </div>
+  </ion-content>
