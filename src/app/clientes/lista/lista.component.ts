@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { dataService } from '../../services/data.service';
-import { ActionSheetController ,NavController } from '@ionic/angular';
+import { ActionSheetController, NavController, ModalController } from '@ionic/angular';
+import { FiltroComponent } from '../filtro/filtro.component';
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.component.html',
@@ -8,55 +9,85 @@ import { ActionSheetController ,NavController } from '@ionic/angular';
 })
 export class ListaComponent implements OnInit {
 
-  verder_id = 501;
   clientes = [];
-  constructor(private dataService: dataService, public actionSheetController: ActionSheetController , private navCtl : NavController) { }
+  page_limit = 50;
+  increaseItems = 50;
+  clientesDataservice: any;
+  usuario: any;
+  constructor(private dataService: dataService, public actionSheetController: ActionSheetController, private navCtl: NavController, public modalController: ModalController) {
+    this.usuario = JSON.parse(localStorage.getItem('user'));
+  }
 
   ngOnInit() {
-
-    this.clientes = this.dataService.getClients(this.verder_id);
-
-
+    this.dataService.getClients(this.usuario.vendedor_id).subscribe(res => {
+      this.clientesDataservice = res;
+    
+      this.pushClients(this.page_limit);
+    })
   }
-  loadMore = function () {
+  pushClients(page_limit) {
+    this.clientes = this.clientesDataservice.slice(0, page_limit);
+  }
+  loadMore($event) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (this.clientesDataservice.length > this.page_limit + this.increaseItems) {
+          this.page_limit = this.page_limit + this.increaseItems;
+          this.pushClients(this.page_limit);
+        }
+
+        $event.target.complete();
+        resolve();
+      }, 500);
+    })
 
   };
-  async opcoes(cliente_id, razaosocial){
+
+
+  async opcoes(cliente_id, razaosocial) {
     const actionSheet = await this.actionSheetController.create({
       header: 'Albums',
       cssClass: 'my-custom-class',
       buttons: [{
         text: 'Pedidos',
         role: 'destructive',
-        icon: 'ion-android-list',
+        icon: 'list',
         handler: () => {
-         this.navCtl.navigateForward('clientes/pedidos');
+          this.navCtl.navigateForward('clientes/pedidos');
         }
       }, {
         text: 'Cadastro',
-        icon: 'edit',
+        icon: 'create',
         handler: () => {
-            this.navCtl.navigateForward('clientes/cadastro');
+          this.navCtl.navigateForward('clientes/cadastro');
         }
       }, {
         text: 'Títulos',
-        icon: 'filing',
+        icon: 'albums',
         handler: () => {
-           this.navCtl.navigateForward('clientes/titulos');
+          this.navCtl.navigateForward('clientes/titulos');
         }
       }, {
         text: 'Motivos de Não Venda',
-        icon: 'listBox',
+        icon: 'close-circle',
         handler: () => {
           console.log('Favorite clicked');
         }
       }]
-     
+
     });
     await actionSheet.present();
   }
-  cadastro(){
+  cadastro() {
     this.navCtl.navigateForward('clientes/cadastro');
   }
- 
+  async filter() {
+    const modal = await this.modalController.create({
+      component: FiltroComponent,
+      cssClass: 'my-custom-class',
+    });
+    return await modal.present();
+  }
+
+
 }

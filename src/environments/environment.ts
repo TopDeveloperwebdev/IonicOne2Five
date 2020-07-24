@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false ,
-  AUTH_SERVER_ADDRESS : 'http://191.252.56.160'
+  AUTH_SERVER_ADDRESS : 'http://192.168.109.75/backend'
 };
 
 /*

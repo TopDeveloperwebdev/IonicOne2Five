@@ -5133,9 +5133,8 @@ a.subdued:last-child {
     justify-content: space-between;
     ion-title {
         margin: 0;
-        text-align: left;
+        text-align: center;
         padding: 0px;
-        padding-left: 16%;
         color: white;
     }
 }
@@ -5501,6 +5500,7 @@ a.subdued:last-child {
     background-color: #ef473a;
     color: #fff;
     padding: 0px;
+    z-index: 500;
 }
 
 .bar-assertive .button:hover {
@@ -5686,13 +5686,15 @@ a.subdued:last-child {
 }
 
 .bar-subheader {
-    top: 44px;
+    margin-top: 44px;
     height: 44px;
 }
 
 .bar-subheader .title {
     height: 43px;
     line-height: 44px;
+    margin: auto;
+    padding: 0px !important;
 }
 
 .bar-subfooter {
@@ -7761,6 +7763,12 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.activated {
     font-size: 16px;
 }
 
+.products_detail {
+    .item {
+        padding: 16px;
+    }
+}
+
 .item h2 {
     margin: 0 0 2px 0;
     font-size: 16px;
@@ -8946,12 +8954,22 @@ button.item.item-button-right {
  * --------------------------------------------------
  */
 
+.mt-60 {
+    margin-top: 60px;
+}
+
 .list {
     position: relative;
     padding-top: 1px;
     padding-bottom: 1px;
     padding-left: 0;
     margin-bottom: 20px;
+}
+
+.filter-items {
+    .filter-item {
+        padding: 6px 0 5px 16px !important;
+    }
 }
 
 .list:last-child {

@@ -1,3 +1,63 @@
-<p>
-  filtro works!
-</p>
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar">Filtro de Busca</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+<i class="ion-close-round"></i>
+</button>
+</ion-header>
+<ion-content class="padding">
+    <div class="list mt-60">
+        <label class="item item-input item-stacked-label">
+          <select ng-model="filtro.tipopesquisa" ng-options="pesquisa.id as pesquisa.descricao for pesquisa in pesquisas">
+            <option value="">Selecione a forma de pesquisa</option>
+          </select>
+      </label>
+    </div>
+    <div class="list filter-items">
+        <label class="item item-input item-stacked-label">
+      <input type="text" ng-model="filtro.cli_razaosocial" />
+    </label>
+    </div>
+    <div class="list">
+        <ion-list>
+            <ion-checkbox ng-model="filtro.apenasClientesAtraso">Apenas Clientes com Atraso</ion-checkbox>
+        </ion-list>
+    </div>
+    <div class="list">
+        <label class="item item-input item-stacked-label">
+      <select ng-model="filtro.categoria_id" ng-options="c.categoria_id as c.descricaocategoria for c in categorias">
+        <option value="">Selecione a Categoria</option>
+      </select>
+    </label>
+    </div>
+    <div class="list">
+        <label class="item item-input item-stacked-label">
+      <select ng-model="filtro.responsavel_id"
+              ng-options="r.responsavel_id as r.descricaoresponsavel for r in responsaveis">
+        <option value="">Selecione o Responsável</option>
+      </select>
+    </label>
+    </div>
+    <div class="list">
+        <label class="item item-input item-stacked-label">
+      <select ng-model="filtro.atividade_id" ng-options="a.atividade_id as a.descricaoatividade for a in atividades">
+        <option value="">Selecione a Atividade</option>
+      </select>
+    </label>
+    </div>
+    <div class="list">
+        <label class="item item-input item-stacked-label">
+      <select ng-model="filtro.dia_visita">
+        <option value="">Selecione o Dia</option>
+        <option value="SEGUNDA">SEGUNDA</option>
+        <option value="TERCA">TERÇA</option>
+        <option value="QUARTA">QUARTA</option>
+        <option value="QUINTA">QUINTA</option>
+        <option value="SEXTA">SEXTA</option>
+        <option value="SABADO">SABADO</option>
+        <option value="DOMINGO">DOMINGO</option>
+      </select>
+    </label>
+    </div>
+    <button class="button button-block button-assertive activated" ng-click="filtrar(filtro);">Filtrar</button>
+    <button class="button button-block" ng-click="limparFiltro();">Limpar</button>
+</ion-content>

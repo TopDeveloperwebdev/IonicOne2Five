@@ -6,21 +6,14 @@
 </ion-header>
 
   <ion-content class="padding">
-    <div class="item">
-      <select ng-model="meta_id"
-              ng-change="grafico(meta_id);"
-              ng-options="m.meta_id as m.descricaometa for m in metas">
-        <option value="">Selecione uma meta</option>
+    <div class="item mt-30">
+      <select [(ngModel)]='meta_id' (change)='selectChar(meta_id)'>
+        <option value="" selected >Selecione uma meta</option>
+        <option value="{{meta.meta_id}}" *ngFor="let meta of metas" >{{meta.descricaometa}}</option>
       </select>
     </div>
-    <div class="item item-text-wrap">
-      <canvas id="bar"
-              class="chart chart-bar"
-              chart-data="data"
-              chart-labels="labels"
-              chart-colors="colors"
-              chart-series="series">
-      </canvas>
+    <div class="item item-text-wrap">  
+      <canvas  class="chart chart-bar" #barChart></canvas>
     </div>
   </ion-content>
 

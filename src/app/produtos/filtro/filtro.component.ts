@@ -1,14 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, Input } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 @Component({
   selector: 'app-filtro',
   templateUrl: './filtro.component.html',
   styleUrls: ['./filtro.component.scss'],
 })
 export class FiltroComponent implements OnInit {
+  constructor(public modalController: ModalController) { }
 
-  constructor() { }
+  ngOnInit() {
 
-  ngOnInit() {}
+  }
+  dismiss() {    
+    this.modalController.dismiss({
+      'dismissed': true
+    });
+  }
 
 }

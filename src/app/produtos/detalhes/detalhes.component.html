@@ -1,3 +1,140 @@
-<p>
-  detalhes works!
-</p>
+<ion-header class="bar bar-header bar-assertive">
+    <ion-title>Mais Detalhes</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+    <i class="ion-close-round"></i>
+  </button>
+</ion-header>
+<ion-content>
+    <div class="bar bar-subheader bar-assertive">
+        <h4 class="title">produto.descricaoproduto</h4>
+    </div>
+    <div class="list products_detail">
+        <label class="item">
+      Código
+      <span class="item-note">
+        {{produto.produto_id}}
+      </span>
+    </label>
+        <label class="item">
+      Dados Adicionais
+      <span class="item-note">
+        {{produto.dados_adicionais}}
+      </span>
+    </label>
+        <a class="item">
+      Embalagem
+      <span class="item-note">
+        {{produto.embalagem}}
+      </span>
+    </a>
+        <label class="item">
+      Qtd. na embalagem
+      <span class="item-note">
+        {{produto.produtoembalagem}}
+      </span>
+    </label>
+        <label class="item">
+      Qtd. Min de Venda
+      <span class="item-note">
+        {{produto.qtde_minimo_venda}}
+      </span>
+    </label>
+        <label class="item">
+      Preço
+      <span class="item-note">
+        {{produto.precopadrao | currency:"R$":2}}
+      </span>
+    </label>
+        <label class="item">
+      Preço Unitário
+      <span class="item-note">
+        {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":2}}
+      </span>
+    </label>
+        <label class="item">
+      Custo
+      <span class="item-note" ng-show="vendedor_visualiza_custo == 'S'">
+        {{produto.custo | currency:"R$":2}}
+      </span>
+      <span class="item-note" ng-show="vendedor_visualiza_custo == 'N'">
+        0,00
+      </span>
+    </label>
+        <label class="item">
+      Código de Barras
+      <span class="item-note">
+        {{produto.codigobarras}}
+      </span>
+    </label>
+        <label class="item">
+      Estoque Offline
+      <span class="item-note">
+        {{produto.estoque_offline}}
+      </span>
+    </label>
+        <label class="item">
+      Observações
+      <span class="item-note">
+        {{produto.obs}}
+      </span>
+    </label>
+        <label class="item">
+      Produto em falta
+      <span class="item-note">
+        {{produto.produtoemfalta == 'S' ? 'Sim' : 'Não'}}
+      </span>
+    </label>
+        <label class="item">
+      Produto Novo
+      <span class="item-note">
+        {{produto.produtonovo == 'S' ? 'Sim' : 'Não'}}
+      </span>
+    </label>
+        <label class="item">
+      Produto em Promoção
+      <span class="item-note">
+        {{produto.produtoempromocao == 'S' ? 'Sim' : 'Não'}}
+      </span>
+      <br />
+      <small ng-show="produto.produtoempromocao == 'S'">De: {{produto.data_inicio_promocao | date:"dd/MM/yyyy"}} Até:
+        {{produto.data_fim_promocao | date:"dd/MM/yyyy"}}</small>
+    </label>
+        <label class="item">
+      Qtd. Min Promoção
+      <span class="item-note">
+        {{produto.quant_minima_promocao}}
+      </span>
+    </label>
+        <label class="item">
+      Preço Promoção
+      <span class="item-note">
+        {{produto.preco_promocao | currency:"R$":2}}
+      </span>
+    </label>
+        <label class="item">
+      Preço Unitário Promoção
+      <span class="item-note">
+        {{produto.preco_promocao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":2}}
+      </span>
+    </label>
+        <label class="item">
+      Desconto Máximo
+      <span class="item-note">
+        {{produto.desc_maximopercentual}} %
+      </span>
+    </label>
+        <label class="item">
+      Marca
+      <span class="item-note">
+        {{produto.inf_marca}}
+      </span>
+    </label>
+        <label class="item">
+      Tipo
+      <span class="item-note">
+        {{produto.inf_produto}}
+      </span>
+    </label>
+    </div>
+
+</ion-content>

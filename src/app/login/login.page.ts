@@ -19,6 +19,9 @@ export class LoginPage implements OnInit {
   }
   Login() {
     if (this.login != '' && this.Senha != '') {
+      // this.user = {};
+      // localStorage.setItem('user', JSON.stringify(this.user));  
+      // this.navCtrl.navigateForward('/inicio');
       this.AuthService.login(this.login, this.Senha).subscribe(user => {
         if (user) {
           this.user = user;

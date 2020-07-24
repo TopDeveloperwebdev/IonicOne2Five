@@ -7,7 +7,9 @@ import { IonicModule } from '@ionic/angular';
 import { ProdutosPageRoutingModule } from './produtos-routing.module';
 
 import { ProdutosPage } from './produtos.page';
-import { ListaComponent } from './lista/lista.component'
+import { ListaComponent } from './lista/lista.component';
+import { DetalhesComponent } from './detalhes/detalhes.component';
+import { FiltroComponent } from './filtro/filtro.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -15,6 +17,6 @@ import { ListaComponent } from './lista/lista.component'
     IonicModule,
     ProdutosPageRoutingModule
   ],
-  declarations: [ProdutosPage ,ListaComponent]
+  declarations: [ProdutosPage, ListaComponent, DetalhesComponent, FiltroComponent]
 })
-export class ProdutosPageModule {}
+export class ProdutosPageModule { }

@@ -1,3 +1,48 @@
-<p>
-  filtro works!
-</p>
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar">Filtro de Busca</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+<i class="ion-close-round"></i>
+</button>
+</ion-header>
+<ion-content class="padding">
+    <div class="list mt-60">
+        <label class="item item-input item-stacked-label">
+        <select ng-model="tabela_id" 
+                ng-options="tabela.tabela_id as tabela.descricaotabela for tabela in tabelas" 
+                ng-change="mudarTabelaPreco(tabela_id)">
+            <option value="">Selecione a Tabela</option>
+        </select>
+    </label>
+    </div>
+    <div class="list">
+        <label class="item item-input item-stacked-label">
+        <select ng-model="tipoPesquisa" ng-options="pesquisa.id as pesquisa.descricao for pesquisa in pesquisas">
+          <option value="">Selecione a marca</option>
+        </select>
+    </label>
+    </div>
+    <div class="list">
+        <label class="item item-input item-stacked-label">
+        <input type="text" ng-model="descricaoproduto" style="text-transform: uppercase;" />
+    </label>
+    </div>
+    <div class="list">
+        <label class="item item-input">
+        <select ng-model="marcaSelecionada" ng-options="marca.inf_marca as marca.inf_marca for marca in marcas">
+            <option value="">Selecione a marca</option>
+        </select>
+    </label>
+    </div>
+    <div class="list">
+        <label class="item item-input">
+        <select ng-model="tipoSelecionado" ng-options="tipo.inf_produto as tipo.inf_produto for tipo in tiposProduto">
+            <option value="">Selecione o tipo</option>
+        </select>
+    </label>
+    </div>
+    <ion-list>
+        <ion-checkbox ng-model="produtoEmPromocao" ng-true-value="'S'">Apenas Produtos em Promoção</ion-checkbox>
+    </ion-list>
+    <button class="button button-block button-assertive activated" ng-click="filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa);">Filtrar</button>
+    <button class="button button-block" ng-click="limparFiltro();">Limpar</button>
+</ion-content>

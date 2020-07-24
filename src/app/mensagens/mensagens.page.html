@@ -1,24 +1,23 @@
-
 <ion-header class="bar-assertive ">
     <ion-menu-button side="left">
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-  </button>
+        </button>
     </ion-menu-button>
- 
+
 </ion-header>
 
-<ion-view view-title="Mensagens">
-  <ion-content class="padding">
-   <!-- <div class="card"     ng-repeat="mensagem in mensagens" >
-        <div class="item item-text-wrap">
-            mensagem.mensagem
-        </div>
-    </div>
-    -->
-    asdfasdfasdfsadfsafd
-    <div class="assertive" >Nenhuma mensagem encontrada.</div>
-  </ion-content>
+<ion-view view-title="Mensagens" class="message-section">
+    <ion-content class="padding">
+        <ng-container *ngIf="mensagens; else elseTemplate">
+            <div class="card" *ngFor="let mensagem of mensagens">
+                <div class="item item-text-wrap">
+                    {{mensagem.mensagem}}
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #elseTemplate>
+            <div class="assertive">Nenhuma mensagem encontrada.</div>
+        </ng-template>
+
+    </ion-content>
 </ion-view>
-
-
-

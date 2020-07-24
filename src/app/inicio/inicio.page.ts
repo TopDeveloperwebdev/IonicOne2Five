@@ -6,10 +6,12 @@ import { ModalController, NavController, MenuController, ToastController, AlertC
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage implements OnInit {
-  usuario: {};
-  constructor(private loadCtrl: LoadingController, private navCtl: NavController, public actionSheetController: ActionSheetController) {
-
-
+  
+  usuario  = {
+    vendedor_nome : ''
+  }
+  constructor(private loadCtrl: LoadingController, private navCtl: NavController, public actionSheetController: ActionSheetController) {     
+      
   }
 
   async ngOnInit() {
@@ -17,8 +19,8 @@ export class InicioPage implements OnInit {
       message: 'Aguarde!'
     });
     loading.present();
-    this.usuario = localStorage.getItem('user');
-    console.log('usera', this.usuario);
+    this.usuario = JSON.parse(localStorage.getItem('user'));   
+ 
     loading.dismiss();
   }
   navigate(pagename) {
@@ -32,19 +34,19 @@ export class InicioPage implements OnInit {
       buttons: [{
         text: 'Títulos',
         role: 'destructive',
-        icon: 'ion-android-list',
+        icon: 'list',
         handler: () => {
           this.navCtl.navigateForward('titulos/lista');
         }
       }, {
         text: 'Compras',
-        icon: 'edit',
+        icon: 'list',
         handler: () => {
           this.navCtl.navigateForward('clientes/cadastro');
         }
       }, {
         text: 'Compras - Por item',
-        icon: 'filing',
+        icon: 'list',
         handler: () => {
           this.navCtl.navigateForward('clientes/titulos');
         }

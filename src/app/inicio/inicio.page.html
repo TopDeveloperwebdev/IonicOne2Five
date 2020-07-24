@@ -2,12 +2,13 @@
 <ion-header class="bar-assertive ">
     <ion-menu-button side="left">
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-    </button>
+    </button>    
     </ion-menu-button>  
+      <ion-title>Inicio</ion-title>
 </ion-header>
 <ion-content class="bg">
         <div style="text-align: center; padding: 5px;">
-            Bem vindo, <br> <b class="assertive">usuario.vendedor_nome</b>
+            Bem vindo,<br> <b class="assertive">{{usuario.vendedor_nome}}</b>
         </div>
         <div class="row">
             <div class="col box-icone" (click)="navigate('clientes')">
