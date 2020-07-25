@@ -1,24 +1,25 @@
 <ion-header class="bar-assertive ">
     <ion-menu-button side="left">
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-</button>
+        </button>
     </ion-menu-button>
     <ion-title>Titulos</ion-title>
     <ion-menu-button side="primary">
-        <button class="button" ng-click="modal.show();">
-  <i class="ion-funnel"></i>
-</button>
+        <button class="button close-btn" ng-click="modal.show();">
+            <i class="ion-funnel"></i>
+        </button>
     </ion-menu-button>
 </ion-header>
+
 <ion-content class="padding">
     <h4 class="assertive">
         <small>Quantidade: {{filtro.length}}</small>
-        <br/>
-        <small>Total:  R$</small>
+        <br />
+        <small>Total: {{totalTitulos(filtro) | currency:'R$ '}}</small>
     </h4>
 
     <ion-list>
-        <ion-row class="item" *ngFor="let item of items">
+        <ion-row class="item" *ngFor="let item of titulos">
             <b [ngClass]="verificaDataAtraso(item.datavencimento)">Nº: </b>
             <span [ngClass]="verificaDataAtraso(item.datavencimento)">{{item.numerotitulo}}</span>
             <span class="item-note">
@@ -49,7 +50,9 @@
         </span>
             </p>
         </ion-row>
-        <ion-infinite-scroll ng-if="carregarMais" on-infinite="loadMore()">
+        <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+            <ion-infinite-scroll-content loadingSpinner="lines" loadingText="Loading more data...">
+            </ion-infinite-scroll-content>
         </ion-infinite-scroll>
     </ion-list>
 </ion-content>

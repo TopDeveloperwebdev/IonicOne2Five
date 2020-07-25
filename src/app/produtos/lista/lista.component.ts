@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { dataService } from '../../services/data.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController, LoadingController } from '@ionic/angular';
 import { DetalhesComponent } from '../detalhes/detalhes.component';
 import { FiltroComponent } from '../filtro/filtro.component'
 @Component({
@@ -19,15 +19,21 @@ export class ListaComponent implements OnInit {
   produtos: any;
   tabelas: any;
   tipos: any;
-  constructor(private dataService: dataService, public modalController: ModalController) {
+  constructor(private loadCtrl: LoadingController, private dataService: dataService, public modalController: ModalController) {
     this.usuario = JSON.parse(localStorage.getItem('user'));
   }
-  ngOnInit() {
+
+  async ngOnInit() {
+    const loading = await this.loadCtrl.create({
+      message: 'Aguarde!'
+    });
+    loading.present();
     this.dataService.getProdutos(this.usuario.vendedor_id).subscribe(res => {
-      this.produtosDataservice = res['produtos'];
-      console.log('this.c', this.produtosDataservice)
+      this.produtosDataservice = res['produtos'];   
       this.pushClients(this.page_limit);
+      loading.dismiss();
     })
+  
   }
   pushClients(page_limit) {
     this.produtos = this.produtosDataservice.slice(0, page_limit);

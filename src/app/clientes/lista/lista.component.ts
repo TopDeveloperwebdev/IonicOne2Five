@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { dataService } from '../../services/data.service';
-import { ActionSheetController, NavController, ModalController } from '@ionic/angular';
+import { ActionSheetController, NavController, ModalController, LoadingController } from '@ionic/angular';
 import { FiltroComponent } from '../filtro/filtro.component';
 @Component({
   selector: 'app-lista',
@@ -10,35 +10,36 @@ import { FiltroComponent } from '../filtro/filtro.component';
 export class ListaComponent implements OnInit {
 
   clientes = [];
-  page_limit = 50;
-  increaseItems = 50;
+  take = 100;
+  skip = 0;
   clientesDataservice: any;
   usuario: any;
-  constructor(private dataService: dataService, public actionSheetController: ActionSheetController, private navCtl: NavController, public modalController: ModalController) {
+  constructor(private loadCtrl: LoadingController, private dataService: dataService, public actionSheetController: ActionSheetController, private navCtl: NavController, public modalController: ModalController) {
     this.usuario = JSON.parse(localStorage.getItem('user'));
   }
 
-  ngOnInit() {
-    this.dataService.getClients(this.usuario.vendedor_id).subscribe(res => {
-      this.clientesDataservice = res;
-    
-      this.pushClients(this.page_limit);
-    })
+  async ngOnInit() {
+    const loading = await this.loadCtrl.create({
+      message: 'Aguarde!'
+    });
+    loading.present();
+    this.pushClients(this.take, this.skip);
+    loading.dismiss();
+
   }
-  pushClients(page_limit) {
-    this.clientes = this.clientesDataservice.slice(0, page_limit);
+  pushClients(take, skip) {
+    this.dataService.getClients(this.usuario.vendedor_id, take, skip).subscribe(res => {
+      for (let i = 0; i < res['length']; i++) {
+        this.clientes.push(res[i]);
+      }
+      this.skip += this.take;
+    });
   }
   loadMore($event) {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        if (this.clientesDataservice.length > this.page_limit + this.increaseItems) {
-          this.page_limit = this.page_limit + this.increaseItems;
-          this.pushClients(this.page_limit);
-        }
-
-        $event.target.complete();
-        resolve();
-      }, 500);
+      this.pushClients(this.take, this.skip + this.take);
+      $event.target.complete();
+      resolve();
     })
 
   };

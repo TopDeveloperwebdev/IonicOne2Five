@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, NavController, MenuController, ToastController, AlertController, LoadingController, ActionSheetController } from "@ionic/angular";
+import {Platform, ModalController, NavController, MenuController, ToastController, AlertController, LoadingController, ActionSheetController } from "@ionic/angular";
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.page.html',
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage implements OnInit {
-  
-  usuario  = {
-    vendedor_nome : ''
+
+  usuario = {
+    vendedor_nome: ''
   }
-  constructor(private loadCtrl: LoadingController, private navCtl: NavController, public actionSheetController: ActionSheetController) {     
-      
+  constructor(private loadCtrl: LoadingController, private navCtl: NavController, public actionSheetController: ActionSheetController, private alertController: AlertController ,   private platform: Platform,) {
+
   }
 
   async ngOnInit() {
@@ -19,8 +19,8 @@ export class InicioPage implements OnInit {
       message: 'Aguarde!'
     });
     loading.present();
-    this.usuario = JSON.parse(localStorage.getItem('user'));   
- 
+    this.usuario = JSON.parse(localStorage.getItem('user'));
+
     loading.dismiss();
   }
   navigate(pagename) {
@@ -55,5 +55,6 @@ export class InicioPage implements OnInit {
     });
     await actionSheet.present();
   }
+
 
 }

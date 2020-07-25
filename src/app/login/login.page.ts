@@ -18,17 +18,14 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
   Login() {
-    if (this.login != '' && this.Senha != '') {
-      // this.user = {};
-      // localStorage.setItem('user', JSON.stringify(this.user));  
-      // this.navCtrl.navigateForward('/inicio');
+    if (this.login != '' && this.Senha != '') {     
       this.AuthService.login(this.login, this.Senha).subscribe(user => {
-        if (user) {
+        if (user['vendedor_id']) {
           this.user = user;
           localStorage.setItem('user', JSON.stringify(this.user));
           console.log('user', this.user);
           this.navCtrl.navigateForward('/inicio')
-        } else {
+        } else {        
           localStorage.setItem('user', null);
         }
         error => {

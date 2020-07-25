@@ -8,7 +8,7 @@
 
 <ion-view view-title="Mensagens" class="message-section">
     <ion-content class="padding">
-        <ng-container *ngIf="mensagens; else elseTemplate">
+        <ng-container *ngIf="emptyMessage == ''; else elseTemplate">
             <div class="card" *ngFor="let mensagem of mensagens">
                 <div class="item item-text-wrap">
                     {{mensagem.mensagem}}
@@ -18,6 +18,5 @@
         <ng-template #elseTemplate>
             <div class="assertive">Nenhuma mensagem encontrada.</div>
         </ng-template>
-
     </ion-content>
 </ion-view>
