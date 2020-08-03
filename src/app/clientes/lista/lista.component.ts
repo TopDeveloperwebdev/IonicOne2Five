@@ -10,40 +10,44 @@ import { FiltroComponent } from '../filtro/filtro.component';
 export class ListaComponent implements OnInit {
 
   clientes = [];
-  take = 100;
-  skip = 0;
   clientesDataservice: any;
   usuario: any;
+  page_limit = 50;
+  increaseItems = 50; 
+
+
   constructor(private loadCtrl: LoadingController, private dataService: dataService, public actionSheetController: ActionSheetController, private navCtl: NavController, public modalController: ModalController) {
     this.usuario = JSON.parse(localStorage.getItem('user'));
   }
-
   async ngOnInit() {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
-    this.pushClients(this.take, this.skip);
-    loading.dismiss();
-
+    this.dataService.getClients(this.usuario.vendedor_id).subscribe(res => {
+      this.clientesDataservice = res;      
+      this.pushClients(this.page_limit);
+      loading.dismiss();
+    })
+  
   }
-  pushClients(take, skip) {
-    this.dataService.getClients(this.usuario.vendedor_id, take, skip).subscribe(res => {
-      for (let i = 0; i < res['length']; i++) {
-        this.clientes.push(res[i]);
-      }
-      this.skip += this.take;
-    });
+  pushClients(page_limit) {
+    this.clientes = this.clientesDataservice.slice(0, page_limit);
   }
   loadMore($event) {
     return new Promise((resolve) => {
-      this.pushClients(this.take, this.skip + this.take);
-      $event.target.complete();
-      resolve();
+      setTimeout(() => {
+        if (this.clientesDataservice.length > this.page_limit + this.increaseItems) {
+          this.page_limit = this.page_limit + this.increaseItems;
+          this.pushClients(this.page_limit);
+        }
+
+        $event.target.complete();
+        resolve();
+      }, 500);
     })
 
   };
-
 
   async opcoes(cliente_id, razaosocial) {
     const actionSheet = await this.actionSheetController.create({

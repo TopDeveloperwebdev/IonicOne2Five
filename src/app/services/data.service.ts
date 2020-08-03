@@ -24,13 +24,13 @@ export class dataService {
 
 
 
-    getClients(vendedor_id: any, take: any, skip: any) {
-        // return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/cliente?vendedor_id=${vendedor_id}`,
-        //     { headers: this.headers }
-        // );
-        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/cliente?vendedor_id=${vendedor_id}&&take=${take}&&skip=${skip}`,
+    getClients(vendedor_id: any) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/cliente?vendedor_id=${vendedor_id}`,
             { headers: this.headers }
         );
+        // return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/cliente?vendedor_id=${vendedor_id}&&take=${take}&&skip=${skip}`,
+        //     { headers: this.headers }
+        // );
     }
     getProdutos(vendedor_id: any) {
         return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/produtos?vendedor_id=${vendedor_id}`,
@@ -53,5 +53,6 @@ export class dataService {
             { headers: this.headers }
         );
     }
+
 
 }

@@ -15,7 +15,7 @@ export class AuthService {
     headers: any;
     constructor(private httpClient: HttpClient) {
         this.headers = new HttpHeaders()
-            .set("Accept", 'application/json')            
+            .set("Accept", 'application/json')
             .set('Content-Type', 'application/json')
             .set('Access-Control-Allow-Origin', '*')
             .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
@@ -24,10 +24,13 @@ export class AuthService {
     }
 
 
-    login(login: any, senha: any) {
-        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/vendedor/autenticar?login=${login}&senha=${senha}`, 
+    getUsuarioWeb(login: any, senha: any) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/vendedor/autenticar?login=${login}&senha=${senha}`,
             { headers: this.headers }
         );
+    }
+    verificaUsuarioBloqueado(id) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/vendedor/bloqueado?vendedor_id=${id}`, { headers: this.headers });
     }
 
 }
