@@ -3,17 +3,20 @@ import { AuthService } from '../services/auth.service';
 import { NavController, Platform, AlertController, ModalController, MenuController, LoadingController, ToastController } from '@ionic/angular';
 import { ConexaoService } from '../services/conexao.service';
 import { DBService } from '../services/DB.service';
-import { db } from '../services/DB.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
+
+
 export class LoginPage implements OnInit {
   login = "";
   Senha = "";
   user: any;
   hide: boolean;
+  userTable: Dexie.Table<any, number>;
   constructor(private AuthService: AuthService,
     private loadCtrl: LoadingController,
     public navCtrl: NavController,
@@ -26,10 +29,17 @@ export class LoginPage implements OnInit {
     private DBService: DBService
   ) {
     this.hide = true;
-  }
 
-  ngOnInit() {
+
   }
+  ngOnInit() { }
+  //  async ngOnInit() {
+  //     this.userTable = this.DBService.table('usuario');
+  //     this.userTable.add({id : 1});
+  //     let usuario = await this.userTable.toArray();
+  //     console.log('user', usuario);
+  //    debugger;
+  //   }
 
 
   async presentToast(mensaje: any) {
@@ -40,29 +50,6 @@ export class LoginPage implements OnInit {
     });
     toast.present();
   }
-
-
-  //Login() {
-  //   if (this.login != '' && this.Senha != '') {     
-  //     this.AuthService.login(this.login, this.Senha).subscribe(user => {
-  //       if (user['vendedor_id']) {
-  //         this.user = user;
-  //         db.setItem('user', JSON.stringify(this.user));
-  //         console.log('user', this.user);
-  //         this.navCtrl.navigateForward('/inicio')
-  //       } else {        
-  //         db.setItem('user', null);
-  //       }
-  //       error => {
-  //         alert(error.message);
-  //       }
-  //     });
-  //   }
-
-  // }
-  loginUsuario(login, senha) {
-
-  }
   async Login() {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
@@ -71,13 +58,15 @@ export class LoginPage implements OnInit {
     var login = this.login;
     var senha = this.Senha;
 
-    let usuario = await db.usuario;
-    debugger;
+    this.userTable = this.DBService.table('usuario');
+    let usuario = await this.userTable.toArray();
+    usuario = usuario[0];
+
     if (usuario && usuario['vendedor_login'] === login) {
 
       if (this.ConexaoService.conexaoOnline()) {
         this.AuthService.verificaUsuarioBloqueado(usuario['vendedor_id']).subscribe(res => {
-          if (res['data'].bloqueado === false) {
+          if (res['bloqueado'] === false) {
             if (usuario['vendedor_login'] === login && usuario['vendedor_senha'] === senha) {
               loading.dismiss();
               this.navCtrl.navigateForward('/inicio');
@@ -88,8 +77,7 @@ export class LoginPage implements OnInit {
           } else {
 
             alert("USUARIO BLOQUEADO, FAVOR ENTRAR EM CONTATO COM A EMPRESA");
-            db.delete();
-            db.usuario.clear();
+            this.userTable.clear();
             loading.dismiss();
             navigator['app'].exitApp();
           }
@@ -102,6 +90,7 @@ export class LoginPage implements OnInit {
         this.presentToast('Verifique sua conexão.')
       }
 
+
     } else {
       this.AuthService.getUsuarioWeb(login.toLowerCase(), senha.toLowerCase()).subscribe(res => {
 
@@ -109,18 +98,18 @@ export class LoginPage implements OnInit {
           loading.dismiss();
           this.presentToast('Usuário não encontrado.');
         } else {
-          if (usuario['bloqueado'] === true) {
+          if (res['bloqueado'] === true) {
             alert("USUARIO BLOQUEADO, FAVOR ENTRAR EM CONTATO COM A EMPRESA");
-            db.delete();
-
-            db.usuario.clear();
+            this.userTable.clear();
             loading.dismiss();
             navigator['app'].exitApp();
-          } else if (usuario['download_aplicativo'] === 'S') {
-            loading.dismiss();
-            this.presentToast('Você já fez o download em outro aparelho.');
-          } else {
-            db.usuario.add(res);
+          } 
+          // else if (res['download_aplicativo'] === 'S') {
+          //   loading.dismiss();
+          //   this.presentToast('Você já fez o download em outro aparelho.');
+          // }
+           else {
+            this.userTable.add(res);
             localStorage.setItem('sincronizar', 'true');
             loading.dismiss();
             this.navCtrl.navigateForward('/inicio');
@@ -131,10 +120,11 @@ export class LoginPage implements OnInit {
       },
         error => {
           loading.dismiss();
-          db.usuario.clear();
+          this.userTable.clear();
           this.presentToast('Erro ao buscar usuário no WebService.');
         });
     }
   }
+
 
 }

@@ -2,36 +2,16 @@ import { Injectable, OnInit } from '@angular/core';
 import Dexie from 'dexie';
 
 
-import { IEmailAddress, IPhoneNumber, Contact } from '../model/model';
 @Injectable({
     providedIn: 'root'
 })
 
+
 export class DBService extends Dexie {
-
-    public books = [];
-    public users: any;
-    headers: any;
-    db: any;
-
-    atividade: Dexie.Table<any, number>;
-    usuario: Dexie.Table<any, number>;
-    cidade: Dexie.Table<any, number>;
-    categoria: Dexie.Table<any, number>;
-    comissao: Dexie.Table<any, number>;
-    compras_item: Dexie.Table<any, number>;
-    condicao: Dexie.Table<any, number>;
-    forma: Dexie.Table<any, number>;
-    itempedido: Dexie.Table<any, number>;
-    
     constructor() {
-        super("ContactsDatabase");
-        this.db = this;
-        //
-        // Define tables and indexes
-        //
-        this.db.version(1).stores({
-            usuario: '++atividade_id,vendedor_id,vendedor_login,vendedor_senha,download_aplicativo',
+        super('Ng2DexieSample');
+        this.version(1).stores({          
+            usuario: '++vendedor_id,vendedor_login,vendedor_senha,download_aplicativo ,vendedor_nome,bloqueado',
             atividade: '++atividade_id,vendedor_id,descricaoatividade',
             categoria: '++categoria_id,vendedor_id,descricaocategoria',
             cidade: '++cidade_id,vendedor_id,descricaocidade,codigoibge,uf',
@@ -61,37 +41,14 @@ export class DBService extends Dexie {
             // ??? abaixo tabelas que não existe (com este nome e atributos ao menos)
             marcas_produto: 'inf_marca',
             tipos_produto: 'inf_produto',
-           
         });
-
-
-        // Let's physically map Contact class to contacts table.
-        // This will make it possible to call loadEmailsAndPhones()
-        // directly on retrieved database objects.
-
-        this.db.atividade.mapToClass(this.atividade);
-        this.db.cidade.mapToClass(this.cidade);
-        this.db.categoria.mapToClass(this.categoria);
-
-        this.db.comissao.mapToClass(this.comissao);
-
-        this.db.compras_item.mapToClass(this.compras_item);
-        this.db.condicao.mapToClass(this.condicao);
-        this.db.forma.mapToClass(this.forma);
-        this.db.itempedido.mapToClass(this.itempedido);
-        this.db.usuario.mapToClass(this.usuario);
-       
-    }
-    OnInit() {
     }
 
-
-
-    // _atualizaIdClientePedido(clientes: any) {
+    // atualizaIdClientePedido(clientes: any) {
     //     if (clientes.length > 0) {
     //         clientes.foreach(i => {
     //             if (clientes[i].cli_id != new Number(clientes[i].cli_cnpjcpf)) {
-    //                 this.dexieService.pedido
+    //                 this.table('pedido')
     //                     .where('cliente_id')
     //                     .equals(clientes[i].cli_cnpjcpf)
     //                     .modify({
@@ -107,7 +64,9 @@ export class DBService extends Dexie {
     //     }
 
     // }
-
-
 }
-export var db = new DBService();
+
+
+
+
+

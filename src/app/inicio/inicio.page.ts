@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Platform, ModalController, NavController, MenuController, ToastController, AlertController, LoadingController, ActionSheetController } from "@ionic/angular";
+import { Platform, ModalController, NavController, MenuController, ToastController, AlertController, LoadingController, ActionSheetController } from "@ionic/angular";
+import { DBService } from '../services/DB.service';
+import { ConexaoService } from '../services/conexao.service';
+import { dataService } from '../services/data.service'
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.page.html',
@@ -7,24 +10,52 @@ import {Platform, ModalController, NavController, MenuController, ToastControlle
 })
 export class InicioPage implements OnInit {
 
-  usuario = {
-    vendedor_nome: ''
-  }
-  constructor(private loadCtrl: LoadingController, private navCtl: NavController, public actionSheetController: ActionSheetController, private alertController: AlertController ,   private platform: Platform,) {
+  // usuario = {
+  //   vendedor_nome: ''
+  // }
+  userTable: Dexie.Table<any, number>;
+  // loading: any;
+  constructor(
+    private loadCtrl: LoadingController,
+    private navCtl: NavController,
+    public actionSheetController: ActionSheetController,
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private platform: Platform,
+    private dbService: DBService,
+    private conexaoService: ConexaoService,
+    private dataService: dataService) {
 
   }
-
-  async ngOnInit() {
-    const loading = await this.loadCtrl.create({
-      message: 'Aguarde!'
+  async presentToast(mensaje: any) {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 1000,
+      position: 'bottom'
     });
-    loading.present();
-    this.usuario = JSON.parse(localStorage.getItem('user'));
+    toast.present();
+  }
+  async ngOnInit() {
+    this.userTable = this.dbService.table('usuario');
+    let usuario = await this.userTable.toArray();
+    if (usuario.length == 0) {
+      this.navCtl.navigateForward('login');
+    }
+    if (localStorage.getItem('sincronizar') == 'true') {
+      if (this.conexaoService.conexaoOnline()) {
 
-    loading.dismiss();
+        const loading = await this.loadCtrl.create({
+          message: 'Sincronizando, aguarde!'
+        });
+        loading.present();
+         this.dataService.init();
+
+      } else {
+        this.presentToast('Não há conexão com a internet no momento.')
+      }
+    }
   }
   navigate(pagename) {
-    console.log('pagename', pagename);
     this.navCtl.navigateForward(pagename);
   }
   async opcoesRelatorios(cliente_id, razaosocial) {
@@ -57,4 +88,42 @@ export class InicioPage implements OnInit {
   }
 
 
+
 }
+
+
+// if (store.get('sincronizar') == true) {
+//   if (ConexaoService.conexaoOnline()) {
+//     $ionicLoading.show({
+//       template: 'Sincronizando, aguarde!'
+//     });
+
+//     SincronizacaoService.init();
+
+//   } else {
+//     $cordovaToast.showShortBottom('Não há conexão com a internet no momento.');
+//   }
+// }
+
+// $scope.usuario = store.get('usuario');
+
+
+
+// $scope.sair = function () {
+//   $ionicPopup.confirm({
+//     title: 'Sair do aplicativo',
+//     template: 'DESEJA SAIR DO APLICATIVO?',
+//     buttons: [
+//       {text: 'Não'},
+//       {
+//         text: 'Sim',
+//         type: 'button-assertive',
+//         onTap: function () {
+//           //  store.remove('usuario');
+//           //  window.cache.clear();
+//           ionic.Platform.exitApp();
+//         }
+//       }
+//     ]
+//   });
+// }
