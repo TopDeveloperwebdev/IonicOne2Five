@@ -15,7 +15,7 @@ export class dataService {
     public users: any;
     headers: any;
     constructor(private httpClient: HttpClient, private dbService: DBService,
-        private alertController: AlertController, private loadingController: LoadingController) {
+        private alertCtrl: AlertController, private loadingController: LoadingController) {
         this.headers = new HttpHeaders()
             .set("Accept", 'application/json')
             .set('Content-Type', 'application/json')
@@ -25,6 +25,21 @@ export class dataService {
             .set('Access-Control-Allow-Credentials', 'true');
     }
 
+    async presentConfirm() {
+        console.log('Alert Shown Method Accessed!');
+        const alert = await this.alertCtrl.create({
+            header: 'Mensagem',
+            message: 'Sincronismo de Entrada efetuado com sucesso!',
+            buttons: [
+                {
+                    text: 'Fechar',
+                    role: 'cancel',
+                    cssClass: 'button button-assertive',
+                }
+            ]
+        });
+        await alert.present();
+    }
     init() {
         const vendedor_id = 501;
         let clientes;
@@ -169,7 +184,7 @@ export class dataService {
                 )])
                 .subscribe(res => {
                     this.loadingController.dismiss();
-                   
+                    this.presentConfirm();
                     // $ionicPopup.alert({
                     //     title: 'Mensagem',
                     //     template: 'Sincronismo de Entrada efetuado com sucesso!',
