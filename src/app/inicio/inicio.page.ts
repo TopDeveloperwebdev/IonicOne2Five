@@ -10,9 +10,7 @@ import { dataService } from '../services/data.service'
 })
 export class InicioPage implements OnInit {
 
-  // usuario = {
-  //   vendedor_nome: ''
-  // }
+  usuario: any;
   userTable: Dexie.Table<any, number>;
   // loading: any;
   constructor(
@@ -37,10 +35,11 @@ export class InicioPage implements OnInit {
   }
   async ngOnInit() {
     this.userTable = this.dbService.table('usuario');
-    let usuario = await this.userTable.toArray();
-    if (usuario.length == 0) {
+    this.usuario = await this.userTable.toArray();
+    if (this.usuario.length == 0) {
       this.navCtl.navigateForward('login');
     }
+    this.usuario = this.usuario[0];
     if (localStorage.getItem('sincronizar') == 'true') {
       if (this.conexaoService.conexaoOnline()) {
 
@@ -48,7 +47,7 @@ export class InicioPage implements OnInit {
           message: 'Sincronizando, aguarde!'
         });
         loading.present();
-         this.dataService.init();
+        this.dataService.init(this.usuario['vendedor_id']);
 
       } else {
         this.presentToast('Não há conexão com a internet no momento.')
@@ -105,7 +104,6 @@ export class InicioPage implements OnInit {
 //   }
 // }
 
-// $scope.usuario = store.get('usuario');
 
 
 

@@ -40,8 +40,7 @@ export class dataService {
         });
         await alert.present();
     }
-    init() {
-        const vendedor_id = 501;
+    init(vendedor_id: any) {
         let clientes;
         let atividades;
         let categorias;

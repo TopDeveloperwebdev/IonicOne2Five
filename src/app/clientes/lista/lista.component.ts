@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { dataService } from '../../services/data.service';
 import { ActionSheetController, NavController, ModalController, LoadingController } from '@ionic/angular';
 import { FiltroComponent } from '../filtro/filtro.component';
+import { DBService } from '../../services/DB.service';
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.component.html',
@@ -13,23 +14,24 @@ export class ListaComponent implements OnInit {
   clientesDataservice: any;
   usuario: any;
   page_limit = 50;
-  increaseItems = 50; 
+  increaseItems = 50;
 
 
-  constructor(private loadCtrl: LoadingController, private dataService: dataService, public actionSheetController: ActionSheetController, private navCtl: NavController, public modalController: ModalController) {
-    this.usuario = JSON.parse(localStorage.getItem('user'));
+  constructor(private loadCtrl: LoadingController, private dataService: dataService, public actionSheetController: ActionSheetController, private navCtl: NavController, public modalController: ModalController, private dbService: DBService) {
+
   }
   async ngOnInit() {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
-    this.dataService.getClients(this.usuario.vendedor_id).subscribe(res => {
-      this.clientesDataservice = res;      
+    let usertemp = await this.dbService.table('usuario').toArray();
+    this.usuario = usertemp[0];
+    this.dbService.table('clientes').toArray().then(res => {
+      this.clientesDataservice = res[0];
       this.pushClients(this.page_limit);
       loading.dismiss();
     })
-  
   }
   pushClients(page_limit) {
     this.clientes = this.clientesDataservice.slice(0, page_limit);
