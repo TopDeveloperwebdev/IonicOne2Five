@@ -10,7 +10,7 @@
 <ion-content style="background: #f0f0f0;">
     <h4 class="assertive padding">
         {{nomecliente}}
-        <div ng-if="cliente" style="color: grey;">
+        <!-- <div ng-if="cliente" style="color: grey;">
             <small>
         Limite de crédito: {{cliente.trava_limite_credito?cliente.cli_limitecredito:'sem limite'}}<br>
         <span ng-if="limiteDisponivel(cliente)-totalPedidos(pedidos)<0">Limite disponível:
@@ -18,69 +18,76 @@
         <span ng-if="limiteDisponivel(cliente)-totalPedidos(pedidos)>=0">Limite disponível:
           {{ cliente.trava_limite_credito?(limiteDisponivel(cliente)-totalPedidos(pedidos)).toFixed(2):'sem limite' }}</span>
       </small>
-        </div>
+        </div> -->
     </h4>
 
-    <div ng-if="cliente" style="font-size: 7pt; color: grey; line-height: 10pt; font-weight: 500; padding: 4px 12px; border-bottom: 1px solid lightgrey; margin: 0 4px;">
+    <!-- <div ng-if="cliente" style="font-size: 7pt; color: grey; line-height: 10pt; font-weight: 500; padding: 4px 12px; border-bottom: 1px solid lightgrey; margin: 0 4px;">
         Total de Pedidos: {{totalPedidos(pedidos) | currency:'R$ '}}<br> Títulos à vencer: {{cliente.cli_totaltitulosavencer}}
         <br> Títulos vencidos: {{cliente.cli_totaltitulosvencidos}}<br>
-    </div>
+    </div> -->
 
     <form name="formPedido">
         <h4 class="assertive padding">Capa</h4>
         <div class="list list-inset">
             <label class="item item-input">
-        <label style="font-size: 12px;">Data de Entrega: </label>
+        <label style="font-size: 12px;">Data de Entrega:</label>
             <!-- <i class="icon ion-search placeholder-icon"></i> -->
-            <input type="date" placeholder="Data da Entrega" ng-model="pedido.data_entrega" ng-required="true">
+            <input type="date" [(ngModel)]="pedido.data_entrega" [ngModelOptions]="{standalone: true}">
             </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
-        <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select ng-model="pedido.codigo_condicao_pagto" ng-required="true" ng-change="setPedidoMinimo();"
-          ng-options="condicao.condicao_id as condicao.descricao_condicao for condicao in condicoes">
-          <option value="">Selecione a Condição de Pagto</option>
-        </select>
-      </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
-        <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select ng-model="pedido.codigo_forma_pagto" ng-required="true"
-          ng-options="forma.forma_id as forma.descricaoformapagamento for forma in formas">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->       
+        <select [value]="pedido.codigo_forma_pagto">
           <option value="">Selecione a Forma de Pagto</option>
+          <option value="{{condicao.condicao_id}}" *ngFor="let condicao of condicoes">
+            {{condicao.descricao_condicao}}</option>
         </select>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select ng-model="pedido.tipo_pedido" ng-required="true"
-          ng-options="tipo.codigo as tipo.nome for tipo in tipos">
+     
+        <select [value]="pedido.codigo_forma_pagto">
+          <option value="">Selecione a Forma de Pagto</option>
+          <option value="{{forma.forma_id}}" *ngFor="let forma of formas">
+            {{forma.descricaoformapagamento}}</option>
+        </select>
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+
+        <select [value]="pedido.tipo_pedido" required>
           <option value="">Selecione o Tipo de Pedido</option>
+          <option value="{{tipo.codigo}}" *ngFor="let tipo of tipos">
+            {{tipo.nome}}</option>
         </select>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select ng-model="pedido.codigo_tabela_preco" ng-required="true"
-          ng-options="tabela.tabela_id as tabela.descricaotabela for tabela in tabelas" ng-change="mudarTabelaPreco()">
+
+        <select [value]="pedido.codigo_tabela_preco" required>
           <option value="">Selecione a Tabela</option>
+          <option value="{{tabela.tabela_id}}" *ngFor="let tabela of tabelas">
+            {{tabela.descricaotabela}}</option>
         </select>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <textarea ng-model="pedido.observacao" rows="5" placeholder="Observações"></textarea>
+        <textarea [value]="pedido.observacao" rows="5" placeholder="Observações"></textarea>
       </label>
         </div>
-        <div class="item item-toggle">
+        <div class="item-toggle">
             Urgente
             <label class="toggle toggle-assertive">
-        <input type="checkbox" ng-model="pedido.urgente">
+        <input type="checkbox" [value]="pedido.urgente">
         <div class="track">
           <div class="handle"></div>
         </div>
@@ -88,25 +95,25 @@
         </div>
         <h4 class="assertive padding">Itens</h4>
         <div class="padding">
-            <button class="button button-block button-light" ng-click="addProdutoModal.show();">
+            <button class="button button-block button-light" (click)="addProdutoModal.show();">
         Adicionar Item
       </button>
             <ion-list>
-                <ion-item ng-repeat="item in itens" class="item" ng-init="pedido.total_itens = pedido.total_itens + 1;">
+                <ion-row *ngFor="let item of itens" class="item" ng-init="pedido.total_itens = pedido.total_itens + 1;">
                     {{item.descricao}}
                     <p>Quantidade: {{item.quantidade}}</p>
                     <p>Valor: {{item.valor_total_item| currency:"R$":2}}</p>
-                    <ion-option-button class="button-positive" ng-click="alterarProdutoPedido(item)">
+                    <ion-option-button class="button-positive" (click)="alterarProdutoPedido(item)">
                         Alterar
                     </ion-option-button>
-                    <ion-option-button class="button-assertive" ng-click="apagarProdutoPedido(item)">
+                    <ion-option-button class="button-assertive" (click)="apagarProdutoPedido(item)">
                         Apagar
                     </ion-option-button>
-                </ion-item>
+                </ion-row>
             </ion-list>
             <h4 class="assertive" ng-show="valor_pedido_minimo > 0">Valor mínimo do pedido: {{valor_pedido_minimo | currency:'R$'}}</h4>
             <h4>Total do Pedido: {{pedido.total_pedido | currency:'R$'}}</h4>
-            <button class="button button-block button-assertive" ng-disabled="formPedido.$invalid || itens.length === 0" ng-click="salvar(pedido, itens)">
+            <button class="button button-block button-assertive" ng-disabled="formPedido.$invalid || itens.length === 0" (click)="salvar(pedido, itens)">
         <i class="icon ion-checkmark"></i>
         Salvar
       </button>

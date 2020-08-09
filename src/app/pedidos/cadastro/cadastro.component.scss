@@ -1,3 +1,20 @@
 .toolbar-title {
     width: 82% !important;
 }
+
+ion-content {
+    --background: #f0f0f0;
+    .item-toggle {
+        border-color: #ddd;
+        background-color: #fff;
+        color: #444;
+        position: relative;
+        z-index: 2;
+        display: block;
+        margin: 0px 10px;
+        padding: 16px;
+        border-width: 1px;
+        border-style: solid;
+        font-size: 16px;
+    }
+}

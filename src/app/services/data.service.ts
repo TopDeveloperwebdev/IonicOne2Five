@@ -146,7 +146,8 @@ export class dataService {
             db.table('tabela').clear();
             db.table('compras').clear();
             db.table('forma').clear();
-            db.table('itempedido').clear();
+            db.table('condicoe').clear();
+             db.table('itempedido').clear();
             db.table('mensagem').clear();
             db.table('metas').clear();
             db.table('motivos_nao_venda').clear();
@@ -167,6 +168,7 @@ export class dataService {
             db.table('atividade').add(atividades);
             db.table('compras_item').add(compras_itens);
             db.table('forma').add(formas);
+            db.table('condicoe').add(condicoes);
             db.table('itempedido').add(itenspedido);
             db.table('mensagem').add(mensagens);
             db.table('metas').add(meta_vendedor);

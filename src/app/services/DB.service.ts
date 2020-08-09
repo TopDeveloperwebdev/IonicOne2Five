@@ -19,7 +19,7 @@ export class DBService extends Dexie {
             comissao: '++id,*produto_id,vendedor_id,precoinicial,precofinal,comissao',
             compras: '++compras_id,compras_documento_nro,compras_tipo,compras_vendedor_id,compras_responsavel_id,compras_cliente_id,compras_cliente_nome,compras_cliente_fone,compras_datacompra,compras_totalcompra,compras_desconto,compras_totalcomissao',
             compras_item: '++compras_item_id,compras_id,compras_item_vendedor_id,compras_item_responsavel_id,compras_item_codigoproduto,compras_item_descricaoproduto,compras_item_unidadadeproduto,compras_item_quantidade,compras_item_precototal,compras_item_precounitario,compras_item_descontopercentual,compras_item_precotabela,compras_item_precocusto,compras_item_produtopromocao,compras_item_comissaopercentual,compras_item_comissaovaloritem',
-            condicao: '++condicao_id,vendedor_id,descricao_condicao,percentual_acres_decrescimo,valor_minimo_pedido',
+            condicoe: '++condicao_id,vendedor_id,descricao_condicao,percentual_acres_decrescimo,valor_minimo_pedido',
             forma: '++forma_id,vendedor_id,descricaoformapagamento',
             // ???
             itempedido: '++item_id,pedido_id,codigo_produto,descricao,tipo_item,quantidade,preco_unitario_bruto,desc_unitario_percentual,preco_unitario_comdesconto,valor_total_item,status,cliente_id,enviado',
