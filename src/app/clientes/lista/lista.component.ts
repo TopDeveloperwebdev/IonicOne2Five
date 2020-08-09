@@ -3,6 +3,8 @@ import { dataService } from '../../services/data.service';
 import { ActionSheetController, NavController, ModalController, LoadingController } from '@ionic/angular';
 import { FiltroComponent } from '../filtro/filtro.component';
 import { DBService } from '../../services/DB.service';
+import { promise } from 'protractor';
+import { CLIENT_RENEG_LIMIT } from 'tls';
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.component.html',
@@ -15,22 +17,90 @@ export class ListaComponent implements OnInit {
   usuario: any;
   page_limit = 50;
   increaseItems = 50;
-
-
-  constructor(private loadCtrl: LoadingController, private dataService: dataService, public actionSheetController: ActionSheetController, private navCtl: NavController, public modalController: ModalController, private dbService: DBService) {
+  filtro = {};
+  valueEmittedFromChildComponent: object = {};
+  constructor(
+    private loadCtrl: LoadingController,
+    private dataService: dataService,
+    public actionSheetController: ActionSheetController,
+    private navCtl: NavController,
+    public modalController: ModalController,
+    private dbService: DBService) {
 
   }
-  async ngOnInit() {
+  ngOnInit() {
+    this.clientsInit();
+  }
+  async clientsInit() {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
     let usertemp = await this.dbService.table('usuario').toArray();
     this.usuario = usertemp[0];
-    this.dbService.table('clientes').toArray().then(res => {
-      this.clientesDataservice = res[0];
-      this.pushClients(this.page_limit);
-      loading.dismiss();
+    this.clientesDataservice = [];
+    if (this.filtro.hasOwnProperty('cli_razaosocial') ||
+      this.filtro.hasOwnProperty('cli_totaltitulosvencidos') ||
+      this.filtro.hasOwnProperty('categoria_id') ||
+      this.filtro.hasOwnProperty('atividade_id') ||
+      this.filtro.hasOwnProperty('responsavel_id') ||
+      this.filtro.hasOwnProperty('dia_visita')
+    ) {
+
+      this.clientesDataservice = this.filterItems(this.filtro).then(res => {
+        this.clientesDataservice = res;
+        console.log('res1', res);
+        this.pushClients(this.page_limit);
+        loading.dismiss();
+      });
+    }
+    else {
+      this.dbService.table('clientes').toArray().then(res => {
+        this.clientesDataservice = res[0].sort((a, b) => {return a.cli_razaosocial < b.cli_razaosocial; });
+        console.log('res2', res[0]);
+        this.pushClients(this.page_limit);
+        loading.dismiss();
+      });
+    }
+  }
+  async filterItems(filtro) {
+    return this.dbService.table('clientes').toArray().then(res => {
+      return res[0].filter(function (where) {
+        var comando = [];
+
+        if (filtro.hasOwnProperty('cli_razaosocial')) {
+          if (filtro.tipopesquisa == 2) {
+            var str = new RegExp('^' + filtro.cli_razaosocial, 'i');
+            comando.push('str.test(where.cli_razaosocial)');
+          } else {
+            var str = new RegExp(filtro.cli_razaosocial);
+            comando.push('str.test(where.cli_razaosocial)');
+          }
+        }
+
+        if (filtro.hasOwnProperty('cli_totaltitulosvencidos')) {
+          comando.push('where.cli_totaltitulosvencidos != filtro.cli_totaltitulosvencidos');
+        }
+
+        if (filtro.hasOwnProperty('categoria_id')) {
+          comando.push('where.categoria_id == filtro.categoria_id');
+        }
+
+        if (filtro.hasOwnProperty('atividade_id')) {
+          comando.push('where.atividade_id == filtro.atividade_id');
+        }
+
+        if (filtro.hasOwnProperty('responsavel_id')) {
+          comando.push('where.responsavel_id == filtro.responsavel_id');
+        }
+
+        if (filtro.hasOwnProperty('dia_visita')) {
+          comando.push('where.dia_visita == filtro.dia_visita');
+        }
+
+        return eval(comando.join(' && '));
+
+      });
     })
   }
   pushClients(page_limit) {
@@ -52,6 +122,7 @@ export class ListaComponent implements OnInit {
   };
 
   async opcoes(cliente_id, razaosocial) {
+    console.log('asdfasd', razaosocial);
     const actionSheet = await this.actionSheetController.create({
       header: 'Albums',
       cssClass: 'my-custom-class',
@@ -60,7 +131,7 @@ export class ListaComponent implements OnInit {
         role: 'destructive',
         icon: 'list',
         handler: () => {
-          this.navCtl.navigateForward('clientes/pedidos');
+          this.navCtl.navigateForward(['clientes/pedidos',{ 'cliente_id': cliente_id, 'nomecliente': razaosocial}]);  
         }
       }, {
         text: 'Cadastro',
@@ -92,9 +163,18 @@ export class ListaComponent implements OnInit {
     const modal = await this.modalController.create({
       component: FiltroComponent,
       cssClass: 'my-custom-class',
+      componentProps: {
+        'filtro': this.filtro,
+
+      }
     });
+    modal.onDidDismiss()
+      .then((data) => {
+        this.filtro = data['data']; // Here's your selected user!
+        this.clientsInit();
+      });
+
     return await modal.present();
   }
-
-
+ 
 }

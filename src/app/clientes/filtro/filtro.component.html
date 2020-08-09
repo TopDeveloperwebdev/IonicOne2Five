@@ -1,46 +1,54 @@
 <ion-header class="bar bar-header bar-assertive ">
     <ion-title class="filter-bar">Filtro de Busca</ion-title>
     <button class="button close-btn" (click)="dismiss()">
-<i class="ion-close-round"></i>
-</button>
+    <i class="ion-close-round"></i>
+  </button>
 </ion-header>
 <ion-content class="padding">
-    <div class="list mt-60">
+    <div class="list">
         <label class="item item-input item-stacked-label">
-          <select ng-model="filtro.tipopesquisa" ng-options="pesquisa.id as pesquisa.descricao for pesquisa in pesquisas">
-            <option value="">Selecione a forma de pesquisa</option>
-          </select>
-      </label>
-    </div>
-    <div class="list filter-items">
-        <label class="item item-input item-stacked-label">
-      <input type="text" ng-model="filtro.cli_razaosocial" />
+      <select [(ngModel)]="filtro.tipopesquisa">
+        <option value="">Selecione a forma de pesquisa</option>
+        <option value="{{pesquisa.id}}" *ngFor="let pesquisa of pesquisas">{{pesquisa.descricao}}</option>
+      </select>
     </label>
     </div>
     <div class="list">
-        <ion-list>
-            <ion-checkbox ng-model="filtro.apenasClientesAtraso">Apenas Clientes com Atraso</ion-checkbox>
+        <label class="item item-input item-stacked-label">
+      <input type="text" [(ngModel)]="filtro.cli_razaosocial" />
+    </label>
+    </div>
+    <div class="list">
+        <ion-list class="checkbox">
+            <ion-checkbox [(ngModel)]="filtro.apenasClientesAtraso"></ion-checkbox>
+            <ion-label>Apenas Clientes com Atraso</ion-label>
         </ion-list>
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select ng-model="filtro.categoria_id" ng-options="c.categoria_id as c.descricaocategoria for c in categorias">
+      <select [(ngModel)]="filtro.categoria_id">
         <option value="">Selecione a Categoria</option>
+        <option value="{{categorias.categoria_id}}" *ngFor="let categoria of categorias">
+          {{categoria.descricaocategoria}}</option>
       </select>
     </label>
     </div>
+
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select ng-model="filtro.responsavel_id"
-              ng-options="r.responsavel_id as r.descricaoresponsavel for r in responsaveis">
+      <select [(ngModel)]="filtro.responsavel_id">
         <option value="">Selecione o Responsável</option>
+        <option value="{{responsaveis.responsavel_id}}" *ngFor="let responsavei of responsaveis">
+          {{responsaveis.descricaoresponsavel}}</option>
       </select>
     </label>
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select ng-model="filtro.atividade_id" ng-options="a.atividade_id as a.descricaoatividade for a in atividades">
+      <select [(ngModel)]="filtro.responsavel_id">
         <option value="">Selecione a Atividade</option>
+        <option value="{{atividade.atividade_id}}" *ngFor="let atividade of atividades">
+          {{atividade.descricaoatividade}}</option>
       </select>
     </label>
     </div>
@@ -58,6 +66,6 @@
       </select>
     </label>
     </div>
-    <button class="button button-block button-assertive activated" ng-click="filtrar(filtro);">Filtrar</button>
-    <button class="button button-block" ng-click="limparFiltro();">Limpar</button>
+    <button class="button button-block button-assertive activated" (click)="dismiss();">Filtrar</button>
+    <button class="button button-block" (click)="limparFiltro();">Limpar</button>
 </ion-content>

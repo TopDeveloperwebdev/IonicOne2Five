@@ -1,3 +1,17 @@
 .close-btn {
     position: absolute;
 }
+
+ion-content {
+    --padding-top: 55px;
+    .checkbox {
+        justify-content: start;
+        border: 1px solid #c5c5c5ad;
+        padding: 11px 19px;
+        width: 100%;
+        display: flex;
+        ion-label {
+            margin-left: 15px;
+        }
+    }
+}

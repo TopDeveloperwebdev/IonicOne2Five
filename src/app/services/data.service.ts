@@ -117,6 +117,7 @@ export class dataService {
                 { headers: this.headers }
             )
         ]).subscribe(res => {
+            
             clientes = res[0];
             atividades = res[1];
             categorias = res[2];
@@ -136,8 +137,8 @@ export class dataService {
             visitas_nao_venda = res[16];
             compras = res[17]['compras'];
             compras_itens = res[17]['itens'];
-            let db = this.dbService;
-
+            let db = this.dbService;            
+            localStorage.removeItem('sincronizar');
             db.table('clientes').clear();
             db.table('atividade').clear();
             db.table('categoria').clear();
@@ -158,10 +159,12 @@ export class dataService {
             db.table('marcas_produto').clear();
             db.table('tipos_produto').clear();
             //add
-            db.table('categoria').add(categorias);
+            
+            db.table('categoria').add(categorias);   
             db.table('cidade').add(cidades);
             db.table('clientes').add(clientes);
             db.table('compras').add(compras);
+            db.table('atividade').add(atividades);
             db.table('compras_item').add(compras_itens);
             db.table('forma').add(formas);
             db.table('itempedido').add(itenspedido);

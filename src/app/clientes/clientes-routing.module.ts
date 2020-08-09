@@ -5,7 +5,8 @@ import { ClientesPage } from './clientes.page';
 import { ListaComponent } from './lista/lista.component';
 import { PedidosComponent } from './pedidos/pedidos.component';
 import { CadastroComponent } from  './cadastro/cadastro.component';
-import {TitulosComponent} from './titulos/titulos.component'
+import {TitulosComponent} from './titulos/titulos.component';
+import {MotiCadastroComponent} from './motivonaovenda/cadastro/cadastro.component';
 const routes: Routes = [
   {
     path: '',
@@ -26,6 +27,10 @@ const routes: Routes = [
   {
     path : 'titulos',
     component : TitulosComponent
+  }
+  ,{
+      path : 'alterar',
+    component : MotiCadastroComponent
   }
 ];
 

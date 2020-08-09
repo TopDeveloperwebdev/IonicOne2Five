@@ -25,6 +25,8 @@ export class InicioPage implements OnInit {
     private dataService: dataService) {
 
   }
+
+
   async presentToast(mensaje: any) {
     const toast = await this.toastController.create({
       message: mensaje,
@@ -34,12 +36,13 @@ export class InicioPage implements OnInit {
     toast.present();
   }
   async ngOnInit() {
+    
     this.userTable = this.dbService.table('usuario');
-    this.usuario = await this.userTable.toArray();
-    if (this.usuario.length == 0) {
+    const tempuser = await this.userTable.toArray();
+    if (tempuser.length == 0) {
       this.navCtl.navigateForward('login');
     }
-    this.usuario = this.usuario[0];
+    this.usuario = tempuser[0];
     if (localStorage.getItem('sincronizar') == 'true') {
       if (this.conexaoService.conexaoOnline()) {
 

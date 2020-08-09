@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { CadastroComponent } from './cadastro.component';
+import { CadastroComponent } from './moti.cadastro.component';
 
 describe('CadastroComponent', () => {
   let component: CadastroComponent;

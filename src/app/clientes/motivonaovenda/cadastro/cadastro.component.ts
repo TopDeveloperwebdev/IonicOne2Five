@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './cadastro.component.html',
   styleUrls: ['./cadastro.component.scss'],
 })
-export class CadastroComponent implements OnInit {
+export class MotiCadastroComponent implements OnInit {
 
   constructor() { }
 
