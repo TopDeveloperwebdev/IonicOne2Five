@@ -117,7 +117,7 @@ export class dataService {
                 { headers: this.headers }
             )
         ]).subscribe(res => {
-            
+
             clientes = res[0];
             atividades = res[1];
             categorias = res[2];
@@ -137,7 +137,7 @@ export class dataService {
             visitas_nao_venda = res[16];
             compras = res[17]['compras'];
             compras_itens = res[17]['itens'];
-            let db = this.dbService;            
+            let db = this.dbService;
             localStorage.removeItem('sincronizar');
             db.table('clientes').clear();
             db.table('atividade').clear();
@@ -147,21 +147,21 @@ export class dataService {
             db.table('compras').clear();
             db.table('forma').clear();
             db.table('condicoe').clear();
-             db.table('itempedido').clear();
+            db.table('itempedido').clear();
             db.table('mensagem').clear();
             db.table('metas').clear();
             db.table('motivos_nao_venda').clear();
             db.table('pedido').clear();
-            db.table('produto').clear();
-            db.table('produto_tabela').clear();
+            db.table('produto').clear();          
             db.table('responsavel').clear();
             db.table('titulo').clear();
             db.table('visita_nao_venda').clear();
             db.table('marcas_produto').clear();
             db.table('tipos_produto').clear();
+            db.table('produto_tabela').clear();     
             //add
-            
-            db.table('categoria').add(categorias);   
+
+            db.table('categoria').add(categorias);
             db.table('cidade').add(cidades);
             db.table('clientes').add(clientes);
             db.table('compras').add(compras);
@@ -174,8 +174,11 @@ export class dataService {
             db.table('metas').add(meta_vendedor);
             db.table('motivos_nao_venda').add(motivos_nao_venda);
             db.table('pedido').add(pedidos);
-            db.table('produto').add(produtos);
-            db.table('produto_tabela').add(produto_tabela);
+            db.table('produto').bulkPut(produtos.produtos);
+            db.table('comissao').bulkPut(produtos.comissao);
+            db.table('produto_tabela').bulkPut(produtos.produto_tabela);
+            db.table('marcas_produto').bulkPut(produtos.marcas);
+            db.table('tipos_produto').bulkPut(produtos.tipos);         
             db.table('responsavel').add(responsaveis);
             db.table('tabela').add(tabelas);
             db.table('titulo').add(titulos);

@@ -9,7 +9,7 @@ import { PedidosPageRoutingModule } from './pedidos-routing.module';
 import { PedidosPage } from './pedidos.page';
 import { CadastroComponent } from './cadastro/cadastro.component';
 import { DetalhesProdutoComponent } from './detalhes-produto/detalhes-produto.component'
-
+import { AddProdutoComponent } from './add-produto/add-produto.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -17,6 +17,6 @@ import { DetalhesProdutoComponent } from './detalhes-produto/detalhes-produto.co
     IonicModule,
     PedidosPageRoutingModule
   ],
-  declarations: [PedidosPage, CadastroComponent, DetalhesProdutoComponent]
+  declarations: [PedidosPage, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent]
 })
 export class PedidosPageModule { }

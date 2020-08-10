@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { LoadingController, AlertController } from '@ionic/angular'
+import { LoadingController, AlertController, ModalController } from '@ionic/angular'
 import { DBService } from '../../services/DB.service';
-import { promise } from 'protractor';
+import { AddProdutoComponent } from '../add-produto/add-produto.component'
 
 @Component({
   selector: 'app-cadastro',
@@ -23,7 +23,9 @@ export class CadastroComponent implements OnInit {
     public route: ActivatedRoute,
     public loadCtrl: LoadingController,
     public alertCtrl: AlertController,
-    public dbService: DBService) { }
+    public dbService: DBService,
+    public modalCtrl: ModalController,
+  ) { }
 
   async ngOnInit() {
     const self = this;
@@ -38,11 +40,11 @@ export class CadastroComponent implements OnInit {
     self.cliente = pedido;
 
     let dataHora = pedido.data_entrega.split(" ");
-  
+
 
     pedido.data_entrega = dataHora[0];
-    self.pedido = pedido; 
-   console.log('self pedido', self.pedido);
+    self.pedido = pedido;
+    console.log('self pedido', self.pedido);
     this.condicoes = await this.dbService.table('condicoe').toArray();
     this.condicoes = this.condicoes[0];
     this.formas = await this.dbService.table('forma').toArray();
@@ -127,6 +129,23 @@ export class CadastroComponent implements OnInit {
       ]
     });
     await alert.present();
+  }
+  async addProdutoModal() {
+    const modal = await this.modalCtrl.create({
+      component: AddProdutoComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'pedido': this.pedido,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        let producto = data['data']; // Here's your selected user!
+        this.itens.push(producto);
+      });
+
+    return await modal.present();
   }
 
 }
