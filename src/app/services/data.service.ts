@@ -125,7 +125,7 @@ export class dataService {
             tabelas = res[4];
             formas = res[5];
             condicoes = res[6];
-            produtos = res[7];
+            produtos = res[7];         
             mensagens = res[8];
             meta_vendedor = res[9];
             titulos = res[10];
@@ -152,7 +152,8 @@ export class dataService {
             db.table('metas').clear();
             db.table('motivos_nao_venda').clear();
             db.table('pedido').clear();
-            db.table('produto').clear();          
+            db.table('produto').clear();  
+              db.table('comissao').clear();           
             db.table('responsavel').clear();
             db.table('titulo').clear();
             db.table('visita_nao_venda').clear();
@@ -175,8 +176,8 @@ export class dataService {
             db.table('motivos_nao_venda').add(motivos_nao_venda);
             db.table('pedido').add(pedidos);
             db.table('produto').bulkPut(produtos.produtos);
-            db.table('comissao').bulkPut(produtos.comissao);
-            db.table('produto_tabela').bulkPut(produtos.produto_tabela);
+            db.table('comissao').bulkPut(produtos.comissoes);
+            db.table('produto_tabela').bulkPut(produtos.produto_tabelas);
             db.table('marcas_produto').bulkPut(produtos.marcas);
             db.table('tipos_produto').bulkPut(produtos.tipos);         
             db.table('responsavel').add(responsaveis);

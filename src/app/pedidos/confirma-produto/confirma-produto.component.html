@@ -1,3 +1,73 @@
-<p>
-  confirma-produto works!
-</p>
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar">Confirmar Produto</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+    <i class="ion-close-round"></i>
+  </button>
+</ion-header>
+<ion-content>
+    <form name="addProdutoForm">
+        <div class="list">
+            <label class="item item-input mt-55">
+      
+        <select [value]="produtoEscolhido.comissao" (change)="selecionaComissao();"
+          ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true">
+          <option value="">Selecione a Comissão</option>
+          <option [value]="toNumber(comissao.precoinicial)" *ngFor="let comissao of comissoes_produto">
+            De {{toNumber(comissao.precoinicial) }}
+            a {{toNumber(comissao.precofinal)}} =>
+            {{toNumber(comissao.comissao) }}%
+          </option>
+        </select>
+      </label>
+            <label class="item item-input item-stacked-label">
+        <span class="input-label">Produto </span>
+        <input type="text" [value]="produtoEscolhido.descricao" readonly>
+      </label>
+            <label class="item item-input item-stacked-label">
+        <span class="input-label">Desconto (%) <small
+            ng-if="addProdutoForm.desconto.$invalid && !addProdutoForm.desconto.$pristine" style="color: red;">deve ser
+            menor que ({{descontoPermitido}}%)</small></span>
+        <input type="phone" ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true"
+          ng-keyup="calculaDesconto(addProdutoForm);" name="desconto" ui-number-mask
+          [value]="produtoEscolhido.desc_unitario_percentual">
+      </label>
+            <label class="item item-input item-stacked-label">
+        <span class="input-label">Preço</span>
+        <input type="text" [value]="produtoEscolhido.preco_unitario_bruto" ui-money-mask="2" ng-disabled="true">
+      </label>
+            <label class="item item-input item-stacked-label">
+        <span class="input-label">Acréscimo (%)</span>
+        <input type="phone" [value]="produtoEscolhido.acrescimo" ng-keyup="atualizarPreco(addProdutoForm);" ui-number-mask
+          ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true">
+      </label>
+            <label class="item item-input item-stacked-label">
+        <span class="input-label">Preço de Venda</span>
+        <input type="phone"  [value]="produtoEscolhido.preco_unitario_comdesconto" 
+          ng-disable="produtoEscolhido.promocao == 'S'" ng-blur="calculaPrecoComDesconto(addProdutoForm);"
+          ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" ui-money-mask="2">
+      </label>
+            <!-- <label class="item item-input">
+    <span class="input-label">Quantidade</span>
+    <input type="number" [value]="produtoEscolhido.quantidade" ng-keyup="atualizarPreco(addProdutoForm);">
+  </label> -->
+            <div class="item item-input item-stacked-label">
+                <span class="input-label">Quantidade</span>
+                <h-number [value]="produtoEscolhido.quantidade" min="1" step="1" change="calculaPrecoPorQuantidade();"></h-number>
+            </div>
+            <label class="item item-input item-stacked-label">
+        <span class="input-label">Total</span>
+        <input type="text" [value]="produtoEscolhido.valor_total_item" ui-money-mask="2" readonly>
+      </label>
+        </div>
+    </form>
+    <div class="padding">
+        <button class="button button-block" (click)="maisDetalhesProduto()">
+      <i class="icon ion-search"></i>
+      Mais Detalhes
+    </button>
+        <button class="button button-block button-assertive" ng-disabled="addProdutoForm.$invalid" (click)="confirmaProdutoPedido(produtoEscolhido);">
+      <i class="icon ion-checkmark"></i>
+      Confirmar
+    </button>
+    </div>
+</ion-content>

@@ -37,6 +37,7 @@ export class CadastroComponent implements OnInit {
     self.nomecliente = self.route.snapshot.params['nomecliente'];
     let pedido = JSON.parse(self.route.snapshot.params['pedido']);
 
+
     self.cliente = pedido;
 
     let dataHora = pedido.data_entrega.split(" ");
@@ -131,11 +132,15 @@ export class CadastroComponent implements OnInit {
     await alert.present();
   }
   async addProdutoModal() {
+    let usertemp = await this.dbService.table('usuario').toArray();
+    let usuario = usertemp[0];
     const modal = await this.modalCtrl.create({
       component: AddProdutoComponent,
       cssClass: 'my-custom-class',
       componentProps: {
         'pedido': this.pedido,
+        'itens': this.itens,
+        'usuario': usuario
 
       }
     });
@@ -147,5 +152,10 @@ export class CadastroComponent implements OnInit {
 
     return await modal.present();
   }
+
+  //////// get result 
+
+
+
 
 }

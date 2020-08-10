@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LoadingController, AlertController } from '@ionic/angular';
-import { DBService } from '../../services/DB.service'
+import { LoadingController, AlertController, ModalController } from '@ionic/angular';
+import { DBService } from '../../services/DB.service';
+import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
+import { async } from '@angular/core/testing';
 @Component({
   selector: 'app-add-produto',
   templateUrl: './add-produto.component.html',
@@ -11,11 +13,18 @@ export class AddProdutoComponent implements OnInit {
   db: any;
   listaProdutos = [];
   listaProdutosDataservice: any;
-  usuario: any;
+
   page_limit = 50;
   increaseItems = 50;
+  produtoEscolhido: any;
   @Input() pedido: any;
-  constructor(public loadCtrl: LoadingController, public alertCtrl: AlertController, public dbService: DBService,) {
+  @Input() itens: any;
+  @Input() usuario: any;
+  constructor(
+    public loadCtrl: LoadingController,
+    public alertCtrl: AlertController,
+    public dbService: DBService,
+    public modalCtrl: ModalController) {
     this.db = dbService;
   }
 
@@ -331,10 +340,122 @@ export class AddProdutoComponent implements OnInit {
     })
 
   };
-  dismiss() {    
-    this..dismiss({
-      'dismissed': true
+
+  dismiss() {
+    console.log('dismass');
+    this.modalCtrl.dismiss(this.itens, this.pedido);
+  }
+  addProdutoPedido(produto) {
+    let self = this;
+    this.verificaProdutoLista(produto.produto_id).then(function (p) {
+      if (typeof p === "object") {
+        const alert = this.alertCtrl.create({
+          header: 'Atenção!',
+          message: 'Este produto já existe na lista.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel',
+              cssClass: 'button button-assertive',
+              onTap: function () {
+                console.log(p);
+                self.produtoEscolhido = p;
+                self.confirmarProduto(this.produtoEscolhido);
+              }
+            }
+          ]
+        });
+        alert.present();
+      } else {
+        self.produtoEscolhido = {
+          codigo_produto: produto.produto_id,
+          dados_adicionais: produto.dados_adicionais,
+          descricao: produto.descricaoproduto,
+          preco_unitario_bruto: produto.precotabela,
+          desc_unitario_percentual: 0,
+          quantidade: 1,
+          acrescimo: 0.0,
+          preco_unitario_comdesconto: produto.precotabela,
+          valor_total_item: produto.precotabela,
+          desc_maximopercentual: produto.desc_maximopercentual,
+          promocao: produto.produtoempromocao,
+          embalagem: produto.embalagem,
+          produtoembalagem:
+            (produto.produtoembalagem && produto.produtoembalagem) > 1 ?
+              produto.produtoembalagem : 1,
+          estoque_offline: produto.estoque_offline,
+          custo: self.usuario.vendedor_visualiza_custo == "N" ? 0.0 : produto.custo,
+          preco_promocao: produto.preco_promocao,
+          preco_unitario_promocao: produto.preco_promocao /
+            (produto.produtoembalagem ? produto.produtoembalagem : 1),
+          data_inicio_promocao: produto.data_inicio_promocao,
+          data_fim_promocao: produto.data_fim_promocao,
+          marca: produto.inf_marca,
+          tipo: produto.inf_produto,
+          obs: produto.obs
+        };
+        //  $scope.confirmarProduto.show();
+
+        self.confirmarProduto(self.produtoEscolhido);
+      }
+    });
+  };
+
+  async confirmarProduto(produtoEscolhido) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmaProdutoComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'produtoEscolhido': produtoEscolhido,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        let producto = data['data'];
+        if (producto) {
+          this.confirmaProdutoPedido(producto);
+        }
+      });
+
+    return await modal.present();
+  }
+  verificaProdutoLista(produto_id) {
+    var retorno = false;
+    this.itens.map(function (value) {
+      if (value.codigo_produto == produto_id) {
+        retorno = value;
+      }
+    });
+    return new Promise((resolve, reject) => {
+      return resolve(retorno);
+    })
+  }
+  //get new add produto
+
+  confirmaProdutoPedido = function (produto) {
+    this.apagarItemPedido(produto);
+    this.itens.push(produto);
+    this.atualizarTotalPedido();
+    console.log('this.itens', this.itens, this.pedido);
+  };
+  apagarItemPedido(produto) {
+    this.apagarProdutoPedido(produto);
+    this.atualizarTotalPedido();
+  }
+  apagarProdutoPedido(produto) {
+    var listaItens = this.itens;
+    this.itens = listaItens.filter(function (element) {
+      if (element != produto) return element;
     });
   }
-
+  atualizarTotalPedido() {
+    this.pedido.total_pedido = 0;
+    this.itens.map(i => {
+      var item = parseFloat(i.valor_total_item);
+      var total_pedido = parseFloat(this.pedido.total_pedido);
+      var soma_itens = total_pedido + item;
+      this.pedido.total_pedido = soma_itens.toFixed(2);
+    })
+  }
 }

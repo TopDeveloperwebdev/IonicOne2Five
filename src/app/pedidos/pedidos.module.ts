@@ -9,7 +9,8 @@ import { PedidosPageRoutingModule } from './pedidos-routing.module';
 import { PedidosPage } from './pedidos.page';
 import { CadastroComponent } from './cadastro/cadastro.component';
 import { DetalhesProdutoComponent } from './detalhes-produto/detalhes-produto.component'
-import { AddProdutoComponent } from './add-produto/add-produto.component'
+import { AddProdutoComponent } from './add-produto/add-produto.component';
+import { ConfirmaProdutoComponent} from './confirma-produto/confirma-produto.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -17,6 +18,6 @@ import { AddProdutoComponent } from './add-produto/add-produto.component'
     IonicModule,
     PedidosPageRoutingModule
   ],
-  declarations: [PedidosPage, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent]
+  declarations: [PedidosPage, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent,ConfirmaProdutoComponent]
 })
 export class PedidosPageModule { }

@@ -1,3 +1,70 @@
-<p>
-  detalhes-produto works!
-</p>
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar">Confirmar Produto</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+  <i class="ion-close-round"></i>
+</button>
+</ion-header>
+<ion-content>
+    <label class="item item-input">
+    <span class="input-label">Código</span>
+    <input type="text" value="{{produtoEscolhido.codigo_produto}}" readonly>
+  </label>
+    <label class="item item-input">
+    <span class="input-label">Dados Adicionais</span>
+    <input type="text" value="{{produtoEscolhido.dados_adicionais}}" readonly>
+  </label>
+    <label class="item item-input">
+    <span class="input-label">UND</span>
+    <input type="text" value="{{produtoEscolhido.embalagem}}" readonly>
+  </label>
+    <label class="item item-input">
+    <span class="input-label">Embalagem</span>
+    <input type="text" value="{{produtoEscolhido.produtoembalagem}}" readonly>
+  </label>
+    <label class="item item-input">
+    <span class="input-label">Estoque</span>
+    <input type="text" value="{{produtoEscolhido.estoque_offline}}" readonly>
+  </label>
+    <label class="item item-input">
+    <span class="input-label">Desconto Máximo</span>
+    <input type="text" value="{{produtoEscolhido.desc_maximopercentual}}%" readonly>
+  </label>
+    <label class="item item-input">
+    <span class="input-label">Custo</span>
+    <input type="text" value="{{produtoEscolhido.custo}}" readonly>
+  </label>
+    <label class="item item-input">
+    <span class="input-label">Preco</span>
+    <input type="text" [value]="produtoEscolhido.preco_promocao"  ui-money-mask="2" readonly>
+  </label>
+
+    <label class="item item-input">
+    <span class="input-label">Preco Unitário</span>
+    <input type="text" [value]="produtoEscolhido.preco_unitario_promocao"  ui-money-mask="2" readonly>
+  </label>
+
+    <label class="item item-input">
+    <span class="input-label">Promoção</span>
+    <input type="text" value="{{produtoEscolhido.promocao == 'S' ? 'Sim' : 'Não'}}" readonly>
+  </label>
+    <label class="item item-input">
+      <span class="input-label">Data inicio Promoção</span>
+      <input type="text" value="{{produtoEscolhido.data_inicio_promocao| date:'dd/MM/yyyy'}}" readonly>
+    </label>
+    <label class="item item-input">
+      <span class="input-label">Data fim Promoção</span>
+      <input type="text" value="{{produtoEscolhido.data_fim_promocao| date:'dd/MM/yyyy'}}" readonly>
+    </label>
+    <label class="item item-input">
+      <span class="input-label">Marca</span>
+      <input type="text" [value]="produtoEscolhido.marca" readonly>
+    </label>
+    <label class="item item-input">
+      <span class="input-label">Tipo</span>
+      <input type="text" [value]="produtoEscolhido.tipo" readonly>
+    </label>
+    <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <textarea [value]="produtoEscolhido.obs" rows="5" readonly></textarea>
+    </label>
+</ion-content>
