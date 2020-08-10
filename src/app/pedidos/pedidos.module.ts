@@ -11,6 +11,7 @@ import { CadastroComponent } from './cadastro/cadastro.component';
 import { DetalhesProdutoComponent } from './detalhes-produto/detalhes-produto.component'
 import { AddProdutoComponent } from './add-produto/add-produto.component';
 import { ConfirmaProdutoComponent} from './confirma-produto/confirma-produto.component'
+import { FiltroComponent } from './filtro/filtro.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -18,6 +19,6 @@ import { ConfirmaProdutoComponent} from './confirma-produto/confirma-produto.com
     IonicModule,
     PedidosPageRoutingModule
   ],
-  declarations: [PedidosPage, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent,ConfirmaProdutoComponent]
+  declarations: [PedidosPage, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent,ConfirmaProdutoComponent ,FiltroComponent]
 })
 export class PedidosPageModule { }

@@ -10,7 +10,6 @@
 </ion-header>
 
 <ion-content>
-
     <ion-list>
         <ion-row class="item ion-activatable ripple-parent " [class]="{'cliente-bloqueado': cliente.cli_totaltitulosvencidos  > 0}" (click)="opcoes(cliente.cli_id, cliente.cli_razaosocial); " *ngFor="let cliente of clientes ">
             {{cliente.cli_razaosocial}}

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
-import { NavController } from '@ionic/angular';
+import { NavController, ModalController } from '@ionic/angular';
+import { FiltroPedidosComponent } from '../filtro-pedidos/filtro-pedidos.component'
 @Component({
   selector: 'app-pedidos',
   templateUrl: './pedidos.component.html',
@@ -14,7 +15,7 @@ export class PedidosComponent implements OnInit {
   nomecliente = '';
   cliente_id: '';
 
-  constructor(public route: ActivatedRoute, public dbService: DBService, public navCtl: NavController) {
+  constructor(public route: ActivatedRoute, public dbService: DBService, public navCtl: NavController, public modalController: ModalController) {
 
     this.cliente_id = this.route.snapshot.params['cliente_id'];
 
@@ -106,10 +107,27 @@ export class PedidosComponent implements OnInit {
     }
   };
   cadastro(cliente_id, nomecliente) {
-    this.navCtl.navigateForward(['clientes/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
+    this.navCtl.navigateForward(['pedidos/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
   alterar(p, nomecliente) {
-    let pedido = JSON.stringify(p);    
-    this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido , 'nomecliente': nomecliente }]);
+    let pedido = JSON.stringify(p);
+    this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido, 'nomecliente': nomecliente }]);
   };
+  async filter() {
+    const modal = await this.modalController.create({
+      component: FiltroPedidosComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'filtro': this.filtro,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        this.filtro = data['data']; // Here's your selected user!
+        this.listaPedidos(this.cliente_id);
+      });
+
+    return await modal.present();
+  }
 }

@@ -171,8 +171,8 @@ export class dataService {
             db.table('forma').add(formas);
             db.table('condicoe').add(condicoes);
             db.table('itempedido').add(itenspedido);
-            db.table('mensagem').add(mensagens);
-            db.table('metas').add(meta_vendedor);
+            db.table('mensagem').bulkPut(mensagens);
+            db.table('metas').bulkPut(meta_vendedor);
             db.table('motivos_nao_venda').add(motivos_nao_venda);
             db.table('pedido').add(pedidos);
             db.table('produto').bulkPut(produtos.produtos);
@@ -180,10 +180,10 @@ export class dataService {
             db.table('produto_tabela').bulkPut(produtos.produto_tabelas);
             db.table('marcas_produto').bulkPut(produtos.marcas);
             db.table('tipos_produto').bulkPut(produtos.tipos);         
-            db.table('responsavel').add(responsaveis);
-            db.table('tabela').add(tabelas);
-            db.table('titulo').add(titulos);
-            db.table('visita_nao_venda').add(visitas_nao_venda);
+            db.table('responsavel').bulkPut(responsaveis);
+            db.table('tabela').bulkPut(tabelas);
+            db.table('titulo').bulkPut(titulos);
+            db.table('visita_nao_venda').bulkPut(visitas_nao_venda);
             forkJoin([
                 this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/update/sync/vendedor?vendedor_id=${vendedor_id}`,
                     { headers: this.headers }

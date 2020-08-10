@@ -1,9 +1,6 @@
 <ion-header class="bar-assertive ">
-    <ion-menu-button side="left">
-
-        <ion-back-button [text]="add">
-        </ion-back-button>
-    </ion-menu-button>
+    <ion-back-button [text]="add" (click)="voltar()">
+    </ion-back-button>
     <ion-title>Cadastro de Pedidos</ion-title>
 </ion-header>
 

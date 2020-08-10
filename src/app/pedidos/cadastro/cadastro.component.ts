@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { LoadingController, AlertController, ModalController } from '@ionic/angular'
+import { LoadingController, AlertController, ModalController, NavController } from '@ionic/angular'
 import { DBService } from '../../services/DB.service';
 import { AddProdutoComponent } from '../add-produto/add-produto.component'
 
@@ -25,6 +25,7 @@ export class CadastroComponent implements OnInit {
     public alertCtrl: AlertController,
     public dbService: DBService,
     public modalCtrl: ModalController,
+    public navCtrl: NavController
   ) { }
 
   async ngOnInit() {
@@ -51,7 +52,7 @@ export class CadastroComponent implements OnInit {
     this.formas = await this.dbService.table('forma').toArray();
     this.formas = this.formas[0];
     this.tabelas = await this.dbService.table('tabela').toArray();
-    this.tabelas = this.tabelas[0];
+    // this.tabelas = this.tabelas[0];
     this.tipos = [
       { codigo: "P", nome: "Pedido" },
       { codigo: "B", nome: "Bônus" },
@@ -152,6 +153,28 @@ export class CadastroComponent implements OnInit {
 
     return await modal.present();
   }
+
+  async voltar() {
+    const alert = await this.alertCtrl.create({
+      header: 'Atenção!',
+      message: 'O pedido não foi salvo, deseja sair mesmo assim?',
+      buttons: [
+        {
+          text: 'Sim',
+          cssClass: 'Yes button button-assertive',
+          handler: (e) => {
+            console.log('Confirm Cancel');
+            this.navCtrl.back();
+          }
+        },
+        {
+          text: "Não",
+          cssClass: 'No button-assertive',
+        }
+      ]
+    });
+    await alert.present();
+  };
 
   //////// get result 
 

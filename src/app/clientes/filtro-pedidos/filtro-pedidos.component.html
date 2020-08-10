@@ -1,0 +1,50 @@
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar">Filtro de Pedidos</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+    <i class="ion-close-round"></i>
+  </button>
+</ion-header>
+<ion-content class="padding">
+    <form name="filtroPedidos">
+        <div class="list">
+            <label class="item item-input">
+        <select ng-model="filtro.situacao">
+          <option value="">Todos</option>
+          <option value="S">Enviados</option>
+          <option value="N">Não Enviados</option>
+        </select>
+      </label>
+        </div>
+        <div class="list">
+            <label class="item item-input">
+        <select ng-model="filtro.tipo_pedido" ng-options="tipo.codigo as tipo.nome for tipo in tipos">
+          <option value="">Todos os tipos</option>
+        </select>
+      </label>
+        </div>
+        <div class="list">
+            <label class="item item-input">
+        <select ng-model="filtro.criterioData" name="criterioData">
+          <option value="">Data da Entrega</option>
+          <option value="C" selected>Data da Criação</option>
+        </select>
+      </label>
+            <label class="item item-input" ng-class="{'has-error': filtroPedidos.inicio.$invalid}">
+        <label style="font-size: 12px;">De: </label>
+            <input type="date" name="inicio" ng-model="filtro.inicio" ng-required="filtro.fim != null">
+            </label>
+            <div class="form-errors" ng-messages="filtroPedidos.inicio.$error">
+                <div class="form-error" ng-message="required">Campo Obrigatório</div>
+            </div>
+            <label class="item item-input">
+        <label style="font-size: 12px;">Até: </label>
+            <input type="date" name="fim" ng-model="filtro.fim" ng-required="filtro.inicio != null">
+            </label>
+            <div class="form-errors" ng-messages="filtroPedidos.fim.$error">
+                <div class="form-error" ng-message="required">Campo Obrigatório</div>
+            </div>
+        </div>
+        <button class="button button-block button-assertive activated" ng-disabled="filtroPedidos.$invalid" ng-click="filtrarPedidos(filtro);">Filtrar
+    </button>
+    </form>
+</ion-content>

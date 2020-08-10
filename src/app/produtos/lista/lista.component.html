@@ -11,10 +11,16 @@
 
 </ion-header>
 <ion-content>
+    <!-- <div class="bar bar-header bar-assertive item-input-inset">
+      <label class="item-input-wrapper">
+          <i class="icon ion-ios-search placeholder-icon"></i>
+          <input type="search" ng-model="busca" placeholder="Pesquisar" style="text-transform: uppercase;">
+      </label>
+  </div> -->
     <ion-list>
-        <ion-row class="item ion-activatable ripple-parent" (click)="detalhes(produto);" *ngFor="let produto of produtos">
-            <p style="padding: 10px;">
-                <span [class]="{'balanced': produto.produtoempromocao == 'S', 'assertive': produto.produtoemfalta == 'S', 'positive': produto.produtonovo == 'S'}">{{produto.descricaoproduto}}</span>
+        <ion-row class="item" (click)="detalhes(produto);" *ngFor="let produto of listaProdutos">
+            <p>
+                <span ng-class="{'balanced': produto.produtoempromocao == 'S', 'assertive': produto.produtoemfalta == 'S', 'positive': produto.produtonovo == 'S'}">{{produto.descricaoproduto}}</span>
                 <br>
                 <small>
           {{produto.dados_adicionais}}
@@ -23,22 +29,24 @@
 
             <span class="item-note-left" style="font-size: 18px; color: #aaa !important;" ng-show="produto.produtoembalagem && produto.produtoembalagem > 1">
         <small class="item-note-label">Unitário: </small>
-        <small >
+        <small ng-show="produto.produtoempromocao == 'S'">
           {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}
         </small>
         <b
-          [class]="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}</b>
+          ng-class="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}</b>
       </span>
 
             <span class="item-note" style="font-size: 18px; text-align: right;">
         <small style="color: red; text-decoration: line-through; font-size: 12px;"
-          [hidden]="produto.produtoempromocao != 'S'">
+          ng-show="produto.produtoempromocao == 'S'">
           {{produto.precopadrao| currency:"R$"}}
         </small>
         <b
-          [class]="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela | currency:"R$"}}</b>
+          ng-class="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela | currency:"R$"}}</b>
       </span>
-
+            <ion-option-button class="button-assertive" (click)="comissoes(produto.produto_id);">
+                Comissões
+            </ion-option-button>
         </ion-row>
         <ion-infinite-scroll (ionInfinite)="loadMore($event)">
             <ion-infinite-scroll-content loadingSpinner="lines" loadingText="Loading more data...">

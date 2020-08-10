@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular'
 
 @Component({
   selector: 'app-filtro',
@@ -6,9 +7,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./filtro.component.scss'],
 })
 export class FiltroComponent implements OnInit {
+  filtro: {}
+  constructor(public modalController: ModalController) { }
 
-  constructor() { }
+  ngOnInit() { }
+  dismiss() {
+    console.log('dismass');
+    this.modalController.dismiss(this.filtro);
+  }
 
-  ngOnInit() {}
-
+  limparFiltro = function () {
+    this.filtro = {};
+    this.modalController.dismiss(this.filtro);
+  }
 }

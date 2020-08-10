@@ -1,8 +1,11 @@
 <ion-header class="bar bar-header bar-assertive ">
-    <ion-title class="filter-bar">Adicionar Produtos</ion-title>
+    <ion-title class="filter-bar ">Adicionar Produtos</ion-title>
+    <button class="button close-btn addproduto-filter" (click)="filter(); ">
+    <i class="ion-funnel "></i>
+  </button>
     <button class="button close-btn" (click)="dismiss()">
-  <i class="ion-close-round"></i>
-</button>
+    <i class="ion-close-round"></i>
+  </button>
 </ion-header>
 <ion-content>
     <!-- <div class="bar bar-header bar-assertive item-input-inset">
@@ -18,24 +21,27 @@
                 <span [class]="{'balanced': produto.produtoempromocao == 'S', 'assertive': produto.produtoemfalta == 'S', 'positive': produto.produtonovo == 'S'}">{{produto.descricaoproduto}}</span>
                 <br>
                 <small>
-                {{produto.dados_adicionais}}
-              </small>
+          {{produto.dados_adicionais}}
+        </small>
             </p>
 
             <span class="item-note-left" style="font-size: 18px; color: #aaa !important;" [hidden]="!(produto.produtoembalagem && produto.produtoembalagem > 1)">
-              <small class="item-note-label">Unitário: </small>
-              <small [hidden]="!(produto.produtoempromocao == 'S')">
-              {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}
-              </small>
-              <b [class]="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}</b>
-          </span>
+        <small class="item-note-label">Unitário: </small>
+        <small [hidden]="!(produto.produtoempromocao == 'S')">
+          {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}
+        </small>
+        <b
+          [class]="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}</b>
+      </span>
 
             <span class="item-note" style="font-size: 18px; text-align: right;">
-              <small style="color: red; text-decoration: line-through; font-size: 12px;" [hidden]="!(produto.produtoempromocao == 'S')">
-                  {{produto.precopadrao| currency:"R$"}}
-              </small>
-              <b [class]="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela | currency:"R$"}}</b>
-          </span>
+        <small style="color: red; text-decoration: line-through; font-size: 12px;"
+          [hidden]="!(produto.produtoempromocao == 'S')">
+          {{produto.precopadrao| currency:"R$"}}
+        </small>
+        <b
+          [class]="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela | currency:"R$"}}</b>
+      </span>
 
             <ion-item-options class="button-assertive" (click)="comissoes(produto.produto_id);">
                 Comissões

@@ -58,6 +58,7 @@ export class InicioPage implements OnInit {
     }
   }
   navigate(pagename) {
+    console.log('pagename' , pagename);
     this.navCtl.navigateForward(pagename);
   }
   async opcoesRelatorios(cliente_id, razaosocial) {

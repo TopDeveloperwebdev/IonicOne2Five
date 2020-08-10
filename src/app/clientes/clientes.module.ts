@@ -10,9 +10,10 @@ import { ClientesPage } from './clientes.page';
 import { ListaComponent } from './lista/lista.component';
 import { PedidosComponent } from './pedidos/pedidos.component';
 import { CadastroComponent } from './cadastro/cadastro.component';
-import { TitulosComponent } from './titulos/titulos.component';
+
 import { FiltroComponent } from './filtro/filtro.component';
 import { MotiCadastroComponent } from './motivonaovenda/cadastro/cadastro.component';
+import { FiltroPedidosComponent } from './filtro-pedidos/filtro-pedidos.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -20,6 +21,14 @@ import { MotiCadastroComponent } from './motivonaovenda/cadastro/cadastro.compon
     IonicModule,
     ClientesPageRoutingModule
   ],
-  declarations: [ClientesPage, ListaComponent, PedidosComponent, CadastroComponent, TitulosComponent, FiltroComponent, MotiCadastroComponent]
+  declarations: [
+    ClientesPage, 
+    ListaComponent, 
+    PedidosComponent, 
+    CadastroComponent, 
+
+    FiltroComponent, 
+    MotiCadastroComponent, 
+    FiltroPedidosComponent]
 })
 export class ClientesPageModule { }

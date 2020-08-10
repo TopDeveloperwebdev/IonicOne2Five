@@ -3,8 +3,6 @@ import { dataService } from '../../services/data.service';
 import { ActionSheetController, NavController, ModalController, LoadingController } from '@ionic/angular';
 import { FiltroComponent } from '../filtro/filtro.component';
 import { DBService } from '../../services/DB.service';
-import { promise } from 'protractor';
-import { CLIENT_RENEG_LIMIT } from 'tls';
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.component.html',
@@ -143,7 +141,7 @@ export class ListaComponent implements OnInit {
         text: 'Títulos',
         icon: 'albums',
         handler: () => {
-          this.navCtl.navigateForward('clientes/titulos');
+          this.navCtl.navigateForward(['titulos/lista',{ 'cliente_id': cliente_id, 'nomecliente': razaosocial}]);  
         }
       }, {
         text: 'Motivos de Não Venda',

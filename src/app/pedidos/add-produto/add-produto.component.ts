@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { DBService } from '../../services/DB.service';
 import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
-import { async } from '@angular/core/testing';
+import { FiltroComponent } from '../filtro/filtro.component'
 @Component({
   selector: 'app-add-produto',
   templateUrl: './add-produto.component.html',
@@ -48,12 +48,13 @@ export class AddProdutoComponent implements OnInit {
     await alert.present();
   }
   async produtoInit() {
+    let self = this;
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
 
-    this.ListaProdutos(this.filtro).then(res => {
+    this.ListaProdutos(self.filtro).then(res => {
       console.log('res', res);
       this.listaProdutosDataservice = res;
       this.pushClients(this.page_limit);
@@ -72,8 +73,6 @@ export class AddProdutoComponent implements OnInit {
     //var deferred = $q.defer();
 
     var tabela = this.pedido.codigo_tabela_preco;
-
-
     if (!isNaN(tabela)) {
       var DB_Produto = await this.db.produto.orderBy('descricaoproduto');
 
@@ -319,7 +318,7 @@ export class AddProdutoComponent implements OnInit {
         DB_Produto = this.db.produto
           .where('produtoempromocao')
           .equals(filtro.produtoempromocao);
-      }
+      }     
       return new Promise((resolve, reject) => {
         return resolve(DB_Produto.toArray());
       })
@@ -420,6 +419,25 @@ export class AddProdutoComponent implements OnInit {
 
     return await modal.present();
   }
+  async filtorProduto(produtoEscolhido) {
+    const modal = await this.modalCtrl.create({
+      component: ConfirmaProdutoComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'produtoEscolhido': produtoEscolhido,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        let producto = data['data'];
+        if (producto) {
+          this.confirmaProdutoPedido(producto);
+        }
+      });
+
+    return await modal.present();
+  }
   verificaProdutoLista(produto_id) {
     var retorno = false;
     this.itens.map(function (value) {
@@ -457,5 +475,22 @@ export class AddProdutoComponent implements OnInit {
       var soma_itens = total_pedido + item;
       this.pedido.total_pedido = soma_itens.toFixed(2);
     })
+  }
+  async filter() {
+    const modal = await this.modalCtrl.create({
+      component: FiltroComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'filtro': this.filtro,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        this.filtro = data['data']; // Here's your selected user!
+        this.produtoInit();
+      });
+
+    return await modal.present();
   }
 }

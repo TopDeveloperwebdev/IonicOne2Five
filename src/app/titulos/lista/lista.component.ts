@@ -1,54 +1,82 @@
 import { Component, OnInit } from '@angular/core';
-import { dataService } from '../../services/data.service'
-
+import { DBService } from '../../services/DB.service';
+import { NavController, ModalController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
+import { FiltroComponent } from '../filtro/filtro.component'
 @Component({
-  selector: 'app-lista',
+  selector: 'app-titulos',
   templateUrl: './lista.component.html',
   styleUrls: ['./lista.component.scss'],
 })
 export class ListaComponent implements OnInit {
-  titulos = [];
-  filtro = [];
-  page_limit = 50;
-  increaseTitulos = 50;
-  titulosDataservice: any;
-  usuario: any;
-  constructor(private dataService: dataService) {
-    this.usuario = JSON.parse(localStorage.getItem('user'));
+  items = [];
+  filtro: any;
+  nomeCliente = "ADONAL RACOES E BAZAR LTDA ME";
+  db: any;
+  cliente_id: any;
+
+  constructor(
+    public route: ActivatedRoute,
+    public dbService: DBService,
+    public navCtl: NavController,
+    public modalController: ModalController) {
+    this.cliente_id = this.route.snapshot.params['cliente_id'];
+    this.nomeCliente = this.route.snapshot.params['nomecliente'];
+    this.db = dbService;
   }
 
-  ngOnInit() {
-    this.dataService.getTitulos(this.usuario.vendedor_id).subscribe(res => {
-      this.titulosDataservice = res;
-
-      this.pushtitulos(this.page_limit);
-    })
+  ngOnInit() { 
+    this.listaPedidos(this.filtro);
   }
-  pushtitulos(page_limit) {
-    this.titulos = this.titulosDataservice.slice(0, page_limit);
+  async listaPedidos(filtro) {
+    const self = this;
+   
+    self.items = await this.db.titulo
+      .where('cliente_id')
+      .equals(Number(self.cliente_id))      
+      .toArray();       
   }
-  loadMore($event) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (this.titulosDataservice.length > this.page_limit + this.increaseTitulos) {
-          this.page_limit = this.page_limit + this.increaseTitulos;
-          this.pushtitulos(this.page_limit);
-        }
 
-        $event.target.complete();
-        resolve();
-      }, 500);
-    })
-
+  filterItems(filtro) {
+    const self = this;
+    // const filters = self.items.filter(function (where) {
+    //   const comando = [];
+    //   let cData;
+    //   let dateRange = true;
+    //   let tipo_pedido = true;
+    //   let situacao = true;
+    //   if (filtro.hasOwnProperty('inicio')) {
+    //     let dataInicio = Date.parse(filtro.inicio);
+    //     let dataFim = Date.parse(filtro.fim);
+    //     if (cData === 'C') {
+    //       dateRange = (Date.parse(where.data_gravacao + ' 00:00:00') >=
+    //         dataInicio && Date.parse(where.data_gravacao + ' 00:00:00') <= dataFim)
+    //     } else {
+    //       dateRange = (Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') >=
+    //         dataInicio && Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') <= dataFim)
+    //     }
+    //     comando.push(dateRange);
+    //   }     
+    //   return (dateRange)
+    // });
+    //self.items = filters;
   };
+  async filter() {
+    const modal = await this.modalController.create({
+      component: FiltroComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'filtro': this.filtro,
 
-  verificaDataAtraso(data) {
-    const dataHoje = new Date().toString();
-    if (Date.parse(data) <= Date.parse(dataHoje)) {
-      return 'assertive';
-    } else {
-      return false;
-    }
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        this.filtro = data['data']; // Here's your selected user!
+        this.listaPedidos(this.filtro);
+      });
+
+    return await modal.present();
   }
   totalTitulos(filtro) {
     if (typeof filtro != 'undefined' && filtro.length > 0) {
