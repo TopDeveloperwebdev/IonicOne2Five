@@ -8,15 +8,11 @@
 
 <ion-view view-title="Mensagens" class="message-section">
     <ion-content class="padding">
-        <ng-container *ngIf="emptyMessage == ''; else elseTemplate">
-            <div class="card" *ngFor="let mensagem of mensagens">
+     <div class="card" *ngFor="let mensagem of mensagens">
                 <div class="item item-text-wrap">
                     {{mensagem.mensagem}}
                 </div>
-            </div>
-        </ng-container>
-        <ng-template #elseTemplate>
-            <div class="assertive">Nenhuma mensagem encontrada.</div>
-        </ng-template>
+      </div> 
+       <div class="assertive" *ngIf="!mensagens">Nenhuma mensagem encontrada.</div>
     </ion-content>
 </ion-view>

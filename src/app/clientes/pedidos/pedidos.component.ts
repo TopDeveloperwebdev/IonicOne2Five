@@ -146,13 +146,16 @@ export class PedidosComponent implements OnInit {
   }
   cadastro(cliente_id, nomecliente) {
     let totalPedidos = this.totalPedidos(this.pedidos);
-    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
+    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));    
     this.navCtl.navigateForward(['pedidos/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
-  alterar(p, nomecliente) {
+  alterar(p, nomecliente) {   
+    let totalPedidos = this.totalPedidos(this.pedidos);
+    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
     let pedido = JSON.stringify(p);
     this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido, 'nomecliente': nomecliente }]);
   }
+ 
   async filter() {
     const modal = await this.modalController.create({
       component: FiltroPedidosComponent,

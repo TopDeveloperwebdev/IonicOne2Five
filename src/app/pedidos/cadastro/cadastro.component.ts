@@ -5,8 +5,7 @@ import { DBService } from '../../services/DB.service';
 import { AddProdutoComponent } from '../add-produto/add-produto.component'
 import { Geolocation } from '@ionic-native/geolocation/ngx'
 import { Guid } from 'guid-typescript';
-import { create } from 'domain';
-import { loadavg } from 'os';
+
 
 @Component({
   selector: 'app-cadastro',
@@ -28,6 +27,9 @@ export class CadastroComponent implements OnInit {
   valor_pedido_minimo: any;
   mostrar_pedido_minimo: any;
   db: any;
+  cliente_id: any;
+  loadingStart: any;
+  pedidos: []
   constructor(
     public route: ActivatedRoute,
     public loadCtrl: LoadingController,
@@ -44,27 +46,16 @@ export class CadastroComponent implements OnInit {
   async ngOnInit() {
 
     const self = this;
-    const loading = await self.loadCtrl.create({
+    this.loadingStart = await self.loadCtrl.create({
       message: 'Aguarde!'
     });
-    loading.present();
-
-    self.nomecliente = self.route.snapshot.params['nomecliente'];
-    let pedido = JSON.parse(self.route.snapshot.params['pedido']);
+    this.loadingStart.present();
+    self.cliente_id = self.route.snapshot.params['cliente_id'];
     let user = await this.dbService.table('usuario').toArray();
     this.pedido_valor_minimo = user[0].valor_minimo_pedido;
     this.valor_minimo_obrigatorio = true;
     this.valor_pedido_minimo = 0;
     this.mostrar_pedido_minimo = false;
-
-    self.cliente = pedido;
-
-    let dataHora = pedido.data_entrega.split(" ");
-
-
-    pedido.data_entrega = dataHora[0];
-    self.pedido = pedido;
-    console.log('self pedido', self.pedido);
     this.condicoes = await this.dbService.table('condicoe').toArray();
     this.formas = await this.dbService.table('forma').toArray();
     this.tabelas = await this.dbService.table('tabela').toArray();
@@ -76,6 +67,25 @@ export class CadastroComponent implements OnInit {
       { codigo: "O", nome: "Orçamento" }
     ];
 
+    if (self.cliente_id) {
+      this.createPedidos();
+    } else {
+      this.editPedios();
+    }
+  }
+  editPedios() {
+    let self = this;
+    self.nomecliente = self.route.snapshot.params['nomecliente'];
+    let pedido = JSON.parse(self.route.snapshot.params['pedido']);
+
+    self.cliente = pedido;
+
+    let dataHora = pedido.data_entrega.split(" ");
+
+
+    pedido.data_entrega = dataHora[0];
+    self.pedido = pedido;
+
     pedido.urgente = pedido.urgente == "S" ? true : false;
     let pedido_id;
 
@@ -86,18 +96,87 @@ export class CadastroComponent implements OnInit {
     }
 
     self.getItensPedido(pedido_id).then(res => {
-
       this.itens = res;
       console.log('sdf', this.itens);
       this.pedido.codigo_tabela_preco = this.tabelas.tabela_id;
-      loading.dismiss();
+      this.loadingStart.dismiss();
     }, error => {
-      loading.dismiss();
+      this.loadingStart.dismiss();
       self.presentConfirm();
     });
 
   }
+  async createPedidos() {
+    let self = this;
+    self.itens = [];
+    self.nomecliente = self.route.snapshot.params['nomecliente'];
+    self.cliente_id = self.route.snapshot.params['cliente_id'];
 
+    this.db.clientes
+      .where("cli_id")
+      .equals(Number(self.cliente_id))
+      .first()
+      .then(function (res) {
+        self.pedido.codigo_forma_pagto = res.formapagto_id;
+        self.pedido.codigo_condicao_pagto = res.condicaopagto_id;
+        self.pedido.tipo_pedido = "P";
+        self.pedido.data_entrega = self.gerarDataDeEntregaPadrao();
+
+        self.nomecliente = self.nomecliente;
+        self.cliente = res;
+
+        self.listaPedidos(self.cliente_id);
+
+        if (res.formapagto_id == null) {
+          self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
+        }
+        self.loadingStart.dismiss();
+        if (res.credito_bloqueado === "S") {
+          self.pedidosConfirm();
+          self.loadingStart.dismiss();
+
+        } else {
+          if (res.cli_totaltitulosvencidos > 0) {
+            self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);
+            self.loadingStart.dismiss();
+          }
+        }
+
+      });
+  }
+
+  gerarDataDeEntregaPadrao() {
+    var hoje = new Date();
+    var proximaData = new Date();
+    var diasAcrescentar = 1;
+    switch (hoje.getDay()) {
+      case 5:
+        diasAcrescentar = 3;
+        break;
+      case 6:
+        diasAcrescentar = 2;
+        break;
+    }
+    proximaData.setDate(hoje.getDate() + diasAcrescentar);
+    return proximaData;
+  }
+  async listaPedidos(cliente_id) {
+    this.dbService.table('pedido').toArray().then(res => {
+      return res.filter(function (where) {
+        return where.cliente_id === Number(cliente_id);
+      })
+    }).then(function (items) {
+      this.pedidos = items.map(function (pedido) {
+        if (!pedido.hasOwnProperty('enviado')) {
+          pedido.enviado = 'S';
+        }
+        return pedido;
+      });
+
+    });
+
+
+  }
   async getItensPedido(pedido_id) {
     const self = this;
     var itensArray = [];
@@ -132,6 +211,24 @@ export class CadastroComponent implements OnInit {
         });
     });
 
+  }
+  async pedidosConfirm() {
+    console.log('Alert Shown Method Accessed!');
+    const alert = await this.alertCtrl.create({
+      header: 'Atenção!',
+      message: 'Cliente com crédito bloqueado! Não será possivel cadastrar pedidos.',
+      buttons: [
+        {
+          text: 'Voltar',
+          role: 'cancel',
+          cssClass: 'button button-assertive',
+          handler: () => {
+            this.navCtrl.navigateForward(['pedidos/lista', { 'cliente_id': this.pedido.cliente_id }]);
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
   async presentConfirm() {
     console.log('Alert Shown Method Accessed!');
@@ -271,7 +368,7 @@ export class CadastroComponent implements OnInit {
 
 
     const loading = await this.loadCtrl.create({
-      message: 'Salvando Pedido. Aguarde!'
+      message: 'Salvando Pedido. Aguarde'
     });
     loading.present();
     this.db.transaction("rw", this.db.pedido, this.db.itempedido, function () {
@@ -313,7 +410,6 @@ export class CadastroComponent implements OnInit {
     const itensCount = itens ? itens.length : 0;
 
     if (!itensCount || itensCount == 0) {
-      alert("Adicione ao menos 1 item ao pedido para continuar.");
       return;
     }
     var valor_pedido;
@@ -333,8 +429,8 @@ export class CadastroComponent implements OnInit {
 
     if (limite != false && limite - valor_pedido - valor_outros_pedidos < 0) {
       this.alertConfirm("Atenção!", "Cliente sem limite de crédito.");
-
-    } else if (valor_pedido < valor_min_pedido.toFixed(2) && this.valor_minimo_obrigatorio == true) {
+    }
+    else if (valor_pedido < valor_min_pedido.toFixed(2) && this.valor_minimo_obrigatorio == true) {
       this.alertConfirm("Atenção!", "O valor minimo para fechar o pedido deve ser de R$");
 
     } else if (valor_pedido < valor_min_pedido.toFixed(2) && this.valor_minimo_obrigatorio == false) {

@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
-import { dataService } from '../services/data.service'
+import { dataService } from '../services/data.service';
+import { DBService } from '../services/DB.service'
 @Component({
   selector: 'app-metas',
   templateUrl: './metas.page.html',
@@ -13,14 +14,17 @@ export class MetasPage implements OnInit {
   usuario: any;
   metas: any;
   meta_id: '';
-  constructor(private dataService: dataService) {
-    this.usuario = JSON.parse(localStorage.getItem('user'));
+  db: any
+  constructor(private dataService: dataService, public dbService: DBService) {
+    this.db = dbService;
+
 
   }
 
-  ngOnInit() {
-    this.dataService.getMetas(this.usuario.vendedor_id).subscribe(res => {
-      console.log('res', res);
+  async ngOnInit() {
+    let usertemp = await this.dbService.table('usuario').toArray();
+    this.usuario = usertemp[0];
+    this.db.metas.toArray().then(res => {
       this.metas = res;
     })
   }

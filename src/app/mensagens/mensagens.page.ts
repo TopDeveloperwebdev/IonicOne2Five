@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { dataService } from '../services/data.service'
+import { dataService } from '../services/data.service';
+import { DBService } from '../services/DB.service'
 
 @Component({
   selector: 'app-mensagens',
@@ -11,18 +12,18 @@ export class MensagensPage implements OnInit {
   usuario: any;
   mensagens: any;
   emptyMessage = '';
-  constructor(private dataService: dataService) {
-    this.usuario = JSON.parse(localStorage.getItem('user'));
+  db: any
+  constructor(private dataService: dataService, public dbService: DBService) {
+    this.db = dbService;
+
 
   }
 
-  ngOnInit() {
-    this.dataService.getMensagens(this.usuario.vendedor_id).subscribe(res => {
-      if (res[length]) this.mensagens = res;
-      else {
-        this.emptyMessage = "Nenhuma mensagem encontrada.";
-      }
+  async ngOnInit() {
+    this.db.mensagem.toArray().then(res => {
+      this.mensagens = res;
     })
   }
+
 
 }
