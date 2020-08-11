@@ -17,7 +17,7 @@ export class InicioPage implements OnInit {
     private loadCtrl: LoadingController,
     private navCtl: NavController,
     public actionSheetController: ActionSheetController,
-    private alertController: AlertController,
+    private alertCtrl: AlertController,
     private toastController: ToastController,
     private platform: Platform,
     private dbService: DBService,
@@ -36,7 +36,7 @@ export class InicioPage implements OnInit {
     toast.present();
   }
   async ngOnInit() {
-    
+
     this.userTable = this.dbService.table('usuario');
     const tempuser = await this.userTable.toArray();
     if (tempuser.length == 0) {
@@ -58,7 +58,7 @@ export class InicioPage implements OnInit {
     }
   }
   navigate(pagename) {
-    console.log('pagename' , pagename);
+    console.log('pagename', pagename);
     this.navCtl.navigateForward(pagename);
   }
   async opcoesRelatorios(cliente_id, razaosocial) {
@@ -76,13 +76,13 @@ export class InicioPage implements OnInit {
         text: 'Compras',
         icon: 'list',
         handler: () => {
-          this.navCtl.navigateForward('clientes/cadastro');
+          this.navCtl.navigateForward('compras/relatorio');
         }
       }, {
         text: 'Compras - Por item',
         icon: 'list',
         handler: () => {
-          this.navCtl.navigateForward('clientes/titulos');
+          this.navCtl.navigateForward('compras/relatorio-itens');
         }
       }]
 
@@ -91,7 +91,26 @@ export class InicioPage implements OnInit {
   }
 
 
-
+  async sair() {
+    const alert = await this.alertCtrl.create({
+      header: 'Sair do aplicativo',
+      message: 'DESEJA SAIR DO APLICATIVO?',
+      buttons: [
+        {
+          text: 'Não',
+          role: 'cancel',
+        },
+        {
+          text: 'Sim',       
+          cssClass: 'button button-assertive',
+          handler: (e) => {
+            navigator['app'].exitApp();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 }
 
 

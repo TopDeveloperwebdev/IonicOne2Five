@@ -1,3 +1,35 @@
-<p>
-  relatorio-itens works!
-</p>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+    </button>
+    </ion-menu-button>
+    <ion-title>Clientes</ion-title>
+    <button class="button close-btn" (click)="filter();">
+    <i class="ion-funnel "></i>
+</button>
+</ion-header>
+<ion-content class="padding">
+    <h4 class="assertive">
+        <small>Quantidade: {{itens.length}}</small>
+        <br/>
+        <small>Total das Compras: {{totalCompras(itens) | currency:'R$ '}}</small>
+        <br/>
+        <small>Total das Comissões: {{totalComissoes(itens) | currency:'R$ '}}</small>
+    </h4>
+
+    <ion-list>
+        <ion-row class="item" ng-click="" *ngFor="let item of itens">
+            <b>Cod: {{item.compras_item_codigoproduto}}</b>
+            <p>
+                {{item.compras_item_descricaoproduto}}
+            </p>
+            <p>
+                Unidade: {{item.compras_item_unidadadeproduto}}
+            </p>
+        </ion-row>
+        <ion-infinite-scroll (ionInfinite)="loadMore($event) ">
+            <ion-infinite-scroll-content loadingSpinner="lines " loadingText="Loading more data... ">
+            </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+    </ion-list>
+</ion-content>

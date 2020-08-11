@@ -1,3 +1,53 @@
-<p>
-  relatorio works!
-</p>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+    </button>
+    </ion-menu-button>
+    <ion-title>Clientes</ion-title>
+    <button class="button close-btn" (click)="filter();">
+    <i class="ion-funnel "></i>
+  </button>
+</ion-header>
+
+<ion-content class="padding">
+    <h4 class="assertive">
+        <small>Quantidade: {{filtro.length}}</small>
+        <br />
+        <small>Total das Compras: {{totalCompras(filtro) | currency:'R$ '}}</small>
+        <br />
+        <small>Total das Comissões: {{totalComissoes(filtro) | currency:'R$ '}}</small>
+    </h4>
+
+    <ion-list>
+        <ion-row class="item" (click)="mostrarItens(compra.compras_id);" *ngFor="let compra of compras">
+            <b>Nº: {{compra.compras_documento_nro}}</b>
+            <span class="item-note">
+        <b>{{compra.compras_totalcompra | currency:"R$ "}}</b>
+      </span>
+            <p>
+                <b>Comissão:</b> {{compra.compras_totalcomissao | currency:"R$ "}}
+            </p>
+            <p>
+                <b>Cliente:</b> {{compra.compras_cliente_nome}}
+            </p>
+            <p>
+                <span ng-class="verificaDataAtraso(item.datavencimento);">
+          Data da Compra: {{compra.compras_datacompra.substring(0, 10) | date:"dd/MM/yyyy"}}
+        </span>
+                <span class="item-note">
+          {{compra.compras_tipo}}
+        </span>
+            </p>
+            <p>
+                <span ng-class="verificaDataAtraso(item.datavencimento);">
+          Desconto: {{compra.compras_desconto}}
+        </span>
+            </p>
+
+        </ion-row>
+        <ion-infinite-scroll (ionInfinite)="loadMore($event) ">
+            <ion-infinite-scroll-content loadingSpinner="lines " loadingText="Loading more data... ">
+            </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+    </ion-list>
+</ion-content>

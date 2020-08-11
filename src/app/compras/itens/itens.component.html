@@ -1,3 +1,42 @@
-<p>
-  itens works!
-</p>
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar">Itens da Compra</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+  <i class="ion-close-round"></i>
+</button>
+</ion-header>
+<ion-content class="padding">
+    <ion-list>
+        <ion-row class="item" *ngFor="let item of itens">
+            <b>{{item.compras_item_descricaoproduto}}</b>
+            <p>
+                Cód: {{item.compras_item_codigoproduto}}
+
+                <span class="item-note">
+          <b>Unidade: {{item.compras_item_unidadadeproduto}}</b>
+        </span>
+            </p>
+            <p>
+                Quantidade: {{item.compras_item_quantidade}}
+            </p>
+            <p>
+                Preço Unit: {{item.compras_item_precounitario | currency:"R$ "}}
+            </p>
+            <p>
+                Preço Total: {{item.compras_item_precototal | currency:"R$ "}}
+            </p>
+            <p>
+                Preço Tab: {{item.compras_item_precotabela | currency:"R$ "}}
+
+                <span class="item-note">
+          <b>Desconto(%): {{item.compras_item_descontopercentual}}</b>
+        </span>
+            </p>
+            <p>
+                Comissão(%): {{item.compras_item_comissaopercentual}}%
+            </p>
+            <p>
+                Comissão item: {{item.compras_item_comissaovaloritem | currency:"R$ "}}
+            </p>
+        </ion-row>
+    </ion-list>
+</ion-content>

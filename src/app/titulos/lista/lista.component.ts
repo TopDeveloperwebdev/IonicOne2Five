@@ -25,16 +25,19 @@ export class ListaComponent implements OnInit {
     this.db = dbService;
   }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.listaPedidos(this.filtro);
   }
   async listaPedidos(filtro) {
     const self = this;
-   
-    self.items = await this.db.titulo
-      .where('cliente_id')
-      .equals(Number(self.cliente_id))      
-      .toArray();       
+    if (self.cliente_id) {
+      self.items = await this.db.titulo
+        .where('cliente_id')
+        .equals(Number(self.cliente_id))
+        .toArray();
+    } else {
+      self.items = await this.db.titulo.toArray();
+    }   
   }
 
   filterItems(filtro) {

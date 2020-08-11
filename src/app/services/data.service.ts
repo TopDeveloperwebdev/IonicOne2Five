@@ -165,9 +165,9 @@ export class dataService {
             db.table('categoria').add(categorias);
             db.table('cidade').add(cidades);
             db.table('clientes').add(clientes);
-            db.table('compras').add(compras);
+            db.table('compras').bulkPut(compras);
             db.table('atividade').add(atividades);
-            db.table('compras_item').add(compras_itens);
+            db.table('compras_item').bulkPut(compras_itens);
             db.table('forma').add(formas);
             db.table('condicoe').add(condicoes);
             db.table('itempedido').add(itenspedido);

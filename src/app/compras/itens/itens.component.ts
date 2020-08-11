@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { ModalController } from '@ionic/angular'
 
 @Component({
   selector: 'app-itens',
@@ -7,8 +8,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ItensComponent implements OnInit {
 
-  constructor() { }
+  @Input() itens: any;
+  
+  constructor(public modalController: ModalController) {
 
-  ngOnInit() {}
+  }
 
+  ngOnInit() {
+    console.log('adsfaf', this.itens);
+  }
+  dismiss() {
+    console.log('dismass');
+    this.modalController.dismiss();
+  }
+
+ 
 }
