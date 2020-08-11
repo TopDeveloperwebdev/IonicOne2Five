@@ -29,9 +29,11 @@ export class FiltroComponent implements OnInit {
     this.atividades = await this.dbService.table('atividade').toArray();
     this.categorias = await this.dbService.table('categoria').toArray();
     this.responsaveis = await this.dbService.table('responsavel').toArray();
+  
   }
   dismiss() {
-    console.log('dismass');
+
+
     this.modalController.dismiss(this.filtro);
   }
 

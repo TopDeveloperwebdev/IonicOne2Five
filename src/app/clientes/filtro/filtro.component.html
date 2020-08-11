@@ -38,7 +38,7 @@
         <label class="item item-input item-stacked-label">
       <select [(ngModel)]="filtro.responsavel_id">
         <option value="">Selecione o Responsável</option>
-        <option value="{{responsaveis.responsavel_id}}" *ngFor="let responsavei of responsaveis">
+        <option value="{{responsaveis.responsavel_id}}" *ngFor="let responsaveis of responsaveis">
           {{responsaveis.descricaoresponsavel}}</option>
       </select>
     </label>

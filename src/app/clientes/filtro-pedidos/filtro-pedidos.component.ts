@@ -7,16 +7,30 @@ import { ModalController } from '@ionic/angular';
 })
 export class FiltroPedidosComponent implements OnInit {
   @Input() filtro: any;
+  tipos: any;
   constructor(public modalController: ModalController,) { }
 
-  ngOnInit() { }
-  dismiss() {
+  ngOnInit() {
+    this.tipos = [
+      { codigo: "P", nome: "Pedido" },
+      { codigo: "B", nome: "Bônus" },
+      { codigo: "T", nome: "Troca" },
+      { codigo: "O", nome: "Orçamento" }
+    ];
+
+  }
+  dismiss(filtro) {
     console.log('dismass');
-    this.modalController.dismiss(this.filtro);
+    this.modalController.dismiss(filtro);
   }
 
   limparFiltro = function () {
     this.filtro = {};
     this.modalController.dismiss(this.filtro);
+  }
+  filtrarPedidos() {
+    console.log('filtro' , this.filtro);
+    this.dismiss(this.filtro);
+
   }
 }

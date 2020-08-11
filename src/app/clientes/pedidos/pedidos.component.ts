@@ -145,6 +145,8 @@ export class PedidosComponent implements OnInit {
     }
   }
   cadastro(cliente_id, nomecliente) {
+    let totalPedidos = this.totalPedidos(this.pedidos);
+    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
     this.navCtl.navigateForward(['pedidos/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
   alterar(p, nomecliente) {
@@ -163,6 +165,7 @@ export class PedidosComponent implements OnInit {
     modal.onDidDismiss()
       .then((data) => {
         this.filtro = data['data']; // Here's your selected user!
+        console.log('this.filtro', this.filter);
         this.listaPedidos(this.cliente_id);
       });
 

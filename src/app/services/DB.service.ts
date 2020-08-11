@@ -41,6 +41,7 @@ export class DBService extends Dexie {
             // ??? abaixo tabelas que não existe (com este nome e atributos ao menos)
             marcas_produto: 'inf_marca',
             tipos_produto: 'inf_produto',
+            
         });
     }
 
