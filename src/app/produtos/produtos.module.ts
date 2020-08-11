@@ -9,7 +9,8 @@ import { ProdutosPageRoutingModule } from './produtos-routing.module';
 import { ProdutosPage } from './produtos.page';
 import { ListaComponent } from './lista/lista.component';
 import { DetalhesComponent } from './detalhes/detalhes.component';
-import { FiltroComponent } from './filtro/filtro.component'
+import { FiltroComponent } from './filtro/filtro.component';
+import { ComissoesComponent } from './comissoes/comissoes.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -17,6 +18,6 @@ import { FiltroComponent } from './filtro/filtro.component'
     IonicModule,
     ProdutosPageRoutingModule
   ],
-  declarations: [ProdutosPage, ListaComponent, DetalhesComponent, FiltroComponent]
+  declarations: [ProdutosPage, ListaComponent, DetalhesComponent, FiltroComponent, ComissoesComponent]
 })
 export class ProdutosPageModule { }

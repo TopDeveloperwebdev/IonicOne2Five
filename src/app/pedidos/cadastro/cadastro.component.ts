@@ -48,9 +48,7 @@ export class CadastroComponent implements OnInit {
     self.pedido = pedido;
     console.log('self pedido', self.pedido);
     this.condicoes = await this.dbService.table('condicoe').toArray();
-    this.condicoes = this.condicoes[0];
-    this.formas = await this.dbService.table('forma').toArray();
-    this.formas = this.formas[0];
+    this.formas = await this.dbService.table('forma').toArray(); 
     this.tabelas = await this.dbService.table('tabela').toArray();
     // this.tabelas = this.tabelas[0];
     this.tipos = [
@@ -73,7 +71,7 @@ export class CadastroComponent implements OnInit {
 
       this.itens = res;
       console.log('sdf', this.itens);
-      this.pedido.codigo_tabela_preco = this.tabelas[0].tabela_id;
+      this.pedido.codigo_tabela_preco = this.tabelas.tabela_id;
       loading.dismiss();
     }, error => {
       loading.dismiss();
@@ -89,7 +87,7 @@ export class CadastroComponent implements OnInit {
     return new Promise((resolve, reject) => {
       self.dbService.table('itempedido').toArray().then(
         res => {
-          let itens = res[0].filter(function (where) {
+          let itens = res.filter(function (where) {
             return where.pedido_id == pedido_id;
           })
           itens.map(function (item, index) {

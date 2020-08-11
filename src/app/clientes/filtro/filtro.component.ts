@@ -26,20 +26,17 @@ export class FiltroComponent implements OnInit {
   constructor(public modalController: ModalController, private dbService: DBService) { }
 
   async ngOnInit() {
-    const tempatividade = await this.dbService.table('atividade').toArray();
-    this.atividades = tempatividade[0];
-    const tempcategorias = await this.dbService.table('categoria').toArray();
-    this.categorias = tempcategorias[0];
-    const tempresponsavel = await this.dbService.table('responsavel').toArray();
-    this.responsaveis = tempresponsavel[0];
+    this.atividades = await this.dbService.table('atividade').toArray();
+    this.categorias = await this.dbService.table('categoria').toArray();
+    this.responsaveis = await this.dbService.table('responsavel').toArray();
   }
   dismiss() {
     console.log('dismass');
     this.modalController.dismiss(this.filtro);
   }
- 
-  limparFiltro = function () { 
-    this.filtro = {};    
+
+  limparFiltro = function () {
+    this.filtro = {};
     this.modalController.dismiss(this.filtro);
   }
 }

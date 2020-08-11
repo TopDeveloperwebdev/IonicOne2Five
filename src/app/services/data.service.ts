@@ -163,14 +163,14 @@ export class dataService {
             db.table('produto_tabela').clear();
             //add
 
-            db.table('categoria').add(categorias);
-            db.table('cidade').add(cidades);
+            db.table('categoria').bulkPut(categorias);
+            db.table('cidade').bulkPut(cidades);
             db.table('clientes').bulkPut(clientes);
             db.table('compras').bulkPut(compras);
-            db.table('atividade').add(atividades);
+            db.table('atividade').bulkPut(atividades);
             db.table('compras_item').bulkPut(compras_itens);
-            db.table('forma').add(formas);
-            db.table('condicoe').add(condicoes);
+            db.table('forma').bulkPut(formas);
+            db.table('condicoe').bulkPut(condicoes);
             db.table('itempedido').bulkPut(itenspedido);
             db.table('mensagem').bulkPut(mensagens);
             db.table('metas').bulkPut(meta_vendedor);

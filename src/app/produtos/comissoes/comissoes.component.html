@@ -1,3 +1,24 @@
-<p>
-  comissoes works!
-</p>
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar ">Comissões</ion-title>
+
+    <button class="button close-btn" (click)="dismiss()">
+    <i class="ion-close-round"></i>
+  </button>
+</ion-header>
+<ion-content class="padding">
+    <div class="row">
+        <div class="col">Preço Inicial</div>
+        <div class="col">Preço Final</div>
+        <div class="col">Comissão</div>
+    </div>
+    <div class="row" *ngFor="let comissao of comissoes_produto">
+        <div class="col">{{toNumber(comissao.precoinicial) | currency:"R$":2}}</div>
+        <div class="col">{{toNumber(comissao.precofinal) | currency:"R$":2}}</div>
+        <div class="col">{{toNumber(comissao.comissao)}}%</div>
+    </div>
+    <div class="row" *ngIf="comissoes_produto.length == 0">
+        <div class="col assertive">
+            Produto sem comissões cadastradas.
+        </div>
+    </div>
+</ion-content>

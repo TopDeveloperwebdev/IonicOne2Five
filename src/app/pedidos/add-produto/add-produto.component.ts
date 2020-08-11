@@ -2,7 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { DBService } from '../../services/DB.service';
 import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
-import { FiltroComponent } from '../filtro/filtro.component'
+import { FiltroComponent } from '../filtro/filtro.component';
+import { ComissoesComponent } from '../../produtos/comissoes/comissoes.component'
 @Component({
   selector: 'app-add-produto',
   templateUrl: './add-produto.component.html',
@@ -69,261 +70,255 @@ export class AddProdutoComponent implements OnInit {
     this.listaProdutos = this.listaProdutosDataservice.slice(0, page_limit);
   }
   async ListaProdutos(filtro) {
+    var DB_Produto = await this.db.produto.orderBy('descricaoproduto');
 
-    //var deferred = $q.defer();
-
-    var tabela = this.pedido.codigo_tabela_preco;
-    if (!isNaN(tabela)) {
-      var DB_Produto = await this.db.produto.orderBy('descricaoproduto');
-
+    if (
+      filtro.hasOwnProperty('descricaoproduto') &&
+      filtro.hasOwnProperty('inf_marca') &&
+      filtro.hasOwnProperty('inf_produto') &&
+      filtro.hasOwnProperty('produtoempromocao')
+    ) {
       if (
-        filtro.hasOwnProperty('descricaoproduto') &&
-        filtro.hasOwnProperty('inf_marca') &&
-        filtro.hasOwnProperty('inf_produto') &&
-        filtro.hasOwnProperty('produtoempromocao')
-      ) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto)
-            .and(function (where) {
-              return (
-                where.inf_marca == filtro.inf_marca &&
-                where.inf_produto == filtro.inf_produto &&
-                where.produtoempromocao == 'S'
-              );
-            });
-        } else {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
-            .and(function (where) {
-              return (
-                where.inf_marca == filtro.inf_marca &&
-                where.inf_produto == filtro.inf_produto &&
-                where.produtoempromocao == 'S'
-              );
-            });
-        }
-      } else if (
-        filtro.hasOwnProperty('descricaoproduto') &&
-        filtro.hasOwnProperty('inf_marca') &&
-        filtro.hasOwnProperty('inf_produto')
-      ) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto)
-            .and(function (where) {
-              return (
-                where.inf_marca == filtro.inf_marca &&
-                where.inf_produto == filtro.inf_produto
-              );
-            });
-        } else {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
-            .and(function (where) {
-              return (
-                where.inf_marca == filtro.inf_marca &&
-                where.inf_produto == filtro.inf_produto
-              );
-            });
-        }
-      } else if (
-        filtro.hasOwnProperty('descricaoproduto') &&
-        filtro.hasOwnProperty('inf_marca') &&
-        filtro.hasOwnProperty('produtoempromocao')
-      ) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto)
-            .and(function (where) {
-              return (
-                where.inf_marca == filtro.inf_marca &&
-                where.produtoempromocao == 'S'
-              );
-            });
-        } else {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
-            .and(function (where) {
-              return (
-                where.inf_marca == filtro.inf_marca &&
-                where.produtoempromocao == 'S'
-              );
-            });
-        }
-      } else if (
-        filtro.hasOwnProperty('descricaoproduto') &&
-        filtro.hasOwnProperty('inf_produto') &&
-        filtro.hasOwnProperty('produtoempromocao')
-      ) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto)
-            .and(function (where) {
-              return (
-                where.inf_produto == filtro.inf_produto &&
-                where.produtoempromocao == 'S'
-              );
-            });
-        } else {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
-            .and(function (where) {
-              return (
-                where.inf_produto == filtro.inf_produto &&
-                where.produtoempromocao == 'S'
-              );
-            });
-        }
-      } else if (
-        filtro.hasOwnProperty('inf_marca') &&
-        filtro.hasOwnProperty('inf_produto') &&
-        filtro.hasOwnProperty('produtoempromocao')
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
       ) {
         DB_Produto = this.db.produto
-          .where('[inf_marca+inf_produto+produtoempromocao]')
-          .equals([
-            filtro.inf_marca,
-            filtro.inf_produto,
-            filtro.produtoempromocao
-          ]);
-      } else if (
-        filtro.hasOwnProperty('inf_marca') &&
-        filtro.hasOwnProperty('inf_produto')
-      ) {
-        DB_Produto = this.db.produto
-          .where('[inf_marca+inf_produto]')
-          .equals([filtro.inf_marca, filtro.inf_produto]);
-      } else if (
-        filtro.hasOwnProperty('inf_marca') &&
-        filtro.hasOwnProperty('produtoempromocao')
-      ) {
-        DB_Produto = this.db.produto
-          .where('[inf_marca+produtoempromocao]')
-          .equals([filtro.inf_marca, filtro.produtoempromocao]);
-      } else if (
-        filtro.hasOwnProperty('inf_produto') &&
-        filtro.hasOwnProperty('produtoempromocao')
-      ) {
-        DB_Produto = this.db.produto
-          .where('[inf_produto+produtoempromocao]')
-          .equals([filtro.inf_produto, filtro.produtoempromocao]);
-      } else if (
-        filtro.hasOwnProperty('descricaoproduto') &&
-        filtro.hasOwnProperty('produtoempromocao')
-      ) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto)
-            .and(function (where) {
-              return where.produtoempromocao == 'S';
-            });
-        } else {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
-            .and(function (where) {
-              return where.produtoempromocao == 'S';
-            });
-        }
-      } else if (
-        filtro.hasOwnProperty('descricaoproduto') &&
-        filtro.hasOwnProperty('inf_marca')
-      ) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto)
-            .and(function (where) {
-              return where.inf_marca == filtro.inf_marca;
-            });
-        } else {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
-            .and(function (where) {
-              return where.inf_marca == filtro.inf_marca;
-            });
-        }
-      } else if (
-        filtro.hasOwnProperty('descricaoproduto') &&
-        filtro.hasOwnProperty('inf_produto')
-      ) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto)
-            .and(function (where) {
-              return where.inf_produto == filtro.inf_produto;
-            });
-        } else {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
-            .and(function (where) {
-              return where.inf_produto == filtro.inf_produto;
-            });
-        }
-      } else if (filtro.hasOwnProperty('descricaoproduto')) {
-        if (
-          filtro.hasOwnProperty('tipopesquisa') &&
-          filtro.tipopesquisa == 2
-        ) {
-          DB_Produto = this.db.produto
-            .where('descricaoproduto')
-            .startsWithIgnoreCase(filtro.descricaoproduto);
-        } else {
-          var str = new RegExp(filtro.descricaoproduto);
-          DB_Produto = this.db.produto.filter(function (produto) {
-            return str.test(produto.descricaoproduto);
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto)
+          .and(function (where) {
+            return (
+              where.inf_marca == filtro.inf_marca &&
+              where.inf_produto == filtro.inf_produto &&
+              where.produtoempromocao == 'S'
+            );
           });
-        }
-      } else if (filtro.hasOwnProperty('inf_marca')) {
-        DB_Produto = this.db.produto.where('inf_marca').equals(filtro.inf_marca);
-      } else if (filtro.hasOwnProperty('inf_produto')) {
+      } else {
         DB_Produto = this.db.produto
-          .where('inf_produto')
-          .equals(filtro.inf_produto);
-      } else if (filtro.hasOwnProperty('produtoempromocao')) {
+          .where('descricaoproduto')
+          .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
+          .and(function (where) {
+            return (
+              where.inf_marca == filtro.inf_marca &&
+              where.inf_produto == filtro.inf_produto &&
+              where.produtoempromocao == 'S'
+            );
+          });
+      }
+    } else if (
+      filtro.hasOwnProperty('descricaoproduto') &&
+      filtro.hasOwnProperty('inf_marca') &&
+      filtro.hasOwnProperty('inf_produto')
+    ) {
+      if (
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
+      ) {
         DB_Produto = this.db.produto
-          .where('produtoempromocao')
-          .equals(filtro.produtoempromocao);
-      }     
-      return new Promise((resolve, reject) => {
-        return resolve(DB_Produto.toArray());
-      })
-
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto)
+          .and(function (where) {
+            return (
+              where.inf_marca == filtro.inf_marca &&
+              where.inf_produto == filtro.inf_produto
+            );
+          });
+      } else {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
+          .and(function (where) {
+            return (
+              where.inf_marca == filtro.inf_marca &&
+              where.inf_produto == filtro.inf_produto
+            );
+          });
+      }
+    } else if (
+      filtro.hasOwnProperty('descricaoproduto') &&
+      filtro.hasOwnProperty('inf_marca') &&
+      filtro.hasOwnProperty('produtoempromocao')
+    ) {
+      if (
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
+      ) {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto)
+          .and(function (where) {
+            return (
+              where.inf_marca == filtro.inf_marca &&
+              where.produtoempromocao == 'S'
+            );
+          });
+      } else {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
+          .and(function (where) {
+            return (
+              where.inf_marca == filtro.inf_marca &&
+              where.produtoempromocao == 'S'
+            );
+          });
+      }
+    } else if (
+      filtro.hasOwnProperty('descricaoproduto') &&
+      filtro.hasOwnProperty('inf_produto') &&
+      filtro.hasOwnProperty('produtoempromocao')
+    ) {
+      if (
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
+      ) {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto)
+          .and(function (where) {
+            return (
+              where.inf_produto == filtro.inf_produto &&
+              where.produtoempromocao == 'S'
+            );
+          });
+      } else {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
+          .and(function (where) {
+            return (
+              where.inf_produto == filtro.inf_produto &&
+              where.produtoempromocao == 'S'
+            );
+          });
+      }
+    } else if (
+      filtro.hasOwnProperty('inf_marca') &&
+      filtro.hasOwnProperty('inf_produto') &&
+      filtro.hasOwnProperty('produtoempromocao')
+    ) {
+      DB_Produto = this.db.produto
+        .where('[inf_marca+inf_produto+produtoempromocao]')
+        .equals([
+          filtro.inf_marca,
+          filtro.inf_produto,
+          filtro.produtoempromocao
+        ]);
+    } else if (
+      filtro.hasOwnProperty('inf_marca') &&
+      filtro.hasOwnProperty('inf_produto')
+    ) {
+      DB_Produto = this.db.produto
+        .where('[inf_marca+inf_produto]')
+        .equals([filtro.inf_marca, filtro.inf_produto]);
+    } else if (
+      filtro.hasOwnProperty('inf_marca') &&
+      filtro.hasOwnProperty('produtoempromocao')
+    ) {
+      DB_Produto = this.db.produto
+        .where('[inf_marca+produtoempromocao]')
+        .equals([filtro.inf_marca, filtro.produtoempromocao]);
+    } else if (
+      filtro.hasOwnProperty('inf_produto') &&
+      filtro.hasOwnProperty('produtoempromocao')
+    ) {
+      DB_Produto = this.db.produto
+        .where('[inf_produto+produtoempromocao]')
+        .equals([filtro.inf_produto, filtro.produtoempromocao]);
+    } else if (
+      filtro.hasOwnProperty('descricaoproduto') &&
+      filtro.hasOwnProperty('produtoempromocao')
+    ) {
+      if (
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
+      ) {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto)
+          .and(function (where) {
+            return where.produtoempromocao == 'S';
+          });
+      } else {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
+          .and(function (where) {
+            return where.produtoempromocao == 'S';
+          });
+      }
+    } else if (
+      filtro.hasOwnProperty('descricaoproduto') &&
+      filtro.hasOwnProperty('inf_marca')
+    ) {
+      if (
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
+      ) {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto)
+          .and(function (where) {
+            return where.inf_marca == filtro.inf_marca;
+          });
+      } else {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
+          .and(function (where) {
+            return where.inf_marca == filtro.inf_marca;
+          });
+      }
+    } else if (
+      filtro.hasOwnProperty('descricaoproduto') &&
+      filtro.hasOwnProperty('inf_produto')
+    ) {
+      if (
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
+      ) {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto)
+          .and(function (where) {
+            return where.inf_produto == filtro.inf_produto;
+          });
+      } else {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithAnyOfIgnoreCase([filtro.descricaoproduto])
+          .and(function (where) {
+            return where.inf_produto == filtro.inf_produto;
+          });
+      }
+    } else if (filtro.hasOwnProperty('descricaoproduto')) {
+      if (
+        filtro.hasOwnProperty('tipopesquisa') &&
+        filtro.tipopesquisa == 2
+      ) {
+        DB_Produto = this.db.produto
+          .where('descricaoproduto')
+          .startsWithIgnoreCase(filtro.descricaoproduto);
+      } else {
+        var str = new RegExp(filtro.descricaoproduto);
+        DB_Produto = this.db.produto.filter(function (produto) {
+          return str.test(produto.descricaoproduto);
+        });
+      }
+    } else if (filtro.hasOwnProperty('inf_marca')) {
+      DB_Produto = this.db.produto.where('inf_marca').equals(filtro.inf_marca);
+    } else if (filtro.hasOwnProperty('inf_produto')) {
+      DB_Produto = this.db.produto
+        .where('inf_produto')
+        .equals(filtro.inf_produto);
+    } else if (filtro.hasOwnProperty('produtoempromocao')) {
+      DB_Produto = this.db.produto
+        .where('produtoempromocao')
+        .equals(filtro.produtoempromocao);
     }
+    return new Promise((resolve, reject) => {
+      return resolve(DB_Produto.toArray());
+    })
+
   }
   loadMore($event) {
     return new Promise((resolve) => {
@@ -406,6 +401,26 @@ export class AddProdutoComponent implements OnInit {
       cssClass: 'my-custom-class',
       componentProps: {
         'produtoEscolhido': produtoEscolhido,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        let producto = data['data'];
+        if (producto) {
+          this.confirmaProdutoPedido(producto);
+        }
+      });
+
+    return await modal.present();
+  }
+ 
+  async comissoes(produto_id) {
+    const modal = await this.modalCtrl.create({
+      component: ComissoesComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'produto_id': produto_id,
 
       }
     });
