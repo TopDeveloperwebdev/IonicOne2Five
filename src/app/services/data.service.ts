@@ -395,11 +395,10 @@ export class dataService {
         });
 
     }
-    apagarPedido(pedido_id) {
-        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/pedido/excluir?pedido_id=${pedido_id}`,
+    getApagarPedido(pedido_id) {       
+      return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/pedido/excluir?pedido_id=${pedido_id}`,
             { headers: this.headers }
         );
-
     }
 
 }

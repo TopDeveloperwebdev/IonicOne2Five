@@ -169,22 +169,29 @@ export class PedidosComponent implements OnInit {
     return await modal.present();
   }
   async apagarPedido(pedido) {
+    let self = this;
     if (isNaN(pedido.pedido_id)) {
       const loading = await this.loadCtrl.create({
         message: 'Apagando pedido. Aguarde!'
       });
       loading.present();
-      this.apagarPedidoAPP(pedido.pedido_id);
+      this.apagarPedidoAPP(pedido.pedido_id).then(res => {
+        loading.dismiss();
+        this.listaPedidos(this.cliente_id);
+      });
     } else {
       if (this.conexaoService.conexaoOnline()) {
+
         const loading = await this.loadCtrl.create({
           message: 'Apagando pedido. Aguarde!'
         });
         loading.present();
-        this.dataService.apagarPedido(pedido.pedido_id).subscribe(res => {
-          this.apagarPedidoAPP(pedido.pedido_id);
-        }, error => {
-          this.totalPedidos('Erro ao apagar pedido no Web.');
+
+        this.dataService.getApagarPedido(pedido.pedido_id);
+
+        self.apagarPedidoAPP(pedido.pedido_id).then(res => {
+          loading.dismiss();
+          this.listaPedidos(this.cliente_id);
         })
       } else {
         this.confirmAlert('Atenção!', 'Não é possivel remover este pedido sem estar conectado a internet.')
@@ -192,21 +199,15 @@ export class PedidosComponent implements OnInit {
     }
   }
   async apagarPedidoAPP(pedido_id) {
-    const loading = await this.loadCtrl.create({
-      message: 'Sincronizando saídas, aguarde!'
-    });
-    loading.present();
-    Promise.all([this.db.pedido.where("pedido_id").equals(pedido_id).delete(), this.db.itempedido.where("pedido_id").equals(pedido_id).delete()]).then(res => {
-      loading.dismiss();
-      this.confirmAlert('Mensagem', 'Pedido excluido com sucesso');
-    })
+    return Promise.all([this.db.pedido.where("pedido_id").equals(pedido_id).delete(), this.db.itempedido.where("pedido_id").equals(pedido_id).delete()]);
   }
   async duplicarPedido(pedido) {
+    let self = this;
     const loading = await this.loadCtrl.create({
       message: 'Duplicando pedido. Aguarde!'
     });
     loading.present();
-   
+
     var novo_pedido_id = Guid.create();
     var novoPedido;
     var id_pedido;
@@ -221,7 +222,7 @@ export class PedidosComponent implements OnInit {
     novoPedido.cod_pedido_mob = novo_pedido_id;
     novoPedido.enviado = "N";
     this.db.pedido.add(novoPedido);
-   
+
     this.db.itempedido
       .where("pedido_id")
       .equals(id_pedido)
@@ -229,16 +230,14 @@ export class PedidosComponent implements OnInit {
       .then(function (res) {
         res.map(function (item) {
           var novoItem;
-          debugger;
-          item = novoItem;        
+          novoItem = item;
           novoItem.item_id = Guid.create();
           novoItem.pedido_id = novo_pedido_id;
           novoItem.enviado = "N";
-          this.db.itempedido.add(novoItem);
+          self.db.table('itempedido').add(novoItem);
         });
-
         loading.dismiss();
-        this.confirmAlert('Mensagem', 'Pedido duplicado com sucesso');
+        self.confirmAlert('Mensagem', 'Pedido duplicado com sucesso');
       });
   }
 };

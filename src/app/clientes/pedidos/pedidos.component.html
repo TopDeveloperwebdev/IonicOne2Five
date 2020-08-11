@@ -57,8 +57,8 @@
             </ion-item>
             <ion-item class="assertive" *ngIf="pedidos.length == 0">Não existem pedidos para este cliente.</ion-item>
             <ion-item-options side="end">
-                <ion-item-option (click)="duplicarPedido(pedido)" class="button-positive">Duplicar</ion-item-option>
                 <ion-item-option (click)="apagarPedido(pedido)" class="button-assertive">Apagar</ion-item-option>
+                <ion-item-option (click)="duplicarPedido(pedido)" class="button-positive">Duplicar</ion-item-option>
             </ion-item-options>
         </ion-item-sliding>
     </ion-list>
