@@ -16,6 +16,7 @@ export class ListaComponent implements OnInit {
   page_limit = 50;
   increaseItems = 50;
   filtro = {};
+  db: any;
   valueEmittedFromChildComponent: object = {};
   constructor(
     private loadCtrl: LoadingController,
@@ -24,7 +25,7 @@ export class ListaComponent implements OnInit {
     private navCtl: NavController,
     public modalController: ModalController,
     private dbService: DBService) {
-
+      this.db = dbService;
   }
   ngOnInit() {
     this.clientsInit();
@@ -53,17 +54,19 @@ export class ListaComponent implements OnInit {
       });
     }
     else {
-      this.dbService.table('clientes').toArray().then(res => {
-        this.clientesDataservice = res[0].sort((a, b) => {return a.cli_razaosocial < b.cli_razaosocial; });
-        console.log('res2', res[0]);
+      this.db.clientes.orderBy('cli_razaosocial').toArray().then(res => {      
+        // this.clientesDataservice = res[0].sort((a, b) => {return a.cli_razaosocial < b.cli_razaosocial; });
+        this.clientesDataservice = res;
+        console.log('res2', res);
         this.pushClients(this.page_limit);
         loading.dismiss();
       });
     }
   }
   async filterItems(filtro) {
-    return this.dbService.table('clientes').toArray().then(res => {
-      return res[0].filter(function (where) {
+
+    return this.db.clientes.orderBy('cli_razaosocial').toArray().then(res => {
+      return res.filter(function (where) {
         var comando = [];
 
         if (filtro.hasOwnProperty('cli_razaosocial')) {
@@ -129,7 +132,7 @@ export class ListaComponent implements OnInit {
         role: 'destructive',
         icon: 'list',
         handler: () => {
-          this.navCtl.navigateForward(['clientes/pedidos',{ 'cliente_id': cliente_id, 'nomecliente': razaosocial}]);  
+          this.navCtl.navigateForward(['clientes/pedidos', { 'cliente_id': cliente_id, 'nomecliente': razaosocial }]);
         }
       }, {
         text: 'Cadastro',
@@ -141,7 +144,7 @@ export class ListaComponent implements OnInit {
         text: 'Títulos',
         icon: 'albums',
         handler: () => {
-          this.navCtl.navigateForward(['titulos/lista',{ 'cliente_id': cliente_id, 'nomecliente': razaosocial}]);  
+          this.navCtl.navigateForward(['titulos/lista', { 'cliente_id': cliente_id, 'nomecliente': razaosocial }]);
         }
       }, {
         text: 'Motivos de Não Venda',
@@ -174,5 +177,5 @@ export class ListaComponent implements OnInit {
 
     return await modal.present();
   }
- 
+
 }

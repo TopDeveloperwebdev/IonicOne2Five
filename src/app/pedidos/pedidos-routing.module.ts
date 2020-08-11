@@ -9,9 +9,9 @@ const routes: Routes = [
   {
 
     path: '',
-    redirectTo: 'detail',
-    pathMatch: 'full'
+    component : PedidosPage
   },
+  
   {
     path: 'detail',
     component: DetalhesProdutoComponent

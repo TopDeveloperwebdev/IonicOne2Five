@@ -41,25 +41,26 @@
         <br />
         <small>Quantidade de Pedidos: {{pedidos.length}}</small>
         <br />
-        <small>Total de Pedidos: {{totalPedidos(filtro) | currency:'R$ '}}</small>
+        <small>Total de Pedidos: {{totalPedidos(pedidos) | currency:'R$ '}}</small>
     </h4>
     <ion-list>
-        <ion-row class="item" (click)="alterar(pedido, nomecliente);" *ngFor="let pedido of pedidos">
+        <ion-item-sliding *ngFor="let pedido of pedidos">
+            <ion-item class="item" (click)="alterar(pedido, nomecliente);">
+                <ion-row>
+                    <p>Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido | currency:'R$':2}}</p>
 
-            Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido | currency:'R$':2}}
-
-            <p>
-                {{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}
-            </p>
-            <p>Tipo: {{tipoPedidoFilter(pedido.tipo_pedido)}}</p>
-            <!--<ion-option-button class="button-positive" (click)="duplicarPedido(pedido)">
-                Duplicar
-            </ion-option-button>
-            <ion-option-button class="button-assertive" (click)="apagarPedido(pedido)">
-                Apagar
-            </ion-option-button> -->
-        </ion-row>
-        <ion-item class="assertive" ng-show="pedidos.length == 0">Não existem pedidos para este cliente.</ion-item>
+                    <p>
+                        {{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}
+                    </p>
+                    <p>Tipo: {{tipoPedidoFilter(pedido.tipo_pedido)}}</p>
+                </ion-row>
+            </ion-item>
+            <ion-item class="assertive" *ngIf="pedidos.length == 0">Não existem pedidos para este cliente.</ion-item>
+            <ion-item-options side="end">
+                <ion-item-option (click)="duplicarPedido(pedido)" class="button-positive">Duplicar</ion-item-option>
+                <ion-item-option (click)="apagarPedido(pedido)" class="button-assertive">Apagar</ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
     </ion-list>
 </ion-content>
 <button (click)="cadastro(cliente_id, nomecliente);" class="button button-assertive button-float">

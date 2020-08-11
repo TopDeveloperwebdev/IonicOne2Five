@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
-import { NavController, ModalController } from '@ionic/angular';
-import { FiltroPedidosComponent } from '../filtro-pedidos/filtro-pedidos.component'
+import { NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { FiltroPedidosComponent } from '../filtro-pedidos/filtro-pedidos.component';
+import { ConexaoService } from '../../services/conexao.service';
+import { dataService } from '../../services/data.service';
+import { Guid } from "guid-typescript"
 @Component({
   selector: 'app-pedidos',
   templateUrl: './pedidos.component.html',
@@ -14,24 +17,59 @@ export class PedidosComponent implements OnInit {
   filtro = {};
   nomecliente = '';
   cliente_id: '';
+  db: any;
 
-  constructor(public route: ActivatedRoute, public dbService: DBService, public navCtl: NavController, public modalController: ModalController) {
+  constructor(
+    public route: ActivatedRoute,
+    public dbService: DBService,
+    public navCtl: NavController,
+    public modalController: ModalController,
+    public toastController: ToastController,
+    public alertCtrl: AlertController,
+    public loadCtrl: LoadingController,
+    public conexaoService: ConexaoService,
+    public dataService: dataService) {
 
     this.cliente_id = this.route.snapshot.params['cliente_id'];
 
     this.nomecliente = this.route.snapshot.params['nomecliente'];
-
-
+    this.db = dbService;
   }
 
   ngOnInit() {
     this.listaPedidos(this.cliente_id);
   }
+  async confirmAlert(header, message) {
+    const alert = await this.alertCtrl.create({
+      header: header,
+      message: message,
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          cssClass: 'button button-assertive',
+          handler: () => {
+            this.listaPedidos(this.cliente_id);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  async presentToast(mensaje: any) {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 1000,
+      position: 'bottom'
+    });
+    toast.present();
+  }
+
   async listaPedidos(cliente_id) {
     const self = this;
     self.pedidos = [];
     return this.dbService.table('pedido').toArray().then(res => {
-      return res[0].filter(function (where) {
+      return res.filter(function (where) {
         return where.cliente_id === Number(self.cliente_id);
       })
     }).then(function (pedidos) {
@@ -77,7 +115,7 @@ export class PedidosComponent implements OnInit {
     });
 
     self.pedidos = filters;
-  };
+  }
   tipoPedidoFilter(input) {
     const tipos = [
       { codigo: 'P', nome: 'Pedido' },
@@ -105,14 +143,14 @@ export class PedidosComponent implements OnInit {
     } else {
       return 0;
     }
-  };
+  }
   cadastro(cliente_id, nomecliente) {
     this.navCtl.navigateForward(['pedidos/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
   alterar(p, nomecliente) {
     let pedido = JSON.stringify(p);
     this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido, 'nomecliente': nomecliente }]);
-  };
+  }
   async filter() {
     const modal = await this.modalController.create({
       component: FiltroPedidosComponent,
@@ -130,4 +168,78 @@ export class PedidosComponent implements OnInit {
 
     return await modal.present();
   }
-}
+  async apagarPedido(pedido) {
+    if (isNaN(pedido.pedido_id)) {
+      const loading = await this.loadCtrl.create({
+        message: 'Apagando pedido. Aguarde!'
+      });
+      loading.present();
+      this.apagarPedidoAPP(pedido.pedido_id);
+    } else {
+      if (this.conexaoService.conexaoOnline()) {
+        const loading = await this.loadCtrl.create({
+          message: 'Apagando pedido. Aguarde!'
+        });
+        loading.present();
+        this.dataService.apagarPedido(pedido.pedido_id).subscribe(res => {
+          this.apagarPedidoAPP(pedido.pedido_id);
+        }, error => {
+          this.totalPedidos('Erro ao apagar pedido no Web.');
+        })
+      } else {
+        this.confirmAlert('Atenção!', 'Não é possivel remover este pedido sem estar conectado a internet.')
+      }
+    }
+  }
+  async apagarPedidoAPP(pedido_id) {
+    const loading = await this.loadCtrl.create({
+      message: 'Sincronizando saídas, aguarde!'
+    });
+    loading.present();
+    Promise.all([this.db.pedido.where("pedido_id").equals(pedido_id).delete(), this.db.itempedido.where("pedido_id").equals(pedido_id).delete()]).then(res => {
+      loading.dismiss();
+      this.confirmAlert('Mensagem', 'Pedido excluido com sucesso');
+    })
+  }
+  async duplicarPedido(pedido) {
+    const loading = await this.loadCtrl.create({
+      message: 'Duplicando pedido. Aguarde!'
+    });
+    loading.present();
+   
+    var novo_pedido_id = Guid.create();
+    var novoPedido;
+    var id_pedido;
+
+    if (isNaN(pedido.pedido_id)) {
+      id_pedido = pedido.cod_pedido_mob;
+    } else {
+      id_pedido = pedido.pedido_id;
+    }
+    novoPedido = pedido;
+    novoPedido.pedido_id = novo_pedido_id;
+    novoPedido.cod_pedido_mob = novo_pedido_id;
+    novoPedido.enviado = "N";
+    this.db.pedido.add(novoPedido);
+   
+    this.db.itempedido
+      .where("pedido_id")
+      .equals(id_pedido)
+      .toArray()
+      .then(function (res) {
+        res.map(function (item) {
+          var novoItem;
+          debugger;
+          item = novoItem;        
+          novoItem.item_id = Guid.create();
+          novoItem.pedido_id = novo_pedido_id;
+          novoItem.enviado = "N";
+          this.db.itempedido.add(novoItem);
+        });
+
+        loading.dismiss();
+        this.confirmAlert('Mensagem', 'Pedido duplicado com sucesso');
+      });
+  }
+};
+

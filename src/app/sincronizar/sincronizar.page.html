@@ -10,49 +10,42 @@
 	<ion-content class="padding">
 
 		<div class="row mt-20">
-				<div class="col box-icone" ng-click="sincronizarEntrada();">
+				<div class="col box-icone" (click)="sincronizarEntrada();">
 						<img src="../assets/img/btn_sincro_receber.png" />
 						<div class="legenda">Entradas</div>
 				</div>
-				<div class="col box-icone" ng-click="sincronizarSaida();">
+				<div class="col box-icone" (click)="sincronizarSaida();">
 						<img src="../assets/img/btn_sincro_enviar.png" />
 						<div class="legenda">Saídas</div>
 				</div>
-				<div class="col box-icone" ng-click="sincronizarUsuario();">
+				<div class="col box-icone" (click)="sincronizarUsuario();">
 						<img src="../assets/img/btn_sincro_usuario.png" />
 						<div class="legenda">Usuário</div>
 				</div>
 		</div>
 		<div class="row">
-				<div class="col box-icone" ng-click="sincronizarClientes();">
+				<div class="col box-icone" (click)="sincronizarClientes();">
 						<img src="../assets/img/btn_sincro_clientes.png" />
 						<div class="legenda">Clientes</div>
 				</div>
-				<div class="col box-icone" ng-click="sincronizarProdutos();">
+				<div class="col box-icone" (click)="sincronizarProdutos();">
 						<img src="../assets/img/btn_sincro_produtos.png" />
 						<div class="legenda">Produtos</div>
 				</div>
-				<div class="col box-icone" ng-click="sincronizarTitulos();">
+				<div class="col box-icone" (click)="sincronizarTitulos();">
 						<img src="../assets/img/btn_sincro_titulos.png" />
 						<div class="legenda">Titulos</div>
 				</div>
 		</div>
     <div class="row">
       <div class="col"></div>
-      <div class="col box-icone" ng-click="sincronizarCompras();">
+      <div class="col box-icone" (click)="sincronizarCompras();">
         <img src="../assets/img/btn_sincro_compras.png" />
         <div class="legenda">Compras</div>
       </div>
       <div class="col"></div>
-		</div>
-		<!-- <div class="row">
-      <div class="col"></div>
-      <div class="col box-icone" ng-click="sincronizarTudo();">
-        <img src="../assets/img/btn_sincro_compras.png" />
-        <div class="legenda">Tudo</div>
-      </div>
-      <div class="col"></div>
-    </div> -->
+	</div>
+		
 
   </ion-content>
 

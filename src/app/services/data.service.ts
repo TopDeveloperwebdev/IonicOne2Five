@@ -14,8 +14,10 @@ export class dataService {
     public books = [];
     public users: any;
     headers: any;
+    db: any;
     constructor(private httpClient: HttpClient, private dbService: DBService,
         private alertCtrl: AlertController, private loadingController: LoadingController) {
+        this.db = dbService;
         this.headers = new HttpHeaders()
             .set("Accept", 'application/json')
             .set('Content-Type', 'application/json')
@@ -24,12 +26,10 @@ export class dataService {
             .set('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
             .set('Access-Control-Allow-Credentials', 'true');
     }
-
-    async presentConfirm() {
-        console.log('Alert Shown Method Accessed!');
+    async confirmAlert(header, message) {
         const alert = await this.alertCtrl.create({
-            header: 'Mensagem',
-            message: 'Sincronismo de Entrada efetuado com sucesso!',
+            header: header,
+            message: message,
             buttons: [
                 {
                     text: 'Fechar',
@@ -40,6 +40,7 @@ export class dataService {
         });
         await alert.present();
     }
+
     init(vendedor_id: any) {
         let clientes;
         let atividades;
@@ -125,7 +126,7 @@ export class dataService {
             tabelas = res[4];
             formas = res[5];
             condicoes = res[6];
-            produtos = res[7];         
+            produtos = res[7];
             mensagens = res[8];
             meta_vendedor = res[9];
             titulos = res[10];
@@ -152,34 +153,34 @@ export class dataService {
             db.table('metas').clear();
             db.table('motivos_nao_venda').clear();
             db.table('pedido').clear();
-            db.table('produto').clear();  
-              db.table('comissao').clear();           
+            db.table('produto').clear();
+            db.table('comissao').clear();
             db.table('responsavel').clear();
             db.table('titulo').clear();
             db.table('visita_nao_venda').clear();
             db.table('marcas_produto').clear();
             db.table('tipos_produto').clear();
-            db.table('produto_tabela').clear();     
+            db.table('produto_tabela').clear();
             //add
 
             db.table('categoria').add(categorias);
             db.table('cidade').add(cidades);
-            db.table('clientes').add(clientes);
+            db.table('clientes').bulkPut(clientes);
             db.table('compras').bulkPut(compras);
             db.table('atividade').add(atividades);
             db.table('compras_item').bulkPut(compras_itens);
             db.table('forma').add(formas);
             db.table('condicoe').add(condicoes);
-            db.table('itempedido').add(itenspedido);
+            db.table('itempedido').bulkPut(itenspedido);
             db.table('mensagem').bulkPut(mensagens);
             db.table('metas').bulkPut(meta_vendedor);
-            db.table('motivos_nao_venda').add(motivos_nao_venda);
-            db.table('pedido').add(pedidos);
+            db.table('motivos_nao_venda').bulkPut(motivos_nao_venda);
+            db.table('pedido').bulkPut(pedidos);
             db.table('produto').bulkPut(produtos.produtos);
             db.table('comissao').bulkPut(produtos.comissoes);
             db.table('produto_tabela').bulkPut(produtos.produto_tabelas);
             db.table('marcas_produto').bulkPut(produtos.marcas);
-            db.table('tipos_produto').bulkPut(produtos.tipos);         
+            db.table('tipos_produto').bulkPut(produtos.tipos);
             db.table('responsavel').bulkPut(responsaveis);
             db.table('tabela').bulkPut(tabelas);
             db.table('titulo').bulkPut(titulos);
@@ -192,17 +193,7 @@ export class dataService {
                 )])
                 .subscribe(res => {
                     this.loadingController.dismiss();
-                    this.presentConfirm();
-                    // $ionicPopup.alert({
-                    //     title: 'Mensagem',
-                    //     template: 'Sincronismo de Entrada efetuado com sucesso!',
-                    //     buttons: [
-                    //         {
-                    //             text: 'Fechar',
-                    //             type: 'button-assertive',
-                    //         }
-                    //     ]
-                    // });
+                    this.confirmAlert('Mensagem', 'Sincronismo de Entrada efetuado com sucesso!');
                 });
 
         })
@@ -214,9 +205,6 @@ export class dataService {
         return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/cliente?vendedor_id=${vendedor_id}`,
             { headers: this.headers }
         );
-        // return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/cliente?vendedor_id=${vendedor_id}&&take=${take}&&skip=${skip}`,
-        //     { headers: this.headers }
-        // );
     }
     getProdutos(vendedor_id: any) {
         return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/produtos?vendedor_id=${vendedor_id}`,
@@ -239,8 +227,179 @@ export class dataService {
             { headers: this.headers }
         );
     }
+    getCompras(vendedor_id: any) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/lista/compras?vendedor_id=${vendedor_id}`,
+            { headers: this.headers }
+        );
+    }
+    sincronismo(vendedor_id: any) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/sincronismo?vendedor_id=${vendedor_id}`,
+            { headers: this.headers }
+        );
+    }
 
+    sincronizarSaida() {
+        let self = this;
+        let pedidos_num = 0, num_clientes = 0, num_visitas = 0;
+        return forkJoin([
+            self.db.pedido.where('tipo_pedido').notEqual('O').and(function (where) { return where.enviado == 'N'; }).toArray().then((pedidos) => {
+                pedidos_num = pedidos.length;
+                pedidos.map((pedido) => {
+                    var cod_pedido = pedido.cod_pedido_mob;
+                    self.db.itempedido.where('pedido_id').equals(cod_pedido).toArray().then(function (itenspedido) {
+                        this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/pedido?
+                        pedido_id=${pedido.pedido_id}&&
+                        vendedor_id=${pedido.vendedor_id}&&
+                        cliente_id=${pedido.cliente_id}&&
+                        tipo_pedido=${pedido.tipo_pedido}&&
+                        data_entrega=${pedido.data_entrega}&&
+                        condicao_pagto_id=${pedido.codigo_forma_pagto}&&
+                        tabela_id=${pedido.tabela_id}&&
+                        observacao=${pedido.observacao}&&
+                        num_itens=${pedido.num_itens}&&                    
+                        total_itens=${pedido.total_itens}&&
+                        percentual_desconto=${pedido.percentual_desconto}&&
+                        total_pedido=${pedido.total_pedido}&&
+                        urgente=${pedido.urgente}&&
+                        data_gravacao=${pedido.data_gravacao}&&
+                        hora_gravacao=${pedido.hora_gravacao}&&
+                        latitude_gravacao=${pedido.latitude_gravacao}&&
+                        longitude_gravacao=${pedido.longitude_gravacao}&&
+                        itens=${JSON.stringify(itenspedido)} `,
+                            { headers: this.headers }
+                        ).subscribe(response => {
+                            var pedido_id_web = response.pedido_id;
+                            var ids_itens_web = response.itens_id;
+                            self.db.pedido.update(cod_pedido, { pedido_id: pedido_id_web, enviado: 'S' });
+                            ids_itens_web.map(function (value) {
+                                self.db.itempedido.update(value.id_app, {
+                                    pedido_id: pedido_id_web,
+                                    enviado: 'S'
+                                });
+                            });
+                        },
+                            err => {
+                                this.loadingController.dismiss();
+                                alert('Problemas ao enviar/atualizar pedidos para o servidor.');
+                                return false;
+                            });
+                    });
+                })
+                return pedidos_num;
+            }),
+            self.db.clientes.where('enviado').equals('N').toArray().then(function (clientes) {
+                num_clientes = clientes.length;
+                clientes.map(function (cliente) {
+                    var cliente = cliente;
+                    this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/cliente?cliente=${cliente}`,
+                        { headers: this.headers }
+                    ).subscribe(res => {
+                        self.db.clientes.update(cliente.cli_id, { enviado: 'S' });
+                        return num_clientes;
+                    },
+                        error => {
+                            this.loadingController.dismiss();
+                            alert('Problemas ao enviar/atualizar cliente para o servidor.');
+                        });
+                })
+                return num_clientes;
+            }),
+            self.db.visita_nao_venda.where('enviado').equals('N').toArray().then(function (visitas) {
+                num_visitas = visitas.length;
+                visitas.map(function (visita) {
+                    this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/visita?visita=${visita}`,
+                        { headers: this.headers }
+                    ).subscribe(res => {
+                        self.db.visita_nao_venda.update(visita.cod_visita_mob, {
+                            enviado: 'S',
+                            visita_id: res.visita_id
+                        });
+                        return num_visitas;
+                    },
+                        error => {
+                            this.loadingController.dismiss();
+                            alert('Problemas ao enviar/atualizar visita para o servidor.');
+                        });
+                });
+                return num_visitas;
+            })
+        ]);
+    }
 
+    sincronizarClientes(vendedor_id) {
+        this.getClients(vendedor_id).subscribe(clientes => {
+            localStorage.removeItem('sincronizar');
+            this.db.clientes.clear();
+            this.db.clientes.bulkPut(clientes);
+            this.loadingController.dismiss();
+            this.confirmAlert('Mensagem', 'Sincronismo de clientes efetuado com sucesso!');
+        }, errr => {
+            this.confirmAlert('Atenção', 'Conexão com o servidor falhou. Verifique sua rede ou tente novamente mais tarde.');
+            this.loadingController.dismiss();
+        });
 
+    }
+    sincronizarCompras(vendedor_id) {
+        this.getCompras(vendedor_id).subscribe(res => {
+            let compras = res['compras'];
+            let compras_itens = res['itens'];
+            localStorage.removeItem('sincronizar');
+            this.db.compras.clear();
+            this.db.compras_item.clear();
+            this.db.compras.bulkPut(compras);
+            this.db.compras_item.bulkPut(compras_itens);
+
+            this.loadingController.dismiss();
+            this.confirmAlert('Mensagem', 'Sincronismo de compras efetuado com sucesso!');
+        }, errr => {
+            this.confirmAlert('Atenção', 'Conexão com o servidor falhou. Verifique sua rede ou tente novamente mais tarde.');
+            this.loadingController.dismiss();
+        });
+
+    }
+    sincronizarProdutos(vendedor_id) {
+        this.getProdutos(vendedor_id).subscribe(produtos => {
+
+            this.db.comissao.clear(),
+                this.db.produto.clear(),
+                this.db.produto_tabela.clear(),
+                this.db.marcas_produto.clear(),
+                this.db.tipos_produto.clear()
+            this.db.produto.bulkPut(produtos['produtos']),
+                this.db.comissao.bulkPut(produtos['comissoes']),
+                this.db.produto_tabela.bulkPut(produtos['tabelas']),
+                this.db.marcas_produto.bulkPut(produtos['marcas']),
+                this.db.tipos_produto.bulkPut(produtos['tipos'])
+            localStorage.removeItem('sincronizar');
+
+            this.loadingController.dismiss();
+            this.confirmAlert('Mensagem', 'Sincronismo de produtos efetuado com sucesso!');
+        }, errr => {
+            this.confirmAlert('Atenção', 'Conexão com o servidor falhou. Verifique sua rede ou tente novamente mais tarde.');
+            this.loadingController.dismiss();
+        });
+
+    }
+    sincronizarTitulos(vendedor_id) {
+        this.getTitulos(vendedor_id).subscribe(titulos => {
+
+            this.db.titulo.clear();
+            this.db.titulo.bulkPut(titulos);
+            localStorage.removeItem('sincronizar');
+
+            this.loadingController.dismiss();
+            this.confirmAlert('Mensagem', 'Sincronismo de Títulos efetuado com sucesso!');
+        }, errr => {
+            this.confirmAlert('Atenção', 'Conexão com o servidor falhou. Verifique sua rede ou tente novamente mais tarde.');
+            this.loadingController.dismiss();
+        });
+
+    }
+    apagarPedido(pedido_id) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/pedido/excluir?pedido_id=${pedido_id}`,
+            { headers: this.headers }
+        );
+
+    }
 
 }

@@ -14,10 +14,10 @@
         <h4 class="assertive">
           <small>Quantidade de Pedidos: {{filtro.length}}</small>
           <br />
-          <small>Total de Pedidos: R$ </small>
+          <small>Total de Pedidos: {{totalPedidos(filtro) | currency:'R$ '}}</small>
         </h4>
-        <ion-list >
-            <ion-item ng-click="alterar(pedido, pedido.nomecliente);" *ngFor="let pedido of pedidos" >
+        <ion-list>
+            <ion-item ng-click="alterar(pedido, pedido.nomecliente);" *ngFor="let pedido of pedidostodos" >
                 
                 Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido| currency:'R$':2}}
                 
