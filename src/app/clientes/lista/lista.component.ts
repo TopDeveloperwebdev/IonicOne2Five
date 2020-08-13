@@ -171,7 +171,7 @@ export class ListaComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        this.filtro = data['data']; // Here's your selected user!
+        this.filtro = data['data']; // Here's your selected user!        
         this.clientsInit();
       });
 

@@ -16,7 +16,7 @@
         <div class="col">{{toNumber(comissao.precofinal) | currency:"R$":2}}</div>
         <div class="col">{{toNumber(comissao.comissao)}}%</div>
     </div>
-    <div class="row" *ngIf="comissoes_produto.length == 0">
+    <div class="row" *ngIf="!comissoes_produto">
         <div class="col assertive">
             Produto sem comissões cadastradas.
         </div>

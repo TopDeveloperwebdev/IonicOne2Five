@@ -178,7 +178,7 @@ export class dataService {
             db.table('pedido').bulkPut(pedidos);
             db.table('produto').bulkPut(produtos.produtos);
             db.table('comissao').bulkPut(produtos.comissoes);
-            db.table('produto_tabela').bulkPut(produtos.produto_tabelas);
+            db.table('produto_tabela').bulkPut(produtos.tabelas);
             db.table('marcas_produto').bulkPut(produtos.marcas);
             db.table('tipos_produto').bulkPut(produtos.tipos);
             db.table('responsavel').bulkPut(responsaveis);

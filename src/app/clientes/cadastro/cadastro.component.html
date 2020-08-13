@@ -9,27 +9,31 @@
 </ion-header>
 
 <ion-content style="--background: #f0f0f0;">
-    <form name="formCliente" id="formCliente">
+
+    <form #clientForm="ngForm" novalidate id="formCliente">
         <h4 class="assertive padding">Dados Principais</h4>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Nome Fantasia" ng-model="cliente.cli_fantasia" ng-required="true">
+        <ion-input type="text" placeholder="Nome Fantasia" [(ngModel)]="cliente.cli_fantasia" name="cli_fantasia"
+          required></ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Razão Social" ng-model="cliente.cli_razaosocial" ng-required="true">
-     
+        <ion-input type="text" placeholder="Razão Social" name="cli_razaosocial" [(ngModel)]="cliente.cli_razaosocial"
+          required></ion-input>
+
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select ng-required="true" ng-model="cliente.atividade_id"
-          ng-options="atividade.atividade_id as atividade.descricaoatividade for atividade in atividades | orderBy:'descricaoatividade'">
+        <select [(ngModel)]="cliente.atividade_id" name="atividade_id">
           <option value="">Selecione uma atividade</option>
+          <option value="{{atividades.atividade_id}}" *ngFor="let atividade of atividades">
+            {{atividade.descricaoatividade}}</option>
         </select>
       </label>
 
@@ -37,119 +41,127 @@
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="tel" placeholder="CPF/CNPJ" ng-model="cliente.cli_cnpjcpf" ng-required="true" ui-br-cpfcnpj-mask>
+        <ion-input type="tel" placeholder="CPF/CNPJ" name="cli_cnpjcpf" [(ngModel)]="cliente.cli_cnpjcpf" required
+          ui-br-cpfcnpj-mask></ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Inscrição Estadual" ng-model="cliente.cli_inscricaoestadual">
+        <ion-input type="text" placeholder="Inscrição Estadual" name="cli_inscricaoestadual"
+          [(ngModel)]="cliente.cli_inscricaoestadual"></ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Inscrição Municipal" ng-model="cliente.cli_inscricaomunicipal">
+        <ion-input type="text" placeholder="Inscrição Municipal" name="cli_inscricaomunicipal"
+          [(ngModel)]="cliente.cli_inscricaomunicipal"></ion-input>
       </label>
         </div>
         <h4 class="assertive padding">Dados Cadastrais</h4>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Endereço" ng-model="cliente.cli_endereco" ng-required="true">
+        <ion-input type="text" placeholder="Endereço" name="cli_endereco" [(ngModel)]="cliente.cli_endereco" required>
+        </ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Bairro" ng-model="cliente.cli_bairro" ng-required="true">
+        <ion-input type="text" placeholder="Bairro" name="cli_bairro" [(ngModel)]="cliente.cli_bairro" required>
+        </ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="CEP" ng-model="cliente.cli_cep" ng-required="true">
+        <ion-input type="text" placeholder="CEP" name="cli_cep" [(ngModel)]="cliente.cli_cep" required></ion-input>
+      </label>
+        </div>
+
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <ion-input placeholder="Fax" [(ngModel)]="cliente.cli_fax" name="cli_fax" type="text" required>
+        </ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select ng-model="cliente.cli_codigocidade" ng-required="true"
-          ng-options="cidade.cidade_id as cidade.descricaocidade for cidade in cidades| orderBy:'descricaocidade'">
-          <option value="">Selecione uma cidade</option>
-        </select>
-      </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
-        <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Fax" ng-model="cliente.cli_fax">
-      </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
-        <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="email" placeholder="E-mail" ng-model="cliente.cli_email">
+        <ion-input placeholder="E-mail" [(ngModel)]="cliente.email" name="email" type="email" required>
+        </ion-input>
       </label>
         </div>
         <h4 class="assertive padding">Dados de Contato</h4>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Contato 1" ng-model="cliente.cli_contato1" ng-required="true">
+        <ion-input type="text" placeholder="Contato 1" name="cli_contato1" [(ngModel)]="cliente.cli_contato1" required>
+        </ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="tel" placeholder="Telefone 1" ng-model="cliente.cli_telefone1" ng-required="true">
+        <ion-input type="tel" placeholder="Telefone 1" name="cli_telefone1" [(ngModel)]="cliente.cli_telefone1"
+          required></ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Contato 2" ng-model="cliente.cli_contato2">
+        <ion-input type="text" placeholder="Contato 2" name="cli_contato2" [(ngModel)]="cliente.cli_contato2">
+        </ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="tel" placeholder="Telefone 2" ng-model="cliente.cli_telefone2">
+        <ion-input type="tel" placeholder="Telefone 2" name="cli_telefone2" [(ngModel)]="cliente.cli_telefone2">
+        </ion-input>
       </label>
         </div>
         <h4 class="assertive padding">Dados de Entrega</h4>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Endereço" ng-model="cliente.cli_enderecoentrega">
+        <ion-input type="text" placeholder="Endereço" name="cli_enderecoentrega"
+          [(ngModel)]="cliente.cli_enderecoentrega"></ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="Bairro" ng-model="cliente.cli_bairroentrega">
+        <ion-input type="text" placeholder="Bairro" name="cli_bairroentrega" [(ngModel)]="cliente.cli_bairroentrega">
+        </ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <input type="text" placeholder="CEP" ng-model="cliente.cli_cepentrega">
+        <ion-input type="text" placeholder="CEP" name="cli_cepentrega" [(ngModel)]="cliente.cli_cepentrega" required>
+        </ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select ng-model="cliente.cli_codigocidadeentrega"
-          ng-options="cidade.cidade_id as cidade.descricaocidade for cidade in cidades| orderBy:'descricaocidade'">
+        <select [(ngModel)]="cliente.cli_codigocidadeentrega" name="cli_codigocidadeentrega">
           <option value="">Selecione uma cidade</option>
+          <option value="{{cidade.cidade_id}}" *ngFor="let cidade of cidades">
+            {{cidade.descricaocidade}}</option>
         </select>
       </label>
         </div>
-    </form>
-    <div class="padding">
-        <button class="button button-full button-assertive" ng-disabled="formCliente.$invalid" ng-click="salvar(cliente);">
-      Salvar
-    </button>
 
-    </div>
+        <div class="padding">
+            <button class="button button-full button-assertive" (click)="salvar(clientForm)" [disabled]="!clientForm.valid" type="submit">
+        Salvar
+      </button>
+
+        </div>
+    </form>
 </ion-content>

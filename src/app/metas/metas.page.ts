@@ -22,8 +22,7 @@ export class MetasPage implements OnInit {
   }
 
   async ngOnInit() {
-    let usertemp = await this.dbService.table('usuario').toArray();
-    this.usuario = usertemp[0];
+
     this.db.metas.toArray().then(res => {
       this.metas = res;
     })

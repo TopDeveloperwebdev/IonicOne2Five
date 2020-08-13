@@ -7758,9 +7758,11 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.activated {
     display: block;
     margin: 0px;
     padding: 16px;
-    border-width: 1px;
+    border-width: 0.55px;
     border-style: solid;
     font-size: 16px;
+    --inner-border-width: 0px;
+    //  padding: 10px 1px !important;
 }
 
 .products_detail {

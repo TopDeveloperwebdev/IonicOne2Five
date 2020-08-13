@@ -14,7 +14,8 @@ export class AddProdutoComponent implements OnInit {
   db: any;
   listaProdutos = [];
   listaProdutosDataservice: any;
-
+  tabelas : any;
+  tabela_id : any;
   page_limit = 50;
   increaseItems = 50;
   produtoEscolhido: any;
@@ -54,10 +55,30 @@ export class AddProdutoComponent implements OnInit {
       message: 'Aguarde!'
     });
     loading.present();
-
+    this.tabelas = await this.db.tabela.toArray();
+    this.tabela_id = this.tabelas[0].tabela_id;
+   
     this.ListaProdutos(self.filtro).then(res => {
-      console.log('res', res);
-      this.listaProdutosDataservice = res;
+      let produtos;
+      produtos = res;
+      this.listaProdutosDataservice = produtos.map(function (produto, index) {
+        var p;
+        p = produto;
+        
+        p.precotabela = "";
+        self.db.produto_tabela.where('[produto_id+tabela_id]')
+          .equals([p.produto_id, self.tabela_id.toString()])
+          .first()
+          .then(function (res) {
+            console.log('res --', res);
+            if (res && res.precotabela) {
+              p.precotabela = self.toNumber(res.precotabela);
+            }
+            return p;
+
+          });
+        return p;
+      });
       this.pushClients(this.page_limit);
       loading.dismiss();
     },
@@ -65,6 +86,11 @@ export class AddProdutoComponent implements OnInit {
         loading.dismiss();
         this.presentConfirm();
       })
+  }
+
+  toNumber(string) {
+    var number = string.replace(/([.])/g, '');
+    return number.replace(',', '.');
   }
   pushClients(page_limit) {
     this.listaProdutos = this.listaProdutosDataservice.slice(0, page_limit);
@@ -337,7 +363,8 @@ export class AddProdutoComponent implements OnInit {
 
   dismiss() {
     console.log('dismass');
-    this.modalCtrl.dismiss(this.itens, this.pedido);
+    this.modalCtrl.dismiss({itens : this.itens , pedido : this.pedido});
+   // this.itens, this.pedido
   }
   addProdutoPedido(produto) {
     let self = this;
@@ -361,6 +388,7 @@ export class AddProdutoComponent implements OnInit {
         });
         alert.present();
       } else {
+
         self.produtoEscolhido = {
           codigo_produto: produto.produto_id,
           dados_adicionais: produto.dados_adicionais,
@@ -414,7 +442,7 @@ export class AddProdutoComponent implements OnInit {
 
     return await modal.present();
   }
- 
+
   async comissoes(produto_id) {
     const modal = await this.modalCtrl.create({
       component: ComissoesComponent,

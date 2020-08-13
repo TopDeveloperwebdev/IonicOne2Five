@@ -7,7 +7,7 @@
 <ion-content class="padding">
     <div class="list mt-60">
         <label class="item item-input item-stacked-label">    
-        <select [value]="tabela_id"  (change)="mudarTabelaPreco(tabela_id)">
+        <select [(ngModel)]="tabela_id"  (change)="mudarTabelaPreco(tabela_id)" [ngModelOptions]="{standalone: true}">
             <option value="">Selecione a Tabela</option>
             <option value="{{tabela.id}}" *ngFor="let tabela of tabelas">{{tabela.descricaotabela}}</option>
           </select>
@@ -15,7 +15,7 @@
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">          
-            <select [value]="tipoPesquisa"  >
+            <select [(ngModel)]="tipoPesquisa"   [ngModelOptions]="{standalone: true}">
                 <option value="">Selecione a pesquisa</option>
                 <option value="{{pesquisa.id}}" *ngFor="let pesquisa of pesquisas">{{pesquisa.descricao}}</option>
               </select>
@@ -23,12 +23,12 @@
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-            <input type="text" [value]="descricaoproduto" style="text-transform: uppercase;" />
+            <input type="text" [(ngModel)]="descricaoproduto" style="text-transform: uppercase;" [ngModelOptions]="{standalone: true}"/>
         </label>
     </div>
     <div class="list">
         <label class="item item-input">    
-            <select [value]="marcaSelecionada"  >
+            <select [(ngModel)]="marcaSelecionada" [ngModelOptions]="{standalone: true}" >
                 <option value="">Selecione a marca</option>
                 <option value="{{marca.inf_marca}}" *ngFor="let marca of marcas">{{marca.inf_marca}}</option>
               </select>
@@ -36,14 +36,14 @@
     </div>
     <div class="list">
         <label class="item item-input">           
-            <select [value]="tipoSelecionado"  >
+            <select [(ngModel)]="tipoSelecionado"  [ngModelOptions]="{standalone: true}">
                 <option value="">Selecione o tipo</option>
                 <option value="{{tipo.inf_produto}}" *ngFor="let tipo of tiposProduto">{{tipo.inf_produto}}</option>
               </select>
         </label>
     </div>
     <ion-list>
-        <ion-checkbox [value]="produtoEmPromocao" ng-true-value="'S'">Apenas Produtos em Promoção</ion-checkbox>
+        <ion-checkbox [(ngModel)]="produtoEmPromocao" ng-true-value="'S'" [ngModelOptions]="{standalone: true}">Apenas Produtos em Promoção</ion-checkbox>
     </ion-list>
     <button class="button button-block button-assertive activated" (click)="filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa);">Filtrar</button>
     <button class="button button-block" (click)="limparFiltro();">Limpar</button>

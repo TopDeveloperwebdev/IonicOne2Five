@@ -35,7 +35,9 @@
               [class]="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}</b>
           </span>
 
-                    <span class="item-note" style="font-size: 18px; text-align: right;">
+                    <span class="item-note" style="font-size: 18px; text-align: right;position: absolute;
+                    right: 11px;
+                    bottom: 5px;">
             <small style="color: red; text-decoration: line-through; font-size: 12px;"
             *ngIf="(produto.produtoempromocao == 'S')">
               {{produto.precopadrao| currency:"R$"}}
@@ -44,12 +46,6 @@
               [class]="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela | currency:"R$"}}</b>
           </span>
                 </ion-row>
-
-
-                <!-- <ion-item-options class="button-assertive" (click)="comissoes(produto.produto_id);">
-                Comissões
-            </ion-item-options> -->
-
             </ion-item>
             <ion-item-options side="end">
                 <ion-item-option class="button-assertive" (click)="comissoes(produto.produto_id);" color="danger">Commisoes

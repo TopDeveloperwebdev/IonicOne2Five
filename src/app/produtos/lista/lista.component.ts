@@ -3,7 +3,8 @@ import { dataService } from '../../services/data.service';
 import { ModalController, LoadingController, AlertController } from '@ionic/angular';
 import { DetalhesComponent } from '../detalhes/detalhes.component';
 import { FiltroComponent } from '../filtro/filtro.component';
-import { DBService } from '../../services/DB.service'
+import { DBService } from '../../services/DB.service';
+import { ComissoesComponent } from '../comissoes/comissoes.component'
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.component.html',
@@ -61,6 +62,7 @@ export class ListaComponent implements OnInit {
       message: 'Aguarde!'
     });
     loading.present();
+    let self = this;
     this.tabelas = await this.db.tabela.toArray();
     this.tabela_id = this.tabelas[0].tabela_id;
 
@@ -77,7 +79,27 @@ export class ListaComponent implements OnInit {
 
     this.tipoPesquisa = this.pesquisas[0].id;
     this.ListaProdutos(this.filtro).then(res => {
-      this.listaProdutosDataservice = res;
+      let produtos;
+      produtos = res;
+
+      this.listaProdutosDataservice = produtos.map(function (produto, index) {
+        var p;
+        p = produto;
+
+        p.precotabela = "";
+        self.db.produto_tabela.where('[produto_id+tabela_id]')
+          .equals([p.produto_id, self.tabela_id.toString()])
+          .first()
+          .then(function (res) {
+            if (res && res.precotabela) {
+              p.precotabela = self.toNumber(res.precotabela);
+            }
+            return p;
+
+          });
+        return p;
+      });
+
       this.pushProducts(this.page_limit);
       loading.dismiss();
     },
@@ -86,8 +108,13 @@ export class ListaComponent implements OnInit {
         this.presentConfirm();
       })
   }
+  toNumber(string) {
+    var number = string.replace(/([.])/g, '');
+    return number.replace(',', '.');
+  }
   pushProducts(page_limit) {
     this.listaProdutos = this.listaProdutosDataservice.slice(0, page_limit);
+    console.log(';listaProdutos', this.listaProdutos);
   }
 
   async ListaProdutos(filtro) {
@@ -348,6 +375,23 @@ export class ListaComponent implements OnInit {
 
     }
   }
+  async Comissoes(produto_id) {
+    const modal = await this.modalCtrl.create({
+      component: ComissoesComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'produto_id': produto_id,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        let producto = data['data'];
+
+      });
+
+    return await modal.present();
+  }
 
   loadMore($event) {
     let self = this;
@@ -362,7 +406,7 @@ export class ListaComponent implements OnInit {
       }, 500);
     })
 
-  };
+  }
 
   async detalhes(product0) {
     const modal = await this.modalCtrl.create({

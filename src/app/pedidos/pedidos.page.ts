@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, ModalController, LoadingController } from '@ionic/angular';
-import { FiltroPedidosComponent } from './filtro-pedidos/filtro-pedidos.component';
+import { FiltroComponent } from './filtro/filtro.component'
 import { DBService } from '../services/DB.service';
+import { promise } from 'protractor';
 
 @Component({
   selector: 'app-pedidos',
@@ -18,97 +19,102 @@ export class PedidosPage implements OnInit {
   pedidostodos: any;
   executaFiltro: any;
   db: any;
-
+  pedidostodosLength = 0;
   constructor(
     public dbService: DBService,
     public navCtl: NavController,
     public modalController: ModalController,
     public loadCtrl: LoadingController) {
     this.db = dbService;
+    this.pedidostodos = [];
   }
 
   async ngOnInit() {
+
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
     let self = this;
-    self.pedidostodos = [];
+
     self.executaFiltro = true;
-    this.listaPedidosTodos().then(function (res) {
-      self.pedidostodos = res;
-      loading.dismiss();
-    });
+    let filtro = {};
+    self.pedidostodos = await this.listaPedidosTodos(filtro);
+
+    loading.dismiss();
 
 
   }
 
-  async listaPedidosTodos() {
+  async listaPedidosTodos(filtro) {
     var prodArray = [];
     let self = this;
     let tempPedidos = [];
-    self.db.pedido
-      .orderBy("data_entrega")
-      .desc()
-      .toArray()
-      .then(function (pedidos) {
-        pedidos.map((pedido) => {         
-          var p;
-          p = pedido;
+    return new Promise((resolve, reject) => {
+      self.db.pedido
+        .orderBy("data_entrega")
+        .desc()
+        .toArray()
+        .then(function (pedidos) {
+          pedidos.map((pedido, index) => {
+            var p;
+            p = pedido;
+            if (!p.hasOwnProperty("enviado")) {
+              p.enviado = "S";
+            }
+            if (!p.hasOwnProperty("enviado")) {
+              p.enviado = "S";
+            }
 
-          // if (!p.hasOwnProperty("enviado")) {
-          //   p.enviado = "S";
-          // }
-          // if (!p.hasOwnProperty("enviado")) {
-          //   p.enviado = "S";
-          // }
-        
-          // self.db.clientes.toArray()
-          //   .where("cli_id")
-          //   .equals(p.cliente_id)
-          //   .first()
-          //   .then(function (res) {             
-          //     if (res.hasOwnProperty("cli_razaosocial")) {
-          //       p.nomecliente = res.cli_razaosocial;
-          //     } else {
-          //       p.nomecliente = res.cli_fantasia;
-          //     }
+            self.db.clientes
+              .where("cli_id")
+              .equals(p.cliente_id)
+              .first()
+              .then(function (res) {
+                if (res.hasOwnProperty("cli_razaosocial")) {
+                  p.nomecliente = res.cli_razaosocial;
+                } else {
+                  p.nomecliente = res.cli_fantasia;
+                }
 
-          //     var entrega = p.data_entrega.split(" ");
-          //     p.data_entrega = entrega[0];
-          //     tempPedidos.push(p);
-          //   });
-            
-        });
-        tempPedidos = self.filterItems(self.filtro, pedidos);
-      
-        return new Promise((resolve, reject) => {
-          return resolve(tempPedidos);
+                var entrega = p.data_entrega.split(" ");
+                p.data_entrega = entrega[0];
+                tempPedidos.push(p);
+                if (pedidos.length - 1 == index) {
+
+
+                  self.filterItems(filtro, tempPedidos).then(res => {
+                    return resolve(res);
+                  })
+
+                }
+              });
+          });
         })
-      });
+    });
 
   }
 
-
-  filterItems(filtro, pedidostodos) {
+  async filterItems(filtro, res) {
     const self = this;
-    const filters = pedidostodos.filter(function (where) {
-      const comando = [];
-      let cData;
-      let dateRange = true;
+
+    console.log('res', res);
+
+    let resultItems = res.filter(function (where) {
+      let dateRange;
+      let dataInicio = Date.parse(filtro.inicio);
+      let dataFim = Date.parse(filtro.fim);
+      let datatipo_pedido = filtro.tipo_pedido;
+      let datasituacao = filtro.situacao;
+      dateRange = true;
       let tipo_pedido = true;
       let situacao = true;
+      let enviado = false;
       if (filtro.hasOwnProperty('inicio')) {
-        let dataInicio = Date.parse(filtro.inicio);
-        let dataFim = Date.parse(filtro.fim);
-        if (cData === 'C') {
-          dateRange = (Date.parse(where.data_gravacao + ' 00:00:00') >=
-            dataInicio && Date.parse(where.data_gravacao + ' 00:00:00') <= dataFim)
-        } else {
-          dateRange = (Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') >=
-            dataInicio && Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') <= dataFim)
-        }
-        comando.push(dateRange);
+        dateRange = (Date.parse(where.data_gravacao) >= dataInicio && Date.parse(where.data_gravacao) <= dataFim)
+      }
+      if (filtro.hasOwnProperty('fim')) {
+        dateRange = (Date.parse(where.data_entrega) >= dataInicio && Date.parse(where.data_entrega) <= dataFim)
       }
       if (filtro.hasOwnProperty('tipo_pedido')) {
         tipo_pedido = (where.tipo_pedido == filtro.tipo_pedido);
@@ -116,10 +122,20 @@ export class PedidosPage implements OnInit {
       if (filtro.hasOwnProperty('situacao')) {
         situacao = (where.situacao == filtro.situacao);
       }
-      return (dateRange && tipo_pedido && situacao)
+      if (where.hasOwnProperty('enviado') && where.enviado == 'N') {
+        enviado = true;
+      } else if (where.hasOwnProperty('enviado') && where.enviado == 'S' && Date.parse(Date()) == Date.parse(where.data_gravacao.substring(0, 10))) {
+        enviado = true;
+      }
+      return (dateRange && tipo_pedido && situacao && enviado);
+
     });
-    return filters;
-  };
+
+    return new Promise((resolve, reject) => {
+      return resolve(resultItems);
+    })
+
+  }
   tipoPedidoFilter(input) {
     const tipos = [
       { codigo: 'P', nome: 'Pedido' },
@@ -156,8 +172,9 @@ export class PedidosPage implements OnInit {
     this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido, 'nomecliente': nomecliente }]);
   };
   async filter() {
+
     const modal = await this.modalController.create({
-      component: FiltroPedidosComponent,
+      component: FiltroComponent,
       cssClass: 'my-custom-class',
       componentProps: {
         'filtro': this.filtro,
@@ -166,8 +183,8 @@ export class PedidosPage implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        this.filtro = data['data']; // Here's your selected user!
-        this.listaPedidosTodos();
+        let filtro = data['data']; // Here's your selected user!
+        this.listaPedidosTodos(filtro);
       });
 
     return await modal.present();

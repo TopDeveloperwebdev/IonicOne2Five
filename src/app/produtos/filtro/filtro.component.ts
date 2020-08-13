@@ -17,17 +17,19 @@ export class FiltroComponent implements OnInit {
   descricaoproduto = '';
   marcaSelecionada: any;
   tipoSelecionado: any;
-  filtro  : any;
+  filtro: any;
   produtoEmPromocao = '';
   constructor(public modalController: ModalController, public dbService: DBService) {
     this.db = dbService;
+    this.filtro = {};
   }
 
   ngOnInit() {
     let self = this;
+    
     this.db.tabela.toArray().then(function (tabelas) {
       self.tabelas = tabelas;
-      self.tabela_id = tabelas[0].tabela_id;
+      self.tabela_id = tabelas.tabela_id;
     });
     self.db.marcas_produto.toArray().then(function (res) {
       self.marcas = res;
@@ -60,8 +62,8 @@ export class FiltroComponent implements OnInit {
     this.modalController.dismiss(this.filtro);
   }
   filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {
-    console.log('ffffffff' ,tipoPesquisa);
-    
+    console.log('ffffffff', this.filtro);
+  
 
     if (marcaSelecionada != null) {
       this.filtro.inf_marca = marcaSelecionada;
@@ -79,12 +81,14 @@ export class FiltroComponent implements OnInit {
       this.filtro.descricaoproduto = descricaoproduto.toUpperCase();
     }
 
-    this.filtro.tipoPesquisa = tipoPesquisa;
-    console.log('fioltro' , this.filtro);
-    debugger;
+    this.filtro.tipoPesquisa = tipoPesquisa;    
     this.dismiss(this.filtro);
 
   }
 
+  mudarTabelaPreco = function (tabela_id) {
+    this.tabela_id = tabela_id;
+
+  }
 
 }

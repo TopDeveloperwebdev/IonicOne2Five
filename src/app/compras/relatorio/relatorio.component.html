@@ -3,19 +3,19 @@
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
     </button>
     </ion-menu-button>
-    <ion-title>Clientes</ion-title>
-    <button class="button close-btn" (click)="filter();">
+    <ion-title>Compas</ion-title>
+    <button class="button close-btn" (click)="filterModal();">
     <i class="ion-funnel "></i>
   </button>
 </ion-header>
 
 <ion-content class="padding">
     <h4 class="assertive">
-        <small>Quantidade: {{filtro.length}}</small>
+        <small>Quantidade: {{compras.length}}</small>
         <br />
-        <small>Total das Compras: {{totalCompras(filtro) | currency:'R$ '}}</small>
+        <small>Total das Compras: {{totalCompras(compras) | currency:'R$ '}}</small>
         <br />
-        <small>Total das Comissões: {{totalComissoes(filtro) | currency:'R$ '}}</small>
+        <small>Total das Comissões: {{totalComissoes(compras) | currency:'R$ '}}</small>
     </h4>
 
     <ion-list>

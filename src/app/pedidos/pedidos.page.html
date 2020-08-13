@@ -3,38 +3,44 @@
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
   </button>
     </ion-menu-button>
-    <ion-title>Produtos</ion-title>
-     <ion-menu-button side="primary">
-    <button class="button close-btn" (click)="filter(); ">
-        <i class="ion-funnel "></i>
-    </button>
-    </ion-menu-button>
+    <ion-title>Pedidos</ion-title>
+      <button class="button close-btn" (click)="filter();">
+    <i class="ion-funnel "></i>
+  </button>
 </ion-header>
     <ion-content class="padding">
         <h4 class="assertive">
-          <small>Quantidade de Pedidos: {{filtro.length}}</small>
+          <small>Quantidade de Pedidos: {{pedidostodos.length}}</small>
           <br />
-          <small>Total de Pedidos: {{totalPedidos(filtro) | currency:'R$ '}}</small>
+          <small>Total de Pedidos: {{totalPedidos(pedidostodos) | currency:'R$ '}}</small>
         </h4>
         <ion-list>
-            <ion-item ng-click="alterar(pedido, pedido.nomecliente);" *ngFor="let pedido of pedidostodos" >
-                
-                Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido| currency:'R$':2}}
-                
-                <p class="assertive">
+         <ion-item-sliding *ngFor="let pedido of pedidostodos">
+           
+              <ion-item (click)="alterar(pedido, pedido.nomecliente);"  >
+                <div>
+                    Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido| currency:'R$':2}}
+                     <div>
+                  <p class="assertive">
                     <b>Cliente:</b> {{pedido.nomecliente}}
                 </p>
-                <p>
-                    <small>{{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}</small>
-                </p>
-                <p>Tipo: {{pedido.tipo_pedido | tipoPedidoFilter}}</p>
-                <ion-option-button class="button-positive" ng-click="duplicarPedido(pedido)">
-                    Duplicar
-                </ion-option-button>
-                <ion-option-button class="button-assertive" ng-click="apagarPedido(pedido)">
-                    Apagar
-                </ion-option-button>
+                </div>
+                <div>
+                     <p>
+                         <small>{{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}</small>
+                    </p>
+                </div>
+                <div>
+                    <p>Tipo: {{pedido.tipo_pedido}}</p>    
+                </div>
+                </div>   
             </ion-item>
-            <ion-item class="assertive" ng-show="pedidos.length == 0">Não existem pedidos no sistema.</ion-item>
+
+            <ion-item-options side="end">
+                <ion-item-option class="button-positive" (click)="duplicarPedido(pedido)" >Duplicar</ion-item-option>
+                <ion-item-option class="button-assertive" color="danger" (click)="apagarPedido(pedido)" >Apagar</ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+            <ion-item class="assertive" *ngIf="!pedidostodos.length">Não existem pedidos no sistema.</ion-item>
         </ion-list>
     </ion-content>

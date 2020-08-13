@@ -12,6 +12,7 @@ export class InicioPage implements OnInit {
 
   usuario: any;
   userTable: Dexie.Table<any, number>;
+  vendedor_nome : '';
   // loading: any;
   constructor(
     private loadCtrl: LoadingController,
@@ -43,6 +44,7 @@ export class InicioPage implements OnInit {
       this.navCtl.navigateForward('login');
     }
     this.usuario = tempuser[0];
+    this.vendedor_nome = this.usuario.vendedor_nome;
     if (localStorage.getItem('sincronizar') == 'true') {
       if (this.conexaoService.conexaoOnline()) {
 

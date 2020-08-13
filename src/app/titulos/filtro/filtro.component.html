@@ -1,35 +1,45 @@
 <ion-header class="bar bar-header bar-assertive ">
     <ion-title class="filter-bar">Filtro de Titulos</ion-title>
-    <button class="button close-btn" (click)="dismiss()">
-    <i class="ion-close-round"></i>
-  </button>
+    <button class="button close-btn" (click)="dismiss({})">
+        <i class="ion-close-round"></i>
+    </button>
 </ion-header>
 <ion-content class="padding">
-    <form name="filtroTitulos">
+    <form #filtroTitulos="ngForm" novalidate id="filtroTitulos">
+
         <div class="list">
             <label class="item item-input mt-55">
-        <select [value]="filtro.situacao">
-          <option value="">Todos</option>
-          <option value="V">Vencidos</option>
-          <option value="A">A Vencer</option>
-        </select>
-      </label>
+                <select [(ngModel)]="filtro.situacao" name="situacao">
+                    <option value="">Todos</option>
+                    <option value="V">Vencidos</option>
+                    <option value="A">A Vencer</option>
+                </select>
+            </label>
+
             <label class="item item-input" ng-class="{'has-error': filtroTitulos.inicio.$invalid}">
-        <label style="font-size: 12px;">De: </label>
-            <input type="date" name="inicio" [value]="filtro.inicio" ng-required="filtro.fim != null">
+                <label style="font-size: 12px;">De: </label>
+            <ion-input type="date" name="inicio" [(ngModel)]="filtro.inicio" required="{{filtro.fim != null}}" #inicio="ngModel"></ion-input>
             </label>
-            <div class="form-errors" ng-messages="filtroTitulos.inicio.$error">
+            <div class="form-errors" *ngIf="inicio.hasError()">
                 <div class="form-error" ng-message="required">Campo Obrigatório</div>
             </div>
+
             <label class="item item-input">
-        <label style="font-size: 12px;">Até: </label>
-            <input type="date" name="fim" [value]="filtro.fim" ng-required="filtro.inicio != null">
+                <label style="font-size: 12px;">Até: </label>
+            <ion-input type="date" name="fim" [(ngModel)]="filtro.fim" [required]="filtro.inicio != null" #fim="ngModel">
+            </ion-input>
             </label>
-            <div class="form-errors" ng-messages="filtroTitulos.fim.$error">
+            <div class="form-errors" *ngIf="inicio.hasError()">
                 <div class="form-error" ng-message="required">Campo Obrigatório</div>
             </div>
+
         </div>
-        <button class="button button-block button-assertive activated" ng-disabled="filtroTitulos.$invalid" ng-click="filtrarTitulos(filtro);">Filtrar
-    </button>
+
+
+        <button class="button button-full button-assertive" (click)="filtrarTitulos(filtroTitulos)" [disabled]="!filtroTitulos.valid" type="submit">
+            Filtrar
+        </button>
+
+
     </form>
 </ion-content>

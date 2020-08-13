@@ -3,7 +3,8 @@ import { AuthService } from '../services/auth.service';
 import { NavController, Platform, AlertController, ModalController, MenuController, LoadingController, ToastController } from '@ionic/angular';
 import { ConexaoService } from '../services/conexao.service';
 import { DBService } from '../services/DB.service';
-
+import { NgForm } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -50,7 +51,7 @@ export class LoginPage implements OnInit {
     });
     toast.present();
   }
-  async Login() {
+  async Login(form: NgForm) {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
@@ -104,10 +105,10 @@ export class LoginPage implements OnInit {
             loading.dismiss();
             navigator['app'].exitApp();
           } 
-          // else if (res['download_aplicativo'] === 'S') {
-          //   loading.dismiss();
-          //   this.presentToast('Você já fez o download em outro aparelho.');
-          // }
+          else if (res['download_aplicativo'] === 'S') {
+            loading.dismiss();
+            this.presentToast('Você já fez o download em outro aparelho.');
+          }
            else {
             this.userTable.add(res);
             localStorage.setItem('sincronizar', 'true');

@@ -3,16 +3,15 @@
 			<div class="logo-login">
 				<img src="../assets/img/LOGO_APP.png" />
 			</div>
-			<form name="formLogin" class="padding">
+			<form #formLogin="ngForm" novalidate name="formLogin" class="padding">
 	      <label class="item item-input">
-	        <input type="text" placeholder="Usuário"  ng-required="true" autofocus="true" [(ngModel)]="login" name="login">
+	        <ion-input type="text" placeholder="Usuário"  required autofocus="true" [(ngModel)]="login" name="login" ></ion-input>
 	      </label>
 	      <label class="item item-input">
-	        <input type="password" placeholder="Senha"  ng-required="true" [(ngModel)]="Senha" name="Senha">
+	        <input type="password" placeholder="Senha"  required [(ngModel)]="Senha" name="Senha">
 	      </label>
-				<button class="button button-block button-assertive"
-							  (click)="Login()"
-								ng-disabled="formLogin.$invalid">
+				<button class="button button-block button-assertive" 
+							 (click)="Login(formLogin)" type="submit" [disabled]="!formLogin.valid">
 	        Login
 	      </button>
 			</form>

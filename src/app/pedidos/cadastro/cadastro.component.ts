@@ -5,7 +5,7 @@ import { DBService } from '../../services/DB.service';
 import { AddProdutoComponent } from '../add-produto/add-produto.component'
 import { Geolocation } from '@ionic-native/geolocation/ngx'
 import { Guid } from 'guid-typescript';
-
+import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
 
 @Component({
   selector: 'app-cadastro',
@@ -77,8 +77,8 @@ export class CadastroComponent implements OnInit {
     let self = this;
     self.nomecliente = self.route.snapshot.params['nomecliente'];
     let pedido = JSON.parse(self.route.snapshot.params['pedido']);
+    self.cliente = {};
 
-    self.cliente = pedido;
 
     let dataHora = pedido.data_entrega.split(" ");
 
@@ -96,9 +96,9 @@ export class CadastroComponent implements OnInit {
     }
 
     self.getItensPedido(pedido_id).then(res => {
-      this.itens = res;
-      console.log('sdf', this.itens);
-      this.pedido.codigo_tabela_preco = this.tabelas.tabela_id;
+      self.itens = res;
+      console.log('sdf', self.itens);
+      self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
       this.loadingStart.dismiss();
     }, error => {
       this.loadingStart.dismiss();
@@ -260,8 +260,9 @@ export class CadastroComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        let producto = data['data']; // Here's your selected user!
-        this.itens.push(producto);
+        // Here's your selected user!
+        this.itens = data['data'].itens;
+        this.pedido = data['data'].pedido;
       });
 
     return await modal.present();
@@ -275,10 +276,6 @@ export class CadastroComponent implements OnInit {
         {
           text: 'Sim',
           cssClass: 'Yes button button-assertive',
-          handler: (e) => {
-            console.log('Confirm Cancel');
-            this.navCtrl.back();
-          }
         },
         {
           text: "Não",
@@ -287,7 +284,7 @@ export class CadastroComponent implements OnInit {
       ]
     });
     await alert.present();
-  };
+  }
   async alert(header, message) {
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
@@ -353,57 +350,84 @@ export class CadastroComponent implements OnInit {
       pedidoObj.pedido_id = id;
     }
 
-    // pedidoObj.data_entrega = $filter("date")(
-    //   pedido.data_entrega,
-    //   "yyyy-MM-dd"
-    // );
+    pedidoObj.data_entrega = pedido.data_entrega;
 
     pedidoObj.vendedor_id = this.db.table('usuario').vendedor_id;
     pedidoObj.urgente = pedido.urgente == true ? "S" : "N";
-    //pedidoObj.data_gravacao = $filter("date")(new Date(), "yyyy-MM-dd");
-    //pedidoObj.hora_gravacao = $filter("date")(new Date(), "HH:mm:ss");
+    pedidoObj.data_gravacao = new Date();
+    pedidoObj.hora_gravacao = new Date();
     pedidoObj.enviado = "N";
     pedidoObj.latitude_gravacao = lat;
     pedidoObj.longitude_gravacao = lng;
 
-
+    let self = this;
     const loading = await this.loadCtrl.create({
       message: 'Salvando Pedido. Aguarde'
     });
     loading.present();
-    this.db.transaction("rw", this.db.pedido, this.db.itempedido, function () {
-      this.db.pedido.put(pedidoObj);
-      this.db.itempedido
-        .where("pedido_id")
-        .equals(pedidoObj.pedido_id)
-        .delete()
-        .then(function () {
-          itens.map(function (value) {
-            var itempedido;
-            itempedido.item_id = Guid.create();
-            itempedido.pedido_id = isNaN(pedidoObj.pedido_id) ?
+    this.db.pedido.put(pedidoObj);
+    this.db.itempedido
+      .where("pedido_id")
+      .equals(pedidoObj.pedido_id)
+      .delete()
+      .then(function () {
+        itens.map(function (value) {
+          var itempedido;
+          let id = Guid.create()['value'];
+          itempedido = {
+            item_id: id,
+            pedido_id: pedidoObj.pedido_id ?
               pedidoObj.cod_pedido_mob :
-              pedidoObj.pedido_id;
-            itempedido.codigo_produto = value.codigo_produto;
-            itempedido.descricao = value.descricao;
-            itempedido.quantidade = value.quantidade;
-            itempedido.preco_unitario_bruto = value.preco_unitario_bruto;
-            itempedido.desc_unitario_percentual =
-              value.desc_unitario_percentual;
-            itempedido.preco_unitario_comdesconto =
-              value.preco_unitario_comdesconto;
-            itempedido.valor_total_item = value.valor_total_item;
-            itempedido.enviado = "N";
-            this.db.itempedido.add(itempedido);
-          });
+              pedidoObj.pedido_id,
+            codigo_produto: value.codigo_produto,
+            descricao: value.descricao,
+            quantidade: value.quantidade,
+            preco_unitario_bruto: value.preco_unitario_bruto,
+            desc_unitario_percentual: value.desc_unitario_percentual,
+            preco_unitario_comdesconto: value.preco_unitario_comdesconto,
+            valor_total_item: value.valor_total_item,
+            enviado: "N"
+          };
+          self.db.itempedido.add(itempedido);
         });
-    }).then(function () {
-      loading.dismiss();
-      this.navCtl.navigateForward(['pedidos/lista', { 'cliente_id': pedido.cliente_id, 'nomecliente': '' }]);
-    })
-      .catch(function (error) {
+      }).then(function () {
+        loading.dismiss();
+        self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': pedido.cliente_id, 'nomecliente': '' }]);
+      }).catch(function (error) {
+        console.log('erro', error);
         loading.dismiss();
       });
+  }
+  alterarProdutoPedido(produto, index) {
+    let produtoEscolhido = produto;
+    // produtoEscolhido.quantidade = parseFloat(
+    //   produtoEscolhido.quantidade
+    // );
+    this.confirmarProduto(produtoEscolhido, index);
+  }
+
+  async confirmarProduto(produtoEscolhido, index) {    
+    const modal = await this.modalCtrl.create({
+      component: ConfirmaProdutoComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'produtoEscolhido': produtoEscolhido,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        let producto = data['data'];
+        this.itens[index] = producto;
+      });
+
+    return await modal.present();
+  }
+  apagarProdutoPedido(index) {   
+    var listaItens = this.itens;
+    this.itens = listaItens.filter(function (element, i) {    
+      if (i != index) return element;
+    });   
   }
 
   salvar(pedido, itens) {
@@ -412,6 +436,7 @@ export class CadastroComponent implements OnInit {
     if (!itensCount || itensCount == 0) {
       return;
     }
+
     var valor_pedido;
     valor_pedido = parseFloat(pedido.total_pedido);
     var valor_min_pedido;

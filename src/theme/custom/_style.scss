@@ -23,6 +23,26 @@
     right: 10px;
 }
 
+.alert-button-group {
+    justify-content: space-around !important;
+    width: 100% !important;
+    color: black;
+    .button {
+        width: 30% !important;
+    }
+    .No {
+        color: #000;
+    }
+}
+
+.item-native {
+    min-height: 70px !important;
+}
+
+.list-md {
+    padding-top: 55px;
+}
+
 .alert-wrapper.sc-ion-alert-md {
     width: 57% !important;
     background: #ffffffe0 !important;

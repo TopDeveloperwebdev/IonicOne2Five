@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DBService } from '../../services/DB.service';
 import { ItensComponent } from '../itens/itens.component';
-import { ModalController } from '@ionic/angular'
+import { ModalController } from '@ionic/angular';
+import { FiltroComponent } from '../filtro/filtro.component';
 
 @Component({
   selector: 'app-relatorio',
@@ -20,58 +21,54 @@ export class RelatorioComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.compras = [];
+    this.filtro = {};
+    this.Init(this.filtro);
+
+  }
+  Init(filtro) {
     let self = this;
-    self.filtro = {};
-    self.getCompras(this.filtro).then(res => {
+    self.getCompras(filtro).then(res => {   
       self.comprasDataservice = res;
       self.pushClients(this.page_limit);
     })
   }
 
-  getCompras(filtro) {
-    var DB_Compras = this.db.compras;
-    this.db.compras.count().then(function (count) {
-      if (filtro.hasOwnProperty('responsavel_id') && filtro.hasOwnProperty('inicio')) {
-        DB_Compras = this.db.compras
-          .where('compras_responsavel_id')
-          .equals(filtro.responsavel_id)
-          .filter(function (list) {
-            return this.filter(list, filtro.inicio, filtro.fim);
-          });
-      } else if (filtro.hasOwnProperty('responsavel_id')) {
-        DB_Compras = this.db.compras
-          .where('compras_responsavel_id')
-          .equals(filtro.responsavel_id);
-      } else if (filtro.hasOwnProperty('inicio')) {
-        DB_Compras = this.db.compras
-          .filter(function (list) {
-            return this.filter('comprasFilter')(list, filtro.inicio, filtro.fim);
-          });
-      } else {
-        DB_Compras = this.db.compras;
+  async getCompras(filtro) {
+    let res = await this.db.compras.toArray();
+    let tempItems;
+    tempItems = res.filter(function (where) {
+      let dateRange;
+      let dataInicio = Date.parse(filtro.inicio);
+      let dataFim = Date.parse(filtro.fim);
+      let dataResponsavel_id = filtro.responsavel_id;
+      let responsavel_id = true;
+      dateRange = true;
+      if (filtro.hasOwnProperty('inicio')) {
+        dateRange = (Date.parse(where.compras_datacompra) >= dataInicio && Date.parse(where.compras_datacompra) <= dataFim)
       }
+      if (filtro.hasOwnProperty('responsavel_id')) {
+        responsavel_id = (where.compras_responsavel_id == dataResponsavel_id)
+      }
+      return dateRange && responsavel_id;
     });
-    return new Promise((resolve, reject) => {
-      return resolve(DB_Compras.toArray())
-    })
 
+    return new Promise((resolve, reject) => {
+      return resolve(tempItems)
+    })
   }
+
   filter(input, inicio, fim) {
     var dataInicio = Date.parse(inicio);
     var dataFim = Date.parse(fim);
-    var dataHoje = new Date();
+
     if (typeof input != 'undefined' && typeof inicio != 'undefined') {
-
-      if (Date.parse(input.compras_datacompra) >= dataInicio &&
+      return (Date.parse(input.compras_datacompra) >= dataInicio &&
         Date.parse(input.compras_datacompra) <= dataFim
-      ) {
-        return input;
-      }
-
+      );
     } else {
-      return input;
+      return true
     }
-
   }
 
   totalCompras(filtro) {
@@ -141,6 +138,20 @@ export class RelatorioComponent implements OnInit {
       .then((data) => {
         let producto = data['data'];
 
+      });
+
+    return await modal.present();
+  }
+  async filterModal() {
+    let self = this;
+    const modal = await this.modalCtrl.create({
+      component: FiltroComponent,
+      cssClass: 'my-custom-class',
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+        let filtro = data['data'];
+        self.Init(filtro);
       });
 
     return await modal.present();

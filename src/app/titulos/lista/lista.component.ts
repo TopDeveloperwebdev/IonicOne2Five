@@ -26,6 +26,7 @@ export class ListaComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.filtro = {};
     this.listaPedidos(this.filtro);
   }
   async listaPedidos(filtro) {
@@ -35,36 +36,41 @@ export class ListaComponent implements OnInit {
         .where('cliente_id')
         .equals(Number(self.cliente_id))
         .toArray();
+
+      this.filterItems(filtro);
     } else {
+
       self.items = await this.db.titulo.toArray();
-    }   
+      console.log('items', self.items);
+      this.filterItems(filtro);
+    }
   }
 
   filterItems(filtro) {
     const self = this;
-    // const filters = self.items.filter(function (where) {
-    //   const comando = [];
-    //   let cData;
-    //   let dateRange = true;
-    //   let tipo_pedido = true;
-    //   let situacao = true;
-    //   if (filtro.hasOwnProperty('inicio')) {
-    //     let dataInicio = Date.parse(filtro.inicio);
-    //     let dataFim = Date.parse(filtro.fim);
-    //     if (cData === 'C') {
-    //       dateRange = (Date.parse(where.data_gravacao + ' 00:00:00') >=
-    //         dataInicio && Date.parse(where.data_gravacao + ' 00:00:00') <= dataFim)
-    //     } else {
-    //       dateRange = (Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') >=
-    //         dataInicio && Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') <= dataFim)
-    //     }
-    //     comando.push(dateRange);
-    //   }     
-    //   return (dateRange)
-    // });
-    //self.items = filters;
-  };
+    let tempItems = self.items;
+    self.items = tempItems.filter(function (where) {
+      let dateRange;
+      let dataInicio = Date.parse(filtro.inicio);
+      let dataFim = Date.parse(filtro.fim);
+      let dataResponsavel_id = filtro.responsavel_id;
+      let responsavel_id = true;
+      dateRange = true;
+      if (filtro.hasOwnProperty('inicio')) {
+        dateRange = (Date.parse(where.dataemissao) >= dataInicio && Date.parse(where.dataemissao) <= dataFim)
+      }
+      if (filtro.hasOwnProperty('fim')) {
+        dateRange = (Date.parse(where.datavenciment) >= dataInicio && Date.parse(where.datavenciment.substring) <= dataFim)
+      }
+      if (filtro.hasOwnProperty('responsavel_id')) {
+        responsavel_id = (where.responsavel_id == dataResponsavel_id)
+      }
+      return dateRange && responsavel_id;
+    });
+
+  }
   async filter() {
+    let self = this;
     const modal = await this.modalController.create({
       component: FiltroComponent,
       cssClass: 'my-custom-class',
@@ -75,8 +81,9 @@ export class ListaComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        this.filtro = data['data']; // Here's your selected user!
-        this.listaPedidos(this.filtro);
+        self.filtro = data['data']; // Here's your selected user!
+
+        self.listaPedidos(self.filtro);
       });
 
     return await modal.present();

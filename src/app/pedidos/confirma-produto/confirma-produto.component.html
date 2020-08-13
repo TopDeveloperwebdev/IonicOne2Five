@@ -5,14 +5,14 @@
   </button>
 </ion-header>
 <ion-content>
-    <form name="addProdutoForm">
+    <form #addProdutoForm="ngForm" novalidate>
         <div class="list">
             <label class="item item-input mt-55">
-      
-        <select [value]="produtoEscolhido.comissao" (change)="selecionaComissao();"
-          ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true">
+
+        <select [(ngModel)]="produtoEscolhido.comissao" (change)="selecionaComissao();"
+          [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" name="comissao">
           <option value="">Selecione a Comissão</option>
-          <option [value]="toNumber(comissao.precoinicial)" *ngFor="let comissao of comissoes_produto">
+          <option [value]="toNumber(comissao.precoinicial)" *ngFor="let comissao of comissoes_produto">pristine
             De {{toNumber(comissao.precoinicial) }}
             a {{toNumber(comissao.precofinal)}} =>
             {{toNumber(comissao.comissao) }}%
@@ -21,53 +21,60 @@
       </label>
             <label class="item item-input item-stacked-label">
         <span class="input-label">Produto </span>
-        <input type="text" [value]="produtoEscolhido.descricao" readonly>
+        <ion-input type="text" [(ngModel)]="produtoEscolhido.descricao" readonly name="descricao"></ion-input>
       </label>
             <label class="item item-input item-stacked-label">
-        <span class="input-label">Desconto (%) <small
-            ng-if="addProdutoForm.desconto.$invalid && !addProdutoForm.desconto.$pristine" style="color: red;">deve ser
-            menor que ({{descontoPermitido}}%)</small></span>
-        <input type="phone" ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true"
-          ng-keyup="calculaDesconto(addProdutoForm);" name="desconto" ui-number-mask
-          [value]="produtoEscolhido.desc_unitario_percentual">
+        <ion-input type="phone" [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true"
+          *ngIf="calculaDesconto(addProdutoForm);" name="desconto" ui-number-mask
+          [(ngModel)]="produtoEscolhido.desc_unitario_percentual" #desconto="ngModel"></ion-input>
       </label>
             <label class="item item-input item-stacked-label">
-        <span class="input-label">Preço</span>
-        <input type="text" [value]="produtoEscolhido.preco_unitario_bruto" ui-money-mask="2" ng-disabled="true">
+        <span class="input-label">Preço </span>
+        <ion-input name="preco_unitario_bruto" type="text" [(ngModel)]="produtoEscolhido.preco_unitario_bruto"
+          ui-money-mask="2"></ion-input>
       </label>
             <label class="item item-input item-stacked-label">
         <span class="input-label">Acréscimo (%)</span>
-        <input type="phone" [value]="produtoEscolhido.acrescimo" ng-keyup="atualizarPreco(addProdutoForm);" ui-number-mask
-          ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true">
+        <ion-input name="acrescimo" type="phone" [(ngModel)]="produtoEscolhido.acrescimo"
+          (keyup)="atualizarPreco(addProdutoForm);" ui-number-mask
+          [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true"></ion-input>
       </label>
             <label class="item item-input item-stacked-label">
         <span class="input-label">Preço de Venda</span>
-        <input type="phone"  [value]="produtoEscolhido.preco_unitario_comdesconto" 
-          ng-disable="produtoEscolhido.promocao == 'S'" ng-blur="calculaPrecoComDesconto(addProdutoForm);"
-          ng-disabled="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" ui-money-mask="2">
+        <ion-input name="preco_unitario_comdesconto" type="phone"
+          [(ngModel)]="produtoEscolhido.preco_unitario_comdesconto" [disabled]="produtoEscolhido.promocao == 'S'"
+          (blur)="calculaPrecoComDesconto(addProdutoForm);"
+          [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" ui-money-mask="2">
+        </ion-input>
       </label>
             <!-- <label class="item item-input">
     <span class="input-label">Quantidade</span>
-    <input type="number" [value]="produtoEscolhido.quantidade" ng-keyup="atualizarPreco(addProdutoForm);">
+    <ion-input type="number" [(ngModel)]="produtoEscolhido.quantidade" ngIf="atualizarPreco(addProdutoForm);">
   </label> -->
             <div class="item item-input item-stacked-label">
                 <span class="input-label">Quantidade</span>
-                <h-number [value]="produtoEscolhido.quantidade" min="1" step="1" change="calculaPrecoPorQuantidade();"></h-number>
+                <ion-row class="h-number">
+                    <div (click)="Minus()">-</div>
+                    <ion-input [(ngModel)]="produtoEscolhido.quantidade" name="quantidade" min="1" step="1" type="number" (change)="calculaPrecoPorQuantidade();">
+                    </ion-input>
+                    <div (click)="Plus()">+</div>
+                </ion-row>
+
             </div>
             <label class="item item-input item-stacked-label">
         <span class="input-label">Total</span>
-        <input type="text" [value]="produtoEscolhido.valor_total_item" ui-money-mask="2" readonly>
+        <ion-input name="valor_total_item" type="text" [(ngModel)]="produtoEscolhido.valor_total_item" ui-money-mask="2"
+        readonly></ion-input>
       </label>
         </div>
-    </form>
-    <div class="padding">
+
         <button class="button button-block" (click)="maisDetalhesProduto()">
       <i class="icon ion-search"></i>
       Mais Detalhes
     </button>
-        <button class="button button-block button-assertive" ng-disabled="addProdutoForm.$invalid" (click)="confirmaProdutoPedido(produtoEscolhido);">
+        <button class="button button-block button-assertive" [disabled]="!addProdutoForm.valid" (click)="confirmaProdutoPedido(addProdutoForm)">
       <i class="icon ion-checkmark"></i>
       Confirmar
     </button>
-    </div>
+    </form>
 </ion-content>
