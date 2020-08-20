@@ -6,23 +6,23 @@
 </ion-header>
 
 <ion-content style="background: #f0f0f0;">
-    <!-- <h4 class="assertive padding">
+    <h4 class="assertive padding">
         {{nomecliente}}
-        <div ng-if="cliente" style="color: grey;">
+        <div *ngIf="cliente" style="color: grey;">
             <small>
-        Limite de crédito: {{cliente.trava_limite_credito ? cliente.cli_limitecredito:'sem limite'}}<br>
-        <span ng-if="limiteDisponivel(cliente)-totalPedidos(pedidos)<0">Limite disponível:
+        Limite de crédito: {{cliente.trava_limite_credito ? cliente.cli_limitecredito : 'sem limite'}}<br>
+        <span *ngIf="limiteDisponivel(cliente) - totalPedidos(pedidos) < 0">Limite disponível:
           {{ cliente.trava_limite_credito ? '0.00':'sem limite' }}</span>
-        <span ng-if="limiteDisponivel(cliente)-totalPedidos(pedidos)>=0">Limite disponível:
-          {{ cliente.trava_limite_credito ? (limiteDisponivel(cliente)-totalPedidos(pedidos)).toFixed(2):'sem limite' }}</span>
+        <span *ngIf="limiteDisponivel(cliente) - totalPedidos(pedidos) >= 0">Limite disponível:
+          {{ cliente.trava_limite_credito?(limiteDisponivel(cliente)-totalPedidos(pedidos)).toFixed(2):'sem limite' }}</span>
       </small>
         </div>
-    </h4> -->
+    </h4>
 
-    <!-- <div ng-if="cliente" style="font-size: 7pt; color: grey; line-height: 10pt; font-weight: 500; padding: 4px 12px; border-bottom: 1px solid lightgrey; margin: 0 4px;">
-        Total de Pedidos: {{totalPedidos(pedidos) | currency:'R$ '}}<br> Títulos à vencer: {{cliente.cli_totaltitulosavencer}}
+    <div *ngIf="cliente" style="font-size: 7pt; color: grey; line-height: 10pt; font-weight: 500; padding: 4px 12px; border-bottom: 1px solid lightgrey; margin: 0 4px;">
+        Total de Pedidos: {{totalPedidos(pedidos) | currency:'R$' : 'symbol'}}<br> Títulos à vencer: {{cliente.cli_totaltitulosavencer}}
         <br> Títulos vencidos: {{cliente.cli_totaltitulosvencidos}}<br>
-    </div> -->
+    </div>
 
     <form name="formPedido">
         <h4 class="assertive padding">Capa</h4>
@@ -123,7 +123,8 @@
                     </ion-item>
                     <ion-item-options side="end">
                         <ion-item-option class="button-positive" (click)="alterarProdutoPedido(item , i)">Alterar</ion-item-option>
-                        <ion-item-option class="button-assertive" color="danger" (click)="apagarProdutoPedido(i)">Apagar</ion-item-option>
+                        <ion-item-option class="button-assertive" color="danger" (click)="apagarProdutoPedido(i)">Apagar
+                        </ion-item-option>
                     </ion-item-options>
                 </ion-item-sliding>
             </ion-list>

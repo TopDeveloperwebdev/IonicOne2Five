@@ -4,7 +4,7 @@ import { LoadingController, AlertController, ModalController, NavController } fr
 import { DBService } from '../../services/DB.service';
 import { AddProdutoComponent } from '../add-produto/add-produto.component'
 import { Geolocation } from '@ionic-native/geolocation/ngx'
-import { Guid } from 'guid-typescript';
+
 import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
 
 @Component({
@@ -29,6 +29,7 @@ export class CadastroComponent implements OnInit {
   db: any;
   cliente_id: any;
   loadingStart: any;
+  limit: any;
   pedidos: []
   constructor(
     public route: ActivatedRoute,
@@ -72,19 +73,17 @@ export class CadastroComponent implements OnInit {
     } else {
       this.editPedios();
     }
+   
+
   }
   editPedios() {
     let self = this;
     self.nomecliente = self.route.snapshot.params['nomecliente'];
     let pedido = JSON.parse(self.route.snapshot.params['pedido']);
     self.cliente = {};
-
-
     let dataHora = pedido.data_entrega.split(" ");
-
-
     pedido.data_entrega = dataHora[0];
-    self.pedido = pedido;
+
 
     pedido.urgente = pedido.urgente == "S" ? true : false;
     let pedido_id;
@@ -94,7 +93,8 @@ export class CadastroComponent implements OnInit {
     } else {
       pedido_id = pedido.pedido_id;
     }
-
+    self.pedido = pedido;
+    console.log('selfp', self.pedido);
     self.getItensPedido(pedido_id).then(res => {
       self.itens = res;
       console.log('sdf', self.itens);
@@ -141,6 +141,7 @@ export class CadastroComponent implements OnInit {
             self.loadingStart.dismiss();
           }
         }
+       
 
       });
   }
@@ -339,12 +340,25 @@ export class CadastroComponent implements OnInit {
     });
     await alert.present();
   }
+
+  totalPedidos(filtro) {
+    if (typeof filtro != "undefined" && filtro.length > 0) {
+      var total = 0.0;
+      for (var i in filtro) {
+        total += parseFloat(filtro[i].total_pedido);
+      }
+
+      return total.toFixed(2);
+    } else {
+      return 0;
+    }
+  }
+
   //////// get result 
 
   async gravarPedido(pedido, itens, lat, lng) {
     var pedidoObj = pedido;
-    var id = Guid.create();
-
+    var id = this.guid();
     if (pedido.cod_pedido_mob == null) {
       pedidoObj.cod_pedido_mob = id;
       pedidoObj.pedido_id = id;
@@ -373,7 +387,8 @@ export class CadastroComponent implements OnInit {
       .then(function () {
         itens.map(function (value) {
           var itempedido;
-          let id = Guid.create()['value'];
+
+          let id = this.guid();
           itempedido = {
             item_id: id,
             pedido_id: pedidoObj.pedido_id ?
@@ -406,7 +421,7 @@ export class CadastroComponent implements OnInit {
     this.confirmarProduto(produtoEscolhido, index);
   }
 
-  async confirmarProduto(produtoEscolhido, index) {    
+  async confirmarProduto(produtoEscolhido, index) {
     const modal = await this.modalCtrl.create({
       component: ConfirmaProdutoComponent,
       cssClass: 'my-custom-class',
@@ -423,11 +438,11 @@ export class CadastroComponent implements OnInit {
 
     return await modal.present();
   }
-  apagarProdutoPedido(index) {   
+  apagarProdutoPedido(index) {
     var listaItens = this.itens;
-    this.itens = listaItens.filter(function (element, i) {    
+    this.itens = listaItens.filter(function (element, i) {
       if (i != index) return element;
-    });   
+    });
   }
 
   salvar(pedido, itens) {
@@ -472,16 +487,35 @@ export class CadastroComponent implements OnInit {
         this.gravarPedido(pedido, itens, null, null);
       })
     }
-  };
-
-
+  }
   limiteDisponivel(cliente) {
     return (
       cliente.cli_limitecredito -
       cliente.cli_totaltitulosvencidos -
       cliente.cli_totaltitulosavencer
     ).toFixed(2);
-  };
+  }
+  guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
 
+    return (
+      s4() +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      s4() +
+      s4()
+    );
+  }
 
 }

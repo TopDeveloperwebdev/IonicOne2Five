@@ -6,7 +6,7 @@ import { NavController, ModalController, ToastController, LoadingController, Ale
 import { FiltroComponent } from '../../pedidos/filtro/filtro.component';
 import { ConexaoService } from '../../services/conexao.service';
 import { dataService } from '../../services/data.service';
-import { Guid } from "guid-typescript"
+
 @Component({
   selector: 'app-pedidos',
   templateUrl: './pedidos.component.html',
@@ -89,13 +89,13 @@ export class PedidosComponent implements OnInit {
   filterItems(filtro) {
     const self = this;
     const filters = self.pedidos.filter(function (where) {
-      console.log('where' , where);
+      console.log('where', where);
       const comando = [];
       let cData = filtro.criterioData;
       let dateRange = true;
       let tipo_pedido = true;
       let situacao = true;
-      console.log('this.filto' , filtro);
+      console.log('this.filto', filtro);
       if (filtro.hasOwnProperty('inicio')) {
         let dataInicio = Date.parse(filtro.inicio);
         let dataFim = Date.parse(filtro.fim);
@@ -105,7 +105,7 @@ export class PedidosComponent implements OnInit {
         } else {
           dateRange = (Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') >=
             dataInicio && Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') <= dataFim)
-        }    
+        }
       }
       if (filtro.hasOwnProperty('tipo_pedido')) {
         tipo_pedido = (where.tipo_pedido == filtro.tipo_pedido);
@@ -148,16 +148,16 @@ export class PedidosComponent implements OnInit {
   }
   cadastro(cliente_id, nomecliente) {
     let totalPedidos = this.totalPedidos(this.pedidos);
-    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));    
+    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
     this.navCtl.navigateForward(['pedidos/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
-  alterar(p, nomecliente) {   
+  alterar(p, nomecliente) {
     let totalPedidos = this.totalPedidos(this.pedidos);
     localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
     let pedido = JSON.stringify(p);
     this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido, 'nomecliente': nomecliente }]);
   }
- 
+
   async filter() {
     const modal = await this.modalController.create({
       component: FiltroComponent,
@@ -207,7 +207,11 @@ export class PedidosComponent implements OnInit {
     }
   }
   async apagarPedidoAPP(pedido_id) {
-    return Promise.all([this.db.pedido.where("pedido_id").equals(pedido_id).delete(), this.db.itempedido.where("pedido_id").equals(pedido_id).delete()]);
+    return Promise.all(
+      [
+        this.db.pedido.where("pedido_id").equals(pedido_id).delete(),
+        this.db.itempedido.where("pedido_id").equals(pedido_id).delete()
+      ]);
   }
   async duplicarPedido(pedido) {
     let self = this;
@@ -216,7 +220,7 @@ export class PedidosComponent implements OnInit {
     });
     loading.present();
 
-    var novo_pedido_id = Guid.create();
+    var novo_pedido_id = this.guid();
     var novoPedido;
     var id_pedido;
 
@@ -235,11 +239,11 @@ export class PedidosComponent implements OnInit {
       .where("pedido_id")
       .equals(id_pedido)
       .toArray()
-      .then(function (res) {
-        res.map(function (item) {
+      .then(res => {
+        res.map(item => {
           var novoItem;
           novoItem = item;
-          novoItem.item_id = Guid.create();
+          novoItem.item_id = this.guid();
           novoItem.pedido_id = novo_pedido_id;
           novoItem.enviado = "N";
           self.db.table('itempedido').add(novoItem);
@@ -248,5 +252,29 @@ export class PedidosComponent implements OnInit {
         self.confirmAlert('Mensagem', 'Pedido duplicado com sucesso');
       });
   }
-};
+  guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+
+    return (
+      s4() +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      s4() +
+      s4()
+    );
+  }
+
+ 
+}
 
