@@ -32,6 +32,7 @@ export class ListaComponent implements OnInit {
   async listaPedidos(filtro) {
     const self = this;
     if (self.cliente_id) {
+
       self.items = await this.db.titulo
         .where('cliente_id')
         .equals(Number(self.cliente_id))
@@ -39,36 +40,62 @@ export class ListaComponent implements OnInit {
 
       this.filterItems(filtro);
     } else {
-
       self.items = await this.db.titulo.toArray();
       console.log('items', self.items);
       this.filterItems(filtro);
     }
+    console.log('items', self.items);
   }
 
   filterItems(filtro) {
     const self = this;
     let tempItems = self.items;
     self.items = tempItems.filter(function (where) {
-      let dateRange;
       let dataInicio = Date.parse(filtro.inicio);
       let dataFim = Date.parse(filtro.fim);
-      let dataResponsavel_id = filtro.responsavel_id;
-      let responsavel_id = true;
-      dateRange = true;
-      if (filtro.hasOwnProperty('inicio')) {
-        dateRange = (Date.parse(where.dataemissao) >= dataInicio && Date.parse(where.dataemissao) <= dataFim)
+      let situacao = filtro.situacao;
+      let dataHoje = new Date().toDateString();
+      let filtroResult = false;
+      console.log('this.filtro' , filtro , (typeof filtro.inicio != 'undefined'), (typeof situacao != 'undefined') );
+   
+      if (typeof filtro.inicio != 'undefined' && typeof situacao != 'undefined') {
+        if (situacao == 'V') {        
+          if (Date.parse(where.datavencimento) >= dataInicio &&
+            Date.parse(where.datavencimento) <= dataFim &&
+            Date.parse(where.datavencimento) < Date.parse(dataHoje)) {
+            filtroResult = true;           
+          }
+        } else {
+          if (Date.parse(where.datavencimento) >= dataInicio &&
+            Date.parse(where.datavencimento) <= dataFim &&
+            Date.parse(where.datavencimento) >= Date.parse(dataHoje)) {
+              filtroResult = true;
+          }
+        }
+        console.log('filtroResult',filtroResult);
+      } else if (typeof filtro.inicio != 'undefined') {
+        if (Date.parse(where.datavencimento) >= dataInicio &&
+          Date.parse(where.datavencimento) <= dataFim) {
+          filtroResult = true;
+        }
+      } else if (typeof situacao != 'undefined') {
+        if (situacao == 'A') {
+          console.log('Date.parse(dataHoje)',Date.parse(dataHoje),Date.parse(where.datavencimento), where.datavencimento , dataHoje );
+          if (Date.parse(where.datavencimento) >= Date.parse(dataHoje)) {
+            filtroResult = true;
+          }
+        } else {
+          if (Date.parse(where.datavencimento) < Date.parse(dataHoje)) {
+            filtroResult = true;
+          }
+        }
+      } else {
+        filtroResult = true;
       }
-      if (filtro.hasOwnProperty('fim')) {
-        dateRange = (Date.parse(where.datavenciment) >= dataInicio && Date.parse(where.datavenciment.substring) <= dataFim)
-      }
-      if (filtro.hasOwnProperty('responsavel_id')) {
-        responsavel_id = (where.responsavel_id == dataResponsavel_id)
-      }
-      return dateRange && responsavel_id;
+      return filtroResult;
     });
-
   }
+
   async filter() {
     let self = this;
     const modal = await this.modalController.create({
@@ -101,4 +128,12 @@ export class ListaComponent implements OnInit {
     }
   }
 
+  verificaDataAtraso(data) {
+    var dataHoje = new Date().toDateString();
+    if (Date.parse(data) < Date.parse(dataHoje)) {
+      return 'assertive';
+    } else {
+      return '';
+    }
+  }
 }

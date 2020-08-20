@@ -18,16 +18,14 @@
 
     <ion-list>
         <ion-row class="item " *ngFor="let item of items ">
-            <b ng-class="verificaDataAtraso(item.datavencimento); ">Nº: </b>
-            <span ng-class="verificaDataAtraso(item.datavencimento); ">{{item.numerotitulo}}</span>
+            <b [class]="verificaDataAtraso(item.datavencimento)">Nº: </b>
+            <span [class]="verificaDataAtraso(item.datavencimento)">{{item.numerotitulo}}</span>
             <span class="item-note ">
                 {{item.valor | currency:"R$":"symbol"}}
             </span>
+
             <p>
-                <b>Cliente:</b> {{item.nomecliente}}
-            </p>
-            <p>
-                <span ng-class="verificaDataAtraso(item.datavencimento); ">
+                <span [class]="verificaDataAtraso(item.datavencimento)">
                     Vencimento: {{item.datavencimento.substring(0, 10) | date:"dd/MM/yyyy "}}
                 </span>
                 <span class="item-note ">
@@ -35,12 +33,12 @@
                 </span>
             </p>
             <p>
-                <span ng-class="verificaDataAtraso(item.datavencimento); ">
+                <span [class]="verificaDataAtraso(item.datavencimento)">
                     Emitido em: {{item.dataemissao.substring(0, 10) | date:"dd/MM/yyyy "}}
                 </span>
             </p>
             <p>
-                <span ng-class="verificaDataAtraso(item.datavencimento); ">
+                <span [class]="verificaDataAtraso(item.datavencimento)">
                     Saldo: {{item.saldo| currency:"R$":"symbol"}}
                 </span>
                 <span class="item-note ">
