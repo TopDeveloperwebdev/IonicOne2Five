@@ -1,0 +1,40 @@
+<ion-header class="bar bar-header bar-assertive ">
+    <ion-title class="filter-bar">Detail Item</ion-title>
+    <button class="button close-btn" (click)="dismiss({})">
+  <i class="ion-close-round"></i>
+</button>
+</ion-header>
+<ion-content>
+    <ion-list class="padding">
+
+        <ion-item-sliding *ngFor="let item of itens">
+            <ion-item class="item">
+                <div>
+                    <b>cliente_nome: {{item.cliente_nome}}</b>
+                    <div>
+                        <p>
+                            quant : {{ item.quant}}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            total_item: {{Floor(item.total_item)}}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            total_desconto: {{Floor(item.total_desconto)}}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            total_comissao: {{Floor(item.total_comissao)}}
+                        </p>
+                    </div>
+
+                </div>
+            </ion-item>
+        </ion-item-sliding>
+
+    </ion-list>
+</ion-content>

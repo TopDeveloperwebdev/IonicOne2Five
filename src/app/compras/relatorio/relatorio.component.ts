@@ -91,7 +91,6 @@ export class RelatorioComponent implements OnInit {
       for (var i in filtro) {
         total += parseFloat(filtro[i].compras_totalcomissao);
       }
-
       return total.toFixed(2);
     } else {
       return 0;

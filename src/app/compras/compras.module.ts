@@ -12,6 +12,7 @@ import { RelatorioComponent } from './relatorio/relatorio.component';
 import { ItensComponent } from './itens/itens.component';
 import { FiltroComponent } from './filtro/filtro.component';
 import { from } from 'rxjs';
+import { RelatorioComprasComponent } from './relatorio-compras/relatorio-compras.component'
 
 
 @NgModule({
@@ -21,6 +22,6 @@ import { from } from 'rxjs';
     IonicModule,
     ComprasPageRoutingModule
   ],
-  declarations: [ComprasPage, RelatorioItensComponent, RelatorioComponent, ItensComponent, FiltroComponent]
+  declarations: [ComprasPage, RelatorioItensComponent, RelatorioComponent, ItensComponent, FiltroComponent, RelatorioComprasComponent]
 })
 export class ComprasPageModule { }

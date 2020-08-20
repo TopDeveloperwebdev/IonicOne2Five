@@ -12,14 +12,14 @@
         <h4 class="assertive">
           <small>Quantidade de Pedidos: {{pedidostodos.length}}</small>
           <br />
-          <small>Total de Pedidos: {{totalPedidos(pedidostodos) | currency:'R$ '}}</small>
+          <small>Total de Pedidos: {{totalPedidos(pedidostodos) | currency:"R$":"symbol"}}</small>
         </h4>
         <ion-list>
          <ion-item-sliding *ngFor="let pedido of pedidostodos">
            
               <ion-item (click)="alterar(pedido, pedido.nomecliente);"  >
                 <div>
-                    Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido| currency:'R$':2}}
+                    Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido| currency:"R$":"symbol"}}
                      <div>
                   <p class="assertive">
                     <b>Cliente:</b> {{pedido.nomecliente}}

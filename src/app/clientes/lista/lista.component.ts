@@ -149,8 +149,8 @@ export class ListaComponent implements OnInit {
       }, {
         text: 'Motivos de Não Venda',
         icon: 'close-circle',
-        handler: () => {
-          console.log('Favorite clicked');
+        handler: () => {         
+          this.navCtl.navigateForward(['clientes/naovendalist', { 'cliente_id': cliente_id, 'nomecliente': razaosocial }]);
         }
       }]
 

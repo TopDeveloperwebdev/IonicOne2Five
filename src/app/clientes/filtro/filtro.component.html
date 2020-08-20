@@ -7,7 +7,7 @@
 <ion-content class="padding">
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select [(ngModel)]="filtro.tipopesquisa" [ngModelOptions]="{standalone: true}">
+      <select [(ngModel)]="tipopesquisa" [ngModelOptions]="{standalone: true}">
         <option value="">Selecione a forma de pesquisa</option>
         <option value="{{pesquisa.id}}" *ngFor="let pesquisa of pesquisas">{{pesquisa.descricao}}</option>
       </select>
@@ -15,18 +15,18 @@
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <input type="text" [(ngModel)]="filtro.cli_razaosocial" [ngModelOptions]="{standalone: true}" />
+      <input type="text" [(ngModel)]="cli_razaosocial" [ngModelOptions]="{standalone: true}" />
     </label>
     </div>
     <div class="list">
         <ion-list class="checkbox">
-            <ion-checkbox [(ngModel)]="filtro.apenasClientesAtraso" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+            <ion-checkbox [(ngModel)]="apenasClientesAtraso" [ngModelOptions]="{standalone: true}"></ion-checkbox>
             <ion-label>Apenas Clientes com Atraso</ion-label>
         </ion-list>
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select [(ngModel)]="filtro.categoria_id" [ngModelOptions]="{standalone: true}">
+      <select [(ngModel)]="categoria_id" [ngModelOptions]="{standalone: true}">
         <option value="">Selecione a Categoria</option>
         <option value="{{categorias.categoria_id}}" *ngFor="let categoria of categorias">
           {{categoria.descricaocategoria}}</option>
@@ -36,7 +36,7 @@
 
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select [(ngModel)]="filtro.responsavel_id" [ngModelOptions]="{standalone: true}">
+      <select [(ngModel)]="responsavel_id" [ngModelOptions]="{standalone: true}">
         <option value="">Selecione o Responsável</option>
         <option value="{{responsaveis.responsavel_id}}" *ngFor="let responsaveis of responsaveis">
           {{responsaveis.descricaoresponsavel}}</option>
@@ -45,7 +45,7 @@
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select [(ngModel)]="filtro.responsavel_id" [ngModelOptions]="{standalone: true}">
+      <select [(ngModel)]="atividade_id" [ngModelOptions]="{standalone: true}">
         <option value="">Selecione a Atividade</option>
         <option value="{{atividade.atividade_id}}" *ngFor="let atividade of atividades">
           {{atividade.descricaoatividade}}</option>
@@ -54,7 +54,7 @@
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select ng-model="filtro.dia_visita">
+      <select [(ngModel)]="dia_visita">
         <option value="">Selecione o Dia</option>
         <option value="SEGUNDA">SEGUNDA</option>
         <option value="TERCA">TERÇA</option>
@@ -66,6 +66,6 @@
       </select>
     </label>
     </div>
-    <button class="button button-block button-assertive activated" (click)="dismiss();">Filtrar</button>
+    <button class="button button-block button-assertive activated" (click)="Filtrar(tipopesquisa ,cli_razaosocial,apenasClientesAtraso,categoria_id,responsavel_id,atividade_id,dia_visita );">Filtrar</button>
     <button class="button button-block" (click)="limparFiltro();">Limpar</button>
 </ion-content>

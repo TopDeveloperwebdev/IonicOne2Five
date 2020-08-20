@@ -5,6 +5,7 @@ import { ConexaoService } from '../services/conexao.service';
 import { DBService } from '../services/DB.service';
 import { NgForm } from '@angular/forms';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -33,14 +34,10 @@ export class LoginPage implements OnInit {
 
 
   }
-  ngOnInit() { }
-  //  async ngOnInit() {
-  //     this.userTable = this.DBService.table('usuario');
-  //     this.userTable.add({id : 1});
-  //     let usuario = await this.userTable.toArray();
-  //     console.log('user', usuario);
-  //    debugger;
-  //   }
+  ngOnInit() {
+    this.login = localStorage.getItem("login");
+    this.Senha = localStorage.getItem("Senha");
+  }
 
 
   async presentToast(mensaje: any) {
@@ -56,6 +53,8 @@ export class LoginPage implements OnInit {
       message: 'Aguarde!'
     });
     loading.present();
+    localStorage.setItem("login", this.login);
+    localStorage.setItem("Senha", this.Senha);
     var login = this.login;
     var senha = this.Senha;
 
@@ -104,12 +103,12 @@ export class LoginPage implements OnInit {
             this.userTable.clear();
             loading.dismiss();
             navigator['app'].exitApp();
-          } 
+          }
           else if (res['download_aplicativo'] === 'S') {
             loading.dismiss();
             this.presentToast('Você já fez o download em outro aparelho.');
           }
-           else {
+          else {
             this.userTable.add(res);
             localStorage.setItem('sincronizar', 'true');
             loading.dismiss();

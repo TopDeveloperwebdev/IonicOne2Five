@@ -9,7 +9,7 @@ import { ModalController } from '@ionic/angular';
 export class DetalhesComponent implements OnInit {
 
   constructor(public modalController: ModalController) { }
-  @Input() produto: object;
+  @Input() produto: any;
   ngOnInit() {
     console.log('produto',this.produto);
    }

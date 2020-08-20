@@ -5,7 +5,7 @@
 </button>
 </ion-header>
 <ion-content class="padding">
-    <ion-list>
+    <ion-list style="margin-top: 55px;">
         <ion-row class="item" *ngFor="let item of itens">
             <b>{{item.compras_item_descricaoproduto}}</b>
             <p>
@@ -19,13 +19,13 @@
                 Quantidade: {{item.compras_item_quantidade}}
             </p>
             <p>
-                Preço Unit: {{item.compras_item_precounitario | currency:"R$ "}}
+                Preço Unit: {{item.compras_item_precounitario | currency:"R$":"symbol"}}
             </p>
             <p>
-                Preço Total: {{item.compras_item_precototal | currency:"R$ "}}
+                Preço Total: {{item.compras_item_precototal | currency:"R$":"symbol"}}
             </p>
             <p>
-                Preço Tab: {{item.compras_item_precotabela | currency:"R$ "}}
+                Preço Tab: {{item.compras_item_precotabela | currency:"R$":"symbol"}}}}
 
                 <span class="item-note">
           <b>Desconto(%): {{item.compras_item_descontopercentual}}</b>
@@ -35,7 +35,7 @@
                 Comissão(%): {{item.compras_item_comissaopercentual}}%
             </p>
             <p>
-                Comissão item: {{item.compras_item_comissaovaloritem | currency:"R$ "}}
+                Comissão item: {{item.compras_item_comissaovaloritem | currency:"R$":"symbol"}}
             </p>
         </ion-row>
     </ion-list>

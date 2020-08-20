@@ -13,7 +13,7 @@
     <h4 class="assertive ">
         <small>Quantidade: {{items.length}}</small>
         <br />
-        <small>Total: {{totalTitulos(items) | currency:'R$ '}}</small>
+        <small>Total: {{totalTitulos(items) | currency:"R$":"symbol"}}</small>
     </h4>
 
     <ion-list>
@@ -21,7 +21,7 @@
             <b ng-class="verificaDataAtraso(item.datavencimento); ">Nº: </b>
             <span ng-class="verificaDataAtraso(item.datavencimento); ">{{item.numerotitulo}}</span>
             <span class="item-note ">
-                {{item.valor | currency:"R$ "}}
+                {{item.valor | currency:"R$":"symbol"}}
             </span>
             <p>
                 <b>Cliente:</b> {{item.nomecliente}}
@@ -41,10 +41,10 @@
             </p>
             <p>
                 <span ng-class="verificaDataAtraso(item.datavencimento); ">
-                    Saldo: {{item.saldo| currency:"R$ "}}
+                    Saldo: {{item.saldo| currency:"R$":"symbol"}}
                 </span>
                 <span class="item-note ">
-                    Juros: {{item.juros| currency:"R$ "}}
+                    Juros: {{item.juros| currency:"R$":"symbol"}}
                 </span>
             </p>
         </ion-row>

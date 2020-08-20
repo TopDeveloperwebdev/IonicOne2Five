@@ -237,7 +237,12 @@ export class dataService {
             { headers: this.headers }
         );
     }
-
+   
+    excluir(visita_id: any) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/visita/excluir?visita_id=${visita_id}`,
+            { headers: this.headers }
+        )
+    }
     sincronizarSaida() {
         let self = this;
         let pedidos_num = 0, num_clientes = 0, num_visitas = 0;

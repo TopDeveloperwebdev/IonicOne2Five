@@ -32,24 +32,26 @@
                 <span class="item-note-left" style="font-size: 18px; color: #aaa !important;" *ngIf="produto.produtoembalagem && produto.produtoembalagem > 1">
           <small class="item-note-label">Unitário: </small>
           <small *ngIf="produto.produtoempromocao == 'S'">
-            {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}
+            {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":"symbol"}}
           </small>
           <b
-            [class]="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$"}}</b>
+            [class]="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":"symbol"}}</b>
         </span>
 
                 <span class="item-note" slot="end" style="font-size: 18px; text-align: right;margin-top: 15px;">
           <small style="color: red; text-decoration: line-through; font-size: 12px;"
             *ngIf="produto.produtoempromocao == 'S'">
-            {{produto.precopadrao| currency:"R$"}}
+            {{produto.precopadrao| currency:"R$":"symbol"}}
           </small>
-          <b [class]="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S' ? produto.preco_promocao:produto.precotabela  | currency:"R$" }}
+          <b [class]="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S' ? produto.preco_promocao:produto.precotabela  | currency:"R$":"symbol"}}
           </b>
         </span>
 
             </ion-item>
             <ion-item-options side="end">
-                <ion-item-option class="button-assertive" (click)="Comissoes(produto.produto_id);" color="danger">Commisoes
+                <ion-item-option class="button-assertive" (click)="Comissoes(produto.produto_id);" color="danger">COMISSOES
+                </ion-item-option>
+                <ion-item-option class="button-positive" (click)="Fotos(produto);">FOTOS
                 </ion-item-option>
             </ion-item-options>
         </ion-item-sliding>

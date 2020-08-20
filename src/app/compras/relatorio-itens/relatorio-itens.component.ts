@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DBService } from '../../services/DB.service';
 import { ModalController } from '@ionic/angular'
 import { FiltroComponent } from '../filtro/filtro.component';
+import { RelatorioComprasComponent } from '../relatorio-compras/relatorio-compras.component';
 @Component({
   selector: 'app-relatorio-itens',
   templateUrl: './relatorio-itens.component.html',
@@ -30,9 +31,9 @@ export class RelatorioItensComponent implements OnInit {
     self.db.compras_item
       .toArray()
       .then(function (res) {
-       
-        self.filterItems(filtro, res).then(filterItems => {     
-         self.comprasDataservice = filterItems;          
+       console.log('item' , res);
+        self.filterItems(filtro, res).then(filterItems => {
+          self.comprasDataservice = filterItems;
           self.pushClients(self.page_limit);
         })
 
@@ -68,11 +69,31 @@ export class RelatorioItensComponent implements OnInit {
     this.itens = this.comprasDataservice.slice(0, page_limit);
 
   }
-  async filterModal() {
+  // async filterModal() {
+  //   let self = this;
+  //   const modal = await this.modalCtrl.create({
+  //     component: FiltroComponent,
+  //     cssClass: 'my-custom-class',
+  //     componentProps: {
+  //       'filtro': this.filtro,
+  //     }
+  //   });
+  //   modal.onDidDismiss()
+  //     .then((data) => {
+  //       let filtro = data['data'];
+  //       self.getComprasItens(filtro);
+  //     });
+
+  //   return await modal.present();
+  // }
+  async detailItem(code) {
     let self = this;
     const modal = await this.modalCtrl.create({
-      component: FiltroComponent,
+      component: RelatorioComprasComponent,
       cssClass: 'my-custom-class',
+      componentProps: {
+        'code': code,
+      }
     });
     modal.onDidDismiss()
       .then((data) => {
@@ -88,10 +109,8 @@ export class RelatorioItensComponent implements OnInit {
     if (typeof filtro != 'undefined' && filtro.length > 0) {
 
       filtro.map(function (c, index) {
-        total += Number(c.compras_totalcompra);
+        total += Number(c.compras_item_precototal);
       });
-
-
       return total;
     } else {
       return 0;
@@ -101,7 +120,7 @@ export class RelatorioItensComponent implements OnInit {
     if (typeof filtro != 'undefined' && filtro.length > 0) {
       var total = 0.00;
       for (var i in filtro) {
-        total += parseFloat(filtro[i].compras_totalcomissao);
+        total += parseFloat(filtro[i].compras_item_comissaovaloritem);
       }
 
       return total.toFixed(2);
@@ -123,5 +142,6 @@ export class RelatorioItensComponent implements OnInit {
       }, 500);
     })
 
-  };
+  }
+
 }

@@ -4,7 +4,8 @@ import { ModalController, LoadingController, AlertController } from '@ionic/angu
 import { DetalhesComponent } from '../detalhes/detalhes.component';
 import { FiltroComponent } from '../filtro/filtro.component';
 import { DBService } from '../../services/DB.service';
-import { ComissoesComponent } from '../comissoes/comissoes.component'
+import { ComissoesComponent } from '../comissoes/comissoes.component';
+import { FotosComponent } from '../fotos/fotos.component'
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.component.html',
@@ -392,6 +393,24 @@ export class ListaComponent implements OnInit {
 
     return await modal.present();
   }
+  async Fotos(produto) {
+
+    const modal = await this.modalCtrl.create({
+      component: FotosComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'produto': produto,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+             
+
+      });
+
+    return await modal.present();
+  }
 
   loadMore($event) {
     let self = this;
@@ -422,6 +441,18 @@ export class ListaComponent implements OnInit {
     const modal = await this.modalCtrl.create({
       component: FiltroComponent,
       cssClass: 'my-custom-class',
+      componentProps: {
+        filtro: this.filtro,
+        tabela_id : this.tabela_id
+      }
+    });
+    modal.onDidDismiss()
+    .then((data) => {
+      this.filtro = data['data'].filtro;
+      this.tabela_id = data['data'].tabela_id;
+      console.log('this', this.filtro , this.tabela_id);
+      this.produtoInit();
+
     });
     return await modal.present();
   }

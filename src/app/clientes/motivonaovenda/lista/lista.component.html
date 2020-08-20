@@ -1,3 +1,39 @@
-<p>
-  lista works!
-</p>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+    </ion-menu-button>
+    <ion-title>Motivos de Não Venda</ion-title>
+</ion-header>
+<ion-content class="padding">
+    <h4 class="assertive">
+        {{nomecliente}}
+    </h4>
+    <ion-list>
+        <ion-item-sliding *ngFor="let l of listaVisitas">
+            <ion-item class="item" (click)="alterar(l);">
+                <div>
+                    Visitou em <b>{{l.data_visita|date}}</b> as <b>{{l.hora_visita}}</b>
+                    <div>
+                        <p>
+                            {{l.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}
+                        </p>
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item-options side="end">
+                <ion-item-option class="button-positive" (click)="duplicar(l);">
+                    Duplicar
+                </ion-item-option>
+                <ion-item-option class="button-assertive" (click)="apagar(l);" color="danger">
+                    Apagar
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+
+</ion-content>
+
+<button (click)="cadastroNaoVenda();" class="button button-assertive button-float">
+    <i class="icon ion-plus-round"></i>
+</button>

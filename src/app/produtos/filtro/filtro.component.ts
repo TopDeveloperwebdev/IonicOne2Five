@@ -11,25 +11,26 @@ export class FiltroComponent implements OnInit {
   tipoPesquisa: any;
   tabelas: any;
   pesquisas: any;
-  tabela_id: any;
   tiposProduto: any;
   marcas: any;
-  descricaoproduto = '';
+  descricaoproduto = "";
   marcaSelecionada: any;
   tipoSelecionado: any;
-  filtro: any;
-  produtoEmPromocao = '';
+
+  @Input() filtro: any;
+  @Input() tabela_id: any;
+  produtoEmPromocao = "";
   constructor(public modalController: ModalController, public dbService: DBService) {
     this.db = dbService;
-    this.filtro = {};
+    // this.filtro = {};
   }
 
   ngOnInit() {
     let self = this;
-    
+
     this.db.tabela.toArray().then(function (tabelas) {
       self.tabelas = tabelas;
-      self.tabela_id = tabelas.tabela_id;
+      console.log('tables' , self.tabelas);
     });
     self.db.marcas_produto.toArray().then(function (res) {
       self.marcas = res;
@@ -40,6 +41,7 @@ export class FiltroComponent implements OnInit {
     });
     self.pesquisas = [
       {
+
         id: 1,
         descricao: 'Pesquisa Geral'
       },
@@ -50,26 +52,51 @@ export class FiltroComponent implements OnInit {
     ];
 
     self.tipoPesquisa = this.pesquisas[0].id;
+    if (!this.filtro.hasOwnProperty('tipoPesquisa')) {
+      this.tipoPesquisa = "";
+    }
+    else {
+      this.tipoPesquisa = this.filtro.tipoPesquisa;
+    }
+    if (!this.filtro.hasOwnProperty('marcaSelecionada')) {
+      this.marcaSelecionada = "";
+    } else {
+      this.marcaSelecionada = this.filtro.inf_marca;
+    }
+    if (!this.filtro.hasOwnProperty('produtoEmPromocao')) {
+      this.produtoEmPromocao = "";
+    } else {
+      this.marcaSelecionada = this.filtro.produtoEmPromocao;
+    }
+
+    if (!this.filtro.hasOwnProperty('tipoSelecionado')) {
+      this.tipoSelecionado = "";
+    } else {
+      this.marcaSelecionada = this.filtro.inf_produto;
+    }
+    if (!this.filtro.hasOwnProperty('descricaoproduto')) {
+      this.descricaoproduto = "";
+    } else {
+      this.descricaoproduto = this.filtro.descricaoproduto;
+    }
+
   }
 
 
   dismiss(filtro) {
     console.log('dismass');
-    this.modalController.dismiss(filtro);
+    this.modalController.dismiss({ filtro: this.filtro, tabela_id: this.tabela_id });
   }
 
   limparFiltro() {
     this.modalController.dismiss(this.filtro);
   }
-  filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {
-    console.log('ffffffff', this.filtro);
-  
-
-    if (marcaSelecionada != null) {
+  filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {  
+    if (marcaSelecionada != "") {
       this.filtro.inf_marca = marcaSelecionada;
     }
 
-    if (tipoSelecionado != null) {
+    if (tipoSelecionado != "") {
       this.filtro.inf_produto = tipoSelecionado;
     }
 
@@ -77,17 +104,20 @@ export class FiltroComponent implements OnInit {
       this.filtro.produtoEmPromocao = 'S';
     }
 
-    if (descricaoproduto != '' && descricaoproduto != null) {
+    if (descricaoproduto != "") {
       this.filtro.descricaoproduto = descricaoproduto.toUpperCase();
     }
-
-    this.filtro.tipoPesquisa = tipoPesquisa;    
-    this.dismiss(this.filtro);
+    if (tipoPesquisa != "") {
+      this.filtro.tipoPesquisa = tipoPesquisa;
+    }
+    
+    this.modalController.dismiss({ filtro: this.filtro, tabela_id: this.tabela_id });
 
   }
 
   mudarTabelaPreco = function (tabela_id) {
-    this.tabela_id = tabela_id;
+    if (tabela_id != "")
+      this.tabela_id = tabela_id;
 
   }
 

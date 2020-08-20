@@ -10,7 +10,8 @@ import { ProdutosPage } from './produtos.page';
 import { ListaComponent } from './lista/lista.component';
 import { DetalhesComponent } from './detalhes/detalhes.component';
 import { FiltroComponent } from './filtro/filtro.component';
-import { ComissoesComponent } from './comissoes/comissoes.component'
+import { ComissoesComponent } from './comissoes/comissoes.component';
+import { FotosComponent } from './fotos/fotos.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -18,6 +19,6 @@ import { ComissoesComponent } from './comissoes/comissoes.component'
     IonicModule,
     ProdutosPageRoutingModule
   ],
-  declarations: [ProdutosPage, ListaComponent, DetalhesComponent, FiltroComponent, ComissoesComponent]
+  declarations: [ProdutosPage, ListaComponent, DetalhesComponent, FiltroComponent, ComissoesComponent ,FotosComponent]
 })
 export class ProdutosPageModule { }

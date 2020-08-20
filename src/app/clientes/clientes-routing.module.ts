@@ -6,6 +6,7 @@ import { ListaComponent } from './lista/lista.component';
 import { PedidosComponent } from './pedidos/pedidos.component';
 import { CadastroComponent } from './cadastro/cadastro.component';
 import { MotiCadastroComponent } from './motivonaovenda/cadastro/cadastro.component';
+import { naovendaListaComponent } from './motivonaovenda/lista/lista.component';
 const routes: Routes = [
   {
     path: '',
@@ -25,9 +26,14 @@ const routes: Routes = [
   }
 
   , {
-    path: 'alterar',
+    path: 'naovendacadastro',
     component: MotiCadastroComponent
   }
+  , {
+    path: 'naovendalist',
+    component: naovendaListaComponent
+  }
+  
 ];
 
 @NgModule({

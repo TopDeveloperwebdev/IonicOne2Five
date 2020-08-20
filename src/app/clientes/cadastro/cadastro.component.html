@@ -17,6 +17,7 @@
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
         <ion-input type="text" placeholder="Nome Fantasia" [(ngModel)]="cliente.cli_fantasia" name="cli_fantasia"
           required></ion-input>
+          
       </label>
         </div>
         <div class="list list-inset">
@@ -30,7 +31,7 @@
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select [(ngModel)]="cliente.atividade_id" name="atividade_id">
+        <select [(ngModel)]="cliente.atividade_id" name="atividade_id" >
           <option value="">Selecione uma atividade</option>
           <option value="{{atividades.atividade_id}}" *ngFor="let atividade of atividades">
             {{atividade.descricaoatividade}}</option>
@@ -41,8 +42,7 @@
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <ion-input type="tel" placeholder="CPF/CNPJ" name="cli_cnpjcpf" [(ngModel)]="cliente.cli_cnpjcpf" required
-          ui-br-cpfcnpj-mask></ion-input>
+        <ion-input type="phone" placeholder="CPF/CNPJ" name="cli_cnpjcpf" [(ngModel)]="cliente.cli_cnpjcpf" required  mask="00.000.000/0000-00"></ion-input>
       </label>
         </div>
         <div class="list list-inset">
@@ -91,7 +91,7 @@
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <ion-input placeholder="E-mail" [(ngModel)]="cliente.email" name="email" type="email" required>
+        <ion-input placeholder="E-mail" [(ngModel)]="cliente.cli_email" name="email" type="email" required>
         </ion-input>
       </label>
         </div>
@@ -106,7 +106,7 @@
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <ion-input type="tel" placeholder="Telefone 1" name="cli_telefone1" [(ngModel)]="cliente.cli_telefone1"
+        <ion-input type="phone" placeholder="Telefone 1" name="cli_telefone1" [(ngModel)]="cliente.cli_telefone1"
           required></ion-input>
       </label>
         </div>
@@ -120,7 +120,7 @@
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <ion-input type="tel" placeholder="Telefone 2" name="cli_telefone2" [(ngModel)]="cliente.cli_telefone2">
+        <ion-input type="phone" placeholder="Telefone 2" name="cli_telefone2" [(ngModel)]="cliente.cli_telefone2">
         </ion-input>
       </label>
         </div>
@@ -129,13 +129,13 @@
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
         <ion-input type="text" placeholder="Endereço" name="cli_enderecoentrega"
-          [(ngModel)]="cliente.cli_enderecoentrega"></ion-input>
+          [(ngModel)]="cliente.cli_enderecoentrega" required></ion-input>
       </label>
         </div>
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <ion-input type="text" placeholder="Bairro" name="cli_bairroentrega" [(ngModel)]="cliente.cli_bairroentrega">
+        <ion-input type="text" placeholder="Bairro" name="cli_bairroentrega" [(ngModel)]="cliente.cli_bairroentrega" required>
         </ion-input>
       </label>
         </div>
@@ -149,7 +149,7 @@
         <div class="list list-inset">
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
-        <select [(ngModel)]="cliente.cli_codigocidadeentrega" name="cli_codigocidadeentrega">
+        <select [(ngModel)]="cliente.cli_codigocidadeentrega" name="cli_codigocidadeentrega" >
           <option value="">Selecione uma cidade</option>
           <option value="{{cidade.cidade_id}}" *ngFor="let cidade of cidades">
             {{cidade.descricaocidade}}</option>

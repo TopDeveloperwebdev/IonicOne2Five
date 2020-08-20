@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DBService } from '../../services/DB.service';
 import { LoadingController, ModalController } from '@ionic/angular';
 
+
 @Component({
   selector: 'app-comissoes',
   templateUrl: './comissoes.component.html',

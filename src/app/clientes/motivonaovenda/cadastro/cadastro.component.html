@@ -1,3 +1,63 @@
-<p>
-    cadastro works!
-</p>
+<ion-header class="bar-assertive ">
+    <ion-menu-button side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+    </button>
+    </ion-menu-button>
+    <ion-title>Cadastro de Visita</ion-title>
+</ion-header>
+<ion-content class="padding" style="background: #f0f0f0;" ng-controller="NaoVendaController">
+    <form #formNaoVenda="ngForm" novalidate id="formNaoVenda">
+
+        <div class="list list-inset">
+            <label class="item item-input">
+        <label style="font-size: 12px;">Data da Visita: </label>
+            <!-- <i class="icon ion-search placeholder-icon"></i> -->
+            <ion-input type="date" placeholder="Data da Visita" name="data_visita" required [(ngModel)]="form.data_visita">
+            </ion-input>
+            </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <ion-input type="phone" placeholder="Hora da Visita" name="hora_visita" required [(ngModel)]="form.hora_visita" mask="00:00">
+        </ion-input>
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <select [(ngModel)]="form.motivo_id" name="motivo_id">
+          <option value=null>Selecione o Motivo</option>
+          <option value="{{m.motivo_id}}" *ngFor="let m of motivosnaovenda">
+            {{m.descricaomotivo}}</option>
+        </select>
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+
+        <select [(ngModel)]="form.tipo_visita" name="tipo_visita">       
+          <option value="{{t.nome}}" *ngFor="let t of tipoVisita">
+            {{t.nome}}</option>
+        </select>
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <ion-input type="text" placeholder="Inscrição Estadual" name="contato_visita" required
+          [(ngModel)]="form.contato_visita"></ion-input>
+      </label>
+        </div>
+        <div class="list list-inset">
+            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <textarea [(ngModel)]="form.observacao" placeholder="Observação" rows="5" name="observacao"></textarea>
+      </label>
+        </div>
+        <button class="button button-full button-assertive" (click)="salvar(formNaoVenda)" [disabled]="!formNaoVenda.valid" type="submit">
+      Salvar
+    </button>
+    </form>
+</ion-content>

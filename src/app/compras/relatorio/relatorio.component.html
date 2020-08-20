@@ -13,19 +13,19 @@
     <h4 class="assertive">
         <small>Quantidade: {{compras.length}}</small>
         <br />
-        <small>Total das Compras: {{totalCompras(compras) | currency:'R$ '}}</small>
+        <small>Total das Compras: {{totalCompras(compras) | currency:"R$":"symbol"}}</small>
         <br />
-        <small>Total das Comissões: {{totalComissoes(compras) | currency:'R$ '}}</small>
+        <small>Total das Comissões: {{totalComissoes(compras) | currency:"R$":"symbol"}}</small>
     </h4>
 
     <ion-list>
         <ion-row class="item" (click)="mostrarItens(compra.compras_id);" *ngFor="let compra of compras">
             <b>Nº: {{compra.compras_documento_nro}}</b>
             <span class="item-note">
-        <b>{{compra.compras_totalcompra | currency:"R$ "}}</b>
+        <b>{{compra.compras_totalcompra | currency:"R$":"symbol"}}</b>
       </span>
             <p>
-                <b>Comissão:</b> {{compra.compras_totalcomissao | currency:"R$ "}}
+                <b>Comissão:</b> {{compra.compras_totalcomissao | currency:"R$":"symbol"}}
             </p>
             <p>
                 <b>Cliente:</b> {{compra.compras_cliente_nome}}

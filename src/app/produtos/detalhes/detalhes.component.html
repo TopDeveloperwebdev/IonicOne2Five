@@ -6,7 +6,7 @@
 </ion-header>
 <ion-content>
     <div class="bar bar-subheader bar-assertive">
-        <h4 class="title">produto.descricaoproduto</h4>
+        <h4 class="title">{{produto.descricaoproduto}}</h4>
     </div>
     <div class="list products_detail">
         <label class="item">
@@ -42,19 +42,19 @@
         <label class="item">
       Preço
       <span class="item-note">
-        {{produto.precopadrao | currency:"R$":2}}
+        {{produto.precopadrao | currency:"R$":"symbol"}}
       </span>
     </label>
         <label class="item">
       Preço Unitário
       <span class="item-note">
-        {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":2}}
+        {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":"symbol"}}
       </span>
     </label>
         <label class="item">
       Custo
       <span class="item-note" ng-show="vendedor_visualiza_custo == 'S'">
-        {{produto.custo | currency:"R$":2}}
+        {{produto.custo | currency:"R$":"symbol"}}
       </span>
       <span class="item-note" ng-show="vendedor_visualiza_custo == 'N'">
         0,00
@@ -108,13 +108,13 @@
         <label class="item">
       Preço Promoção
       <span class="item-note">
-        {{produto.preco_promocao | currency:"R$":2}}
+        {{produto.preco_promocao | currency:"R$":"symbol"}}
       </span>
     </label>
         <label class="item">
       Preço Unitário Promoção
       <span class="item-note">
-        {{produto.preco_promocao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":2}}
+        {{produto.preco_promocao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":"symbol"}}
       </span>
     </label>
         <label class="item">

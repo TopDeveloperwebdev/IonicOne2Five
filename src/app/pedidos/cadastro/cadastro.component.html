@@ -116,7 +116,7 @@
                                 <p>Quantidade: {{item.quantidade}}</p>
                             </div>
                             <div>
-                                <p>Valor: {{item.valor_total_item| currency:"R$":2}}</p>
+                                <p>Valor: {{item.valor_total_item| currency:"R$":"symbol"}}</p>
                             </div>
                         </div>
 
@@ -127,8 +127,8 @@
                     </ion-item-options>
                 </ion-item-sliding>
             </ion-list>
-            <h4 class="assertive" ng-show="valor_pedido_minimo > 0">Valor mínimo do pedido: {{valor_pedido_minimo | currency:'R$'}}</h4>
-            <h4>Total do Pedido: {{pedido.total_pedido | currency:'R$'}}</h4>
+            <h4 class="assertive" ng-show="valor_pedido_minimo > 0">Valor mínimo do pedido: {{valor_pedido_minimo | currency:"R$":"symbol"}}</h4>
+            <h4>Total do Pedido: {{pedido.total_pedido | currency:"R$":"symbol"}}</h4>
             <button class="button button-block button-assertive" ng-disabled="formPedido.$invalid || itens.length === 0" (click)="salvar(pedido, itens)">
         <i class="icon ion-checkmark"></i>
         Salvar

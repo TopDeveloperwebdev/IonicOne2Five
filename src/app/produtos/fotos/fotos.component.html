@@ -1,0 +1,33 @@
+<ion-header class="bar bar-header bar-assertive">
+    <ion-title>FOTOS</ion-title>
+    <button class="button close-btn" (click)="dismiss()">
+  <i class="ion-close-round"></i>
+</button>
+</ion-header>
+<ion-content>
+    <div class="bar bar-subheader bar-assertive">
+        <h4 class="title">{{produto.descricaoproduto}}</h4>
+    </div>
+
+
+    <ion-slides pager="true" [options]="mySlideOptions">
+        <ion-slide>
+            <img [src]="produto.http_img_1 ? produto.http_img_1 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
+        </ion-slide>
+        <ion-slide>
+            <img [src]="produto.http_img_2 ? produto.http_img_2 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1555891270/ehck0c1jp2txo74kwygg.jpg'" />
+        </ion-slide>
+        <ion-slide>
+            <img [src]="produto.http_img_3 ? produto.http_img_3 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241478/ar5hqirazdtb6ffxjlc7.jpg'" />
+        </ion-slide>
+        <ion-slide>
+            <img [src]="produto.http_img_4 ? produto.http_img_4 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241619/acqbpj8qgggwhvsuzcio.jpg'" />
+        </ion-slide>
+        <ion-slide>
+            <img [src]="produto.http_img_5 ? produto.http_img_5 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
+        </ion-slide>
+        <ion-slide>
+            <img [src]="produto.http_img_6 ? produto.http_img_6 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
+        </ion-slide>
+    </ion-slides>
+</ion-content>

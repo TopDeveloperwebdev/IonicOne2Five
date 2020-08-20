@@ -32,7 +32,6 @@ export class FiltroComponent implements OnInit {
     if(form.valid){
       console.log('this.', this.filtro);
       this.modalController.dismiss(this.filtro);
-    }
- 
+    } 
   }
 }

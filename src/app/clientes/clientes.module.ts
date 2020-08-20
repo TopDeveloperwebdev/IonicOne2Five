@@ -13,23 +13,24 @@ import { CadastroComponent } from './cadastro/cadastro.component';
 import { FiltroComponent } from './filtro/filtro.component';
 import { MotiCadastroComponent } from './motivonaovenda/cadastro/cadastro.component';
 import { FiltroPedidosComponent } from './filtro-pedidos/filtro-pedidos.component';
-
+import { naovendaListaComponent } from './motivonaovenda/lista/lista.component';
+import {NgxMaskIonicModule} from 'ngx-mask-ionic'
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    ClientesPageRoutingModule
+    ClientesPageRoutingModule,
+    NgxMaskIonicModule
   ],
   declarations: [
     ClientesPage, 
     ListaComponent, 
     PedidosComponent, 
     CadastroComponent, 
-
     FiltroComponent, 
     MotiCadastroComponent, 
-    FiltroPedidosComponent]
+    FiltroPedidosComponent,naovendaListaComponent]
 })
 export class ClientesPageModule { }

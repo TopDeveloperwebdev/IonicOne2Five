@@ -29,16 +29,14 @@ export class CadastroComponent implements OnInit {
 
   constructor(public alertCtrl: AlertController, public modalController: ModalController, private dbService: DBService, public navCtrl: NavController, public loadCtrl: LoadingController, private formBuilder: FormBuilder) {
     this.db = dbService;
-    this.cliente = {};
+    this.cliente = { cli_id: null ,atividade_id : '',cli_codigocidadeentrega : ''};
   }
 
   async ngOnInit() {
     this.atividades = await this.dbService.table('atividade').toArray();
     this.cidades = await this.dbService.table('cidade').toArray();
-
-
   }
-async  salvar(form: NgForm) {
+  async salvar(form: NgForm) {
     if (form.valid) {
 
       const loading = await this.loadCtrl.create({
@@ -107,7 +105,7 @@ async  salvar(form: NgForm) {
         this.cliente.cli_cepentrega = "";
       }
 
-    
+
       if (this.cliente.cli_id == null) {
         this.cliente.cli_id = parseInt(this.cliente.cli_cnpjcpf);
 

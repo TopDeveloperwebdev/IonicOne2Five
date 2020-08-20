@@ -11,6 +11,13 @@ export class FiltroComponent implements OnInit {
   atividades: any;
   categorias: any;
   responsaveis: any;
+  categoria_id: any;
+  responsavel_id: any;
+  atividade_id: any;
+  dia_visita: any;
+  tipopesquisa: any;
+  cli_razaosocial: any;
+  apenasClientesAtraso: any;
   pesquisas = [{
     id: 1,
     descricao: 'Pesquisa Geral'
@@ -29,16 +36,76 @@ export class FiltroComponent implements OnInit {
     this.atividades = await this.dbService.table('atividade').toArray();
     this.categorias = await this.dbService.table('categoria').toArray();
     this.responsaveis = await this.dbService.table('responsavel').toArray();
-  
+    if (!this.filtro.hasOwnProperty('categoria_id')) {
+      this.categoria_id = "";
+    }
+    else {
+      this.categoria_id = this.filtro.categoria_id;
+    }
+    if (!this.filtro.hasOwnProperty('tipopesquisa')) {
+      this.tipopesquisa = "";
+    } else {
+      this.tipopesquisa = this.filtro.tipopesquisa;
+    }
+    if (!this.filtro.hasOwnProperty('cli_razaosocial')) {
+      this.cli_razaosocial = "";
+    } else {
+      this.cli_razaosocial = this.filtro.cli_razaosocial;
+    }
+
+    if (!this.filtro.hasOwnProperty('apenasClientesAtraso')) {
+      this.apenasClientesAtraso = "";
+    } else {
+      this.apenasClientesAtraso = this.filtro.apenasClientesAtraso;
+    }
+    if (!this.filtro.hasOwnProperty('responsavel_id')) {
+      this.responsavel_id = "";
+    } else {
+      this.responsavel_id = this.filtro.responsavel_id;
+    }
+    if (!this.filtro.hasOwnProperty('atividade_id')) {
+      this.atividade_id = "";
+    } else {
+      this.atividade_id = this.filtro.atividade_id;
+    }
+    if (!this.filtro.hasOwnProperty('dia_visita')) {
+      this.dia_visita = "";
+    } else {
+      this.dia_visita = this.filtro.dia_visita;
+    }
+
   }
   dismiss() {
-
-
     this.modalController.dismiss(this.filtro);
   }
 
   limparFiltro = function () {
-    this.filtro = {};
+    this.modalController.dismiss(this.filtro);
+  }
+  Filtrar(tipopesquisa, cli_razaosocial, apenasClientesAtraso, categoria_id, responsavel_id, atividade_id, dia_visita) {
+    if (tipopesquisa) {
+      this.filtro.tipopesquisa = tipopesquisa;
+    }
+    if (cli_razaosocial) {
+      this.filtro.cli_razaosocial = cli_razaosocial.toUpperCase();
+    }
+    if (apenasClientesAtraso != "") {
+      this.filtro.cli_totaltitulosvencidos = "0.00";
+    }
+    if (categoria_id != "") {
+      this.filtro.categoria_id = categoria_id;
+    }
+    if (responsavel_id != "") {
+      this.filtro.responsavel_id = responsavel_id;
+    }
+
+    if (atividade_id != "") {
+      this.filtro.atividade_id = atividade_id;
+    }
+    if (dia_visita != "") {
+      this.filtro.dia_visita = dia_visita;
+    }
+    console.log('this.fitro', this.filtro);
     this.modalController.dismiss(this.filtro);
   }
 }
