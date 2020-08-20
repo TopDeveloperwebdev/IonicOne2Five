@@ -23,7 +23,9 @@
             <span class="item-note ">
                 {{item.valor | currency:"R$":"symbol"}}
             </span>
-
+            <p>
+                <b>Cliente:</b> {{item.cliente_nome}}
+            </p>
             <p>
                 <span [class]="verificaDataAtraso(item.datavencimento)">
                     Vencimento: {{item.datavencimento.substring(0, 10) | date:"dd/MM/yyyy "}}

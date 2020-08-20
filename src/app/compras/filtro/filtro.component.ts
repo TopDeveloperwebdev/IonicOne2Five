@@ -2,36 +2,45 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { DBService} from '../../services/DB.service';
+import { DBService } from '../../services/DB.service';
 @Component({
   selector: 'app-filtro',
   templateUrl: './filtro.component.html',
   styleUrls: ['./filtro.component.scss'],
 })
 export class FiltroComponent implements OnInit {
-  filtro : any;  
-  db : any;
-  responsaveis : any;
-  constructor(public modalController: ModalController , public dbService : DBService) { 
-  this.db = dbService;
+  db: any;
+  responsaveis: any;
+  @Input() filtro: any;
+  Copyfiltro: any;
+  constructor(public modalController: ModalController, public dbService: DBService) {
+    this.db = dbService;
 
   }
 
- async ngOnInit() { 
-    this.filtro = {};
-    this.responsaveis = await this.db.responsavel.toArray();  
+  async ngOnInit() {    
+    this.responsaveis = await this.db.responsavel.toArray();
+    this.Copyfiltro = {};
+    Object.assign(this.Copyfiltro, this.filtro);
+    console.log('this' , this.filtro)
+    if (!this.filtro.hasOwnProperty('responsavel_id')) {
+      this.filtro.responsavel_id = ""
+    }
   
+
+
   }
-  dismiss(filtro) {
-  
-    this.modalController.dismiss(filtro);
+  dismiss() {
+    this.modalController.dismiss(this.Copyfiltro);
   }
 
 
-  filtrarTitulos(form : NgForm){
-    if(form.valid){
-      console.log('this.', this.filtro);
+  filtrarTitulos(form: NgForm) {
+    if (form.valid) {    
+      if (this.filtro.responsavel_id == "") {
+        delete this.filtro.responsavel_id;
+      }
       this.modalController.dismiss(this.filtro);
-    } 
+    }
   }
 }

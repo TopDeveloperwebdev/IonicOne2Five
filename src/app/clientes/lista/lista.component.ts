@@ -58,7 +58,7 @@ export class ListaComponent implements OnInit {
         let atividade_id = true;
         let responsavel_id = true;
         let dia_visita = true;
-        console.log('filtro_______',filtro);
+        
         if (filtro.hasOwnProperty('cli_razaosocial')) {
      
           if (filtro.tipopesquisa == "2") {

@@ -14,8 +14,8 @@ export class RelatorioComponent implements OnInit {
   filtro: any;
   comprasDataservice: any;
   compras: any;
-  page_limit = 50;
-  increaseItems = 50;
+  page_limit = 100;
+  increaseItems = 100;
   constructor(public dbService: DBService, public modalCtrl: ModalController) {
     this.db = dbService;
   }
@@ -35,7 +35,9 @@ export class RelatorioComponent implements OnInit {
   }
 
   async getCompras(filtro) {
+ 
     let res = await this.db.compras.toArray();
+    console.log('res' ,res);
     let tempItems;
     tempItems = res.filter(function (where) {
       let dateRange;
@@ -50,6 +52,7 @@ export class RelatorioComponent implements OnInit {
       if (filtro.hasOwnProperty('responsavel_id')) {
         responsavel_id = (where.compras_responsavel_id == dataResponsavel_id)
       }
+    
       return dateRange && responsavel_id;
     });
 
@@ -142,15 +145,19 @@ export class RelatorioComponent implements OnInit {
     return await modal.present();
   }
   async filterModal() {
+    console.log('this' , this.filtro);
     let self = this;
     const modal = await this.modalCtrl.create({
       component: FiltroComponent,
       cssClass: 'my-custom-class',
+      componentProps: {
+        'filtro': this.filtro,
+      }
     });
     modal.onDidDismiss()
       .then((data) => {
-        let filtro = data['data'];
-        self.Init(filtro);
+        this.filtro = data['data'];
+        self.Init(this.filtro);
       });
 
     return await modal.present();

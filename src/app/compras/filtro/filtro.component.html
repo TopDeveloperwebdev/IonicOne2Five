@@ -1,18 +1,18 @@
 <ion-header class="bar bar-header bar-assertive ">
-    <ion-title class="filter-bar">Filtro de Compas</ion-title>
+    <ion-title class="filter-bar">Filtro de Compras</ion-title>
     <button class="button close-btn" (click)="dismiss({})">
     <i class="ion-close-round"></i>
   </button>
 </ion-header>
 <ion-content class="padding">
     <form #filtroCompras="ngForm" novalidate id="filtroCompras">
-        <label class="item item-input" ng-class="{'has-error': filtroCompras.inicio.$invalid}">
+        <label class="item item-input">
       <label style="font-size: 12px;">De: </label>
         <ion-input type="date" name="inicio" [(ngModel)]="filtro.inicio" required="{{filtro.fim != null}}" #inicio="ngModel">
         </ion-input>
         </label>
-        <div class="form-errors" *ngIf="inicio.hasError()">
-            <div class="form-error" ng-message="required">Campo Obrigatório</div>
+        <div class="form-errors" *ngIf="filtro.fim != null && filtro.inicio == null">
+            <div class="form-error" *ngIf="filtro.fim != null && filtro.inicio == null">Campo Obrigatório</div>
         </div>
 
         <label class="item item-input">
@@ -20,8 +20,8 @@
         <ion-input type="date" name="fim" [(ngModel)]="filtro.fim" [required]="filtro.inicio != null" #fim="ngModel">
         </ion-input>
         </label>
-        <div class="form-errors" *ngIf="inicio.hasError()">
-            <div class="form-error" ng-message="required">Campo Obrigatório</div>
+        <div class="form-errors" *ngIf="filtro.fim == null && filtro.inicio != null">
+            <div class="form-error" *ngIf="filtro.fim == null && filtro.inicio != null">Campo Obrigatório</div>
         </div>
         <div class="list">
             <label class="item item-input mt-55">
