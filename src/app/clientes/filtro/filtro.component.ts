@@ -42,6 +42,7 @@ export class FiltroComponent implements OnInit {
     else {
       this.categoria_id = this.filtro.categoria_id;
     }
+    this.filtro.tipopesquisa = "1";
     if (!this.filtro.hasOwnProperty('tipopesquisa')) {
       this.tipopesquisa = "";
     } else {
@@ -52,11 +53,10 @@ export class FiltroComponent implements OnInit {
     } else {
       this.cli_razaosocial = this.filtro.cli_razaosocial;
     }
-
-    if (!this.filtro.hasOwnProperty('apenasClientesAtraso')) {
-      this.apenasClientesAtraso = "";
+    if (!this.filtro.hasOwnProperty('cli_totaltitulosvencidos')) {
+      this.apenasClientesAtraso = false;
     } else {
-      this.apenasClientesAtraso = this.filtro.apenasClientesAtraso;
+      this.apenasClientesAtraso = true;
     }
     if (!this.filtro.hasOwnProperty('responsavel_id')) {
       this.responsavel_id = "";
@@ -80,31 +80,50 @@ export class FiltroComponent implements OnInit {
   }
 
   limparFiltro = function () {
+    this.filtro = {};
     this.modalController.dismiss(this.filtro);
   }
   Filtrar(tipopesquisa, cli_razaosocial, apenasClientesAtraso, categoria_id, responsavel_id, atividade_id, dia_visita) {
     if (tipopesquisa) {
       this.filtro.tipopesquisa = tipopesquisa;
     }
-    if (cli_razaosocial) {
-      this.filtro.cli_razaosocial = cli_razaosocial.toUpperCase();
-    }
-    if (apenasClientesAtraso != "") {
+    this.filtro.cli_razaosocial = cli_razaosocial.toUpperCase();
+    if (apenasClientesAtraso) {
       this.filtro.cli_totaltitulosvencidos = "0.00";
     }
+    else {
+      delete this.filtro.cli_totaltitulosvencidos;
+    }
+
     if (categoria_id != "") {
       this.filtro.categoria_id = categoria_id;
     }
+    else {
+      delete this.filtro.categoria_id;
+    }
+
+
     if (responsavel_id != "") {
       this.filtro.responsavel_id = responsavel_id;
+    } else {
+      delete this.filtro.responsavel_id;
     }
+
 
     if (atividade_id != "") {
       this.filtro.atividade_id = atividade_id;
     }
+    else {
+      delete this.filtro.atividade_id;
+    }
+
     if (dia_visita != "") {
       this.filtro.dia_visita = dia_visita;
     }
+    else {
+      delete this.filtro.dia_visita;
+    }
+
     console.log('this.fitro', this.filtro);
     this.modalController.dismiss(this.filtro);
   }

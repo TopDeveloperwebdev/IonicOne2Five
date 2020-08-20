@@ -25,7 +25,7 @@ export class ListaComponent implements OnInit {
     private navCtl: NavController,
     public modalController: ModalController,
     private dbService: DBService) {
-      this.db = dbService;
+    this.db = dbService;
   }
   ngOnInit() {
     this.clientsInit();
@@ -38,68 +38,62 @@ export class ListaComponent implements OnInit {
     let usertemp = await this.dbService.table('usuario').toArray();
     this.usuario = usertemp[0];
     this.clientesDataservice = [];
-    if (this.filtro.hasOwnProperty('cli_razaosocial') ||
-      this.filtro.hasOwnProperty('cli_totaltitulosvencidos') ||
-      this.filtro.hasOwnProperty('categoria_id') ||
-      this.filtro.hasOwnProperty('atividade_id') ||
-      this.filtro.hasOwnProperty('responsavel_id') ||
-      this.filtro.hasOwnProperty('dia_visita')
-    ) {
+    console.log('res', this.filtro);
+    this.clientesDataservice = this.filterItems(this.filtro).then(res => {
 
-      this.clientesDataservice = this.filterItems(this.filtro).then(res => {
-        this.clientesDataservice = res;
-        console.log('res1', res);
-        this.pushClients(this.page_limit);
-        loading.dismiss();
-      });
-    }
-    else {
-      this.db.clientes.orderBy('cli_razaosocial').toArray().then(res => {      
-        // this.clientesDataservice = res[0].sort((a, b) => {return a.cli_razaosocial < b.cli_razaosocial; });
-        this.clientesDataservice = res;
-        console.log('res2', res);
-        this.pushClients(this.page_limit);
-        loading.dismiss();
-      });
-    }
+      this.clientesDataservice = res;
+      console.log('res1', res);
+      this.pushClients(this.page_limit);
+      loading.dismiss();
+    });
   }
   async filterItems(filtro) {
 
     return this.db.clientes.orderBy('cli_razaosocial').toArray().then(res => {
       return res.filter(function (where) {
-        var comando = [];
-
+      
+        let cli_razaosocial = true;
+        let cli_totaltitulosvencidos = true;
+        let categoria_id = true;
+        let atividade_id = true;
+        let responsavel_id = true;
+        let dia_visita = true;
+        console.log('filtro_______',filtro);
         if (filtro.hasOwnProperty('cli_razaosocial')) {
-          if (filtro.tipopesquisa == 2) {
+     
+          if (filtro.tipopesquisa == "2") {
+            console.log('2' , filtro.tipopesquisa);
             var str = new RegExp('^' + filtro.cli_razaosocial, 'i');
-            comando.push('str.test(where.cli_razaosocial)');
+            cli_razaosocial = str.test(where.cli_razaosocial)
           } else {
             var str = new RegExp(filtro.cli_razaosocial);
-            comando.push('str.test(where.cli_razaosocial)');
+          
+            cli_razaosocial = str.test(where.cli_razaosocial);       
+           
           }
         }
 
         if (filtro.hasOwnProperty('cli_totaltitulosvencidos')) {
-          comando.push('where.cli_totaltitulosvencidos != filtro.cli_totaltitulosvencidos');
+          cli_totaltitulosvencidos = (where.cli_totaltitulosvencidos != filtro.cli_totaltitulosvencidos);
         }
 
         if (filtro.hasOwnProperty('categoria_id')) {
-          comando.push('where.categoria_id == filtro.categoria_id');
+          categoria_id = (where.categoria_id != filtro.categoria_id);
         }
 
         if (filtro.hasOwnProperty('atividade_id')) {
-          comando.push('where.atividade_id == filtro.atividade_id');
+          atividade_id = (where.atividade_id != filtro.atividade_id);
         }
 
         if (filtro.hasOwnProperty('responsavel_id')) {
-          comando.push('where.responsavel_id == filtro.responsavel_id');
+          responsavel_id = (where.responsavel_id != filtro.responsavel_id);
         }
 
         if (filtro.hasOwnProperty('dia_visita')) {
-          comando.push('where.dia_visita == filtro.dia_visita');
+          dia_visita = (where.dia_visita != filtro.dia_visita);
         }
 
-        return eval(comando.join(' && '));
+        return (cli_razaosocial && cli_totaltitulosvencidos && atividade_id && categoria_id && responsavel_id && dia_visita)
 
       });
     })
@@ -149,7 +143,7 @@ export class ListaComponent implements OnInit {
       }, {
         text: 'Motivos de Não Venda',
         icon: 'close-circle',
-        handler: () => {         
+        handler: () => {
           this.navCtl.navigateForward(['clientes/naovendalist', { 'cliente_id': cliente_id, 'nomecliente': razaosocial }]);
         }
       }]
