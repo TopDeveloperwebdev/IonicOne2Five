@@ -29,9 +29,7 @@ export class MotiCadastroComponent implements OnInit {
   async ngOnInit() {
 
     this.motivosnaovenda = [];
-    this.db.motivos_nao_venda.toArray().then(function (motivos) {
-      this.motivosnaovenda = motivos;
-    });
+    this.motivosnaovenda = await this.db.motivos_nao_venda.toArray();
     let usertemp = await this.dbService.table('usuario').toArray();
     this.usuario = usertemp[0];
 

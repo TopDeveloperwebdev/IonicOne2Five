@@ -104,10 +104,10 @@ export class LoginPage implements OnInit {
             loading.dismiss();
             navigator['app'].exitApp();
           }
-          else if (res['download_aplicativo'] === 'S') {
-            loading.dismiss();
-            this.presentToast('Você já fez o download em outro aparelho.');
-          }
+          // else if (res['download_aplicativo'] === 'S') {
+          //   loading.dismiss();
+          //   this.presentToast('Você já fez o download em outro aparelho.');
+          // }
           else {
             this.userTable.add(res);
             localStorage.setItem('sincronizar', 'true');

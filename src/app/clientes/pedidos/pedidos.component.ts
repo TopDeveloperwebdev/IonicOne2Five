@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
 import { NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
-import { FiltroPedidosComponent } from '../filtro-pedidos/filtro-pedidos.component';
+// import { FiltroPedidosComponent } from '../filtro-pedidos/filtro-pedidos.component';
+import { FiltroComponent } from '../../pedidos/filtro/filtro.component';
 import { ConexaoService } from '../../services/conexao.service';
 import { dataService } from '../../services/data.service';
 import { Guid } from "guid-typescript"
@@ -88,11 +89,13 @@ export class PedidosComponent implements OnInit {
   filterItems(filtro) {
     const self = this;
     const filters = self.pedidos.filter(function (where) {
+      console.log('where' , where);
       const comando = [];
-      let cData;
+      let cData = filtro.criterioData;
       let dateRange = true;
       let tipo_pedido = true;
       let situacao = true;
+      console.log('this.filto' , filtro);
       if (filtro.hasOwnProperty('inicio')) {
         let dataInicio = Date.parse(filtro.inicio);
         let dataFim = Date.parse(filtro.fim);
@@ -102,14 +105,13 @@ export class PedidosComponent implements OnInit {
         } else {
           dateRange = (Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') >=
             dataInicio && Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') <= dataFim)
-        }
-        comando.push(dateRange);
+        }    
       }
       if (filtro.hasOwnProperty('tipo_pedido')) {
         tipo_pedido = (where.tipo_pedido == filtro.tipo_pedido);
       }
       if (filtro.hasOwnProperty('situacao')) {
-        situacao = (where.situacao == filtro.situacao);
+        situacao = (where.enviado == filtro.situacao);
       }
       return (dateRange && tipo_pedido && situacao)
     });
@@ -158,7 +160,7 @@ export class PedidosComponent implements OnInit {
  
   async filter() {
     const modal = await this.modalController.create({
-      component: FiltroPedidosComponent,
+      component: FiltroComponent,
       cssClass: 'my-custom-class',
       componentProps: {
         'filtro': this.filtro,

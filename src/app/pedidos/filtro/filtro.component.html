@@ -34,12 +34,17 @@
         <label style="font-size: 12px;">De: </label>
             <ion-input type="date" name="inicio" [(ngModel)]="filtro.inicio" [required]="filtro.fim != null"></ion-input>
             </label>
+            <div class="form-errors" *ngIf="filtro.fim != null && filtro.inicio == null">
+                <div class="form-error" *ngIf="filtro.fim != null && filtro.inicio == null">Campo Obrigatório</div>
+            </div>
 
             <label class="item item-input">
         <label style="font-size: 12px;">Até: </label>
             <ion-input type="date" name="fim" [(ngModel)]="filtro.fim" [required]="filtro.inicio != null"></ion-input>
             </label>
-
+            <div class="form-errors" *ngIf="filtro.fim == null && filtro.inicio != null">
+                <div class="form-error" *ngIf="filtro.fim == null && filtro.inicio != null">Campo Obrigatório</div>
+            </div>
         </div>
         <button class="button button-full button-assertive" (click)="filtrarPedidos(filtroPedidos)" [disabled]="!filtroPedidos.valid" type="submit">
       Filtrar

@@ -10,21 +10,32 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 export class FiltroComponent implements OnInit {
   @Input() filtro: any;
   tipos: any;
+  Copyfiltro = {};
   constructor(public modalController: ModalController,) { }
 
   ngOnInit() {
-    this.filtro = {};
     this.tipos = [
       { codigo: "P", nome: "Pedido" },
       { codigo: "B", nome: "Bônus" },
       { codigo: "T", nome: "Troca" },
       { codigo: "O", nome: "Orçamento" }
     ];
+     
+     Object.assign(this.Copyfiltro, this.filtro)
+    if (!this.filtro.hasOwnProperty('situacao')) {
+      this.filtro.situacao = ""
+    }
+    if (!this.filtro.hasOwnProperty('tipo_pedido')) {
+      this.filtro.tipo_pedido = ""
+    }
+    if (!this.filtro.hasOwnProperty('criterioData')) {
+      this.filtro.criterioData = ""
+    }
 
   }
-  dismiss(filtro) {
+  dismiss() {
     console.log('dismass');
-    this.modalController.dismiss(filtro);
+    this.modalController.dismiss(this.Copyfiltro);
   }
 
   limparFiltro = function () {
@@ -34,7 +45,15 @@ export class FiltroComponent implements OnInit {
 
   filtrarPedidos(form: NgForm) {
     if (form.valid) {
-      console.log('this.', this.filtro);
+      if (this.filtro.situacao == "") {
+        delete this.filtro.situacao;
+      }
+      if (this.filtro.tipo_pedido == "") {
+       delete this.filtro.tipo_pedido ;
+      }
+      if (this.filtro.criterioData == "") {
+        delete this.filtro.criterioData;
+      }
       this.modalController.dismiss(this.filtro);
     }
 
