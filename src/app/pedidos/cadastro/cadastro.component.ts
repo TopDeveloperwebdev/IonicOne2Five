@@ -124,7 +124,7 @@ export class CadastroComponent implements OnInit {
 
         self.nomecliente = self.nomecliente;
         self.cliente = res;
-
+       
         self.listaPedidos(self.cliente_id);
 
         if (res.formapagto_id == null) {
