@@ -64,13 +64,12 @@ export class CadastroComponent implements OnInit {
     this.condicoes = await this.dbService.table('condicoe').toArray();
     this.formas = await this.dbService.table('forma').toArray();
     this.tabelas = await this.dbService.table('tabela').toArray();
-    // this.tabelas = this.tabelas[0];
     this.tipos = [
       { codigo: "P", nome: "Pedido" },
       { codigo: "B", nome: "Bônus" },
       { codigo: "T", nome: "Troca" },
       { codigo: "O", nome: "Orçamento" }
-    ];   
+    ];
     self.nomecliente = self.route.snapshot.params['nomecliente'];
     self.cliente_id = self.route.snapshot.params['cliente_id'];
     let is = self.route.snapshot.params['is'];
@@ -99,11 +98,11 @@ export class CadastroComponent implements OnInit {
       pedido_id = pedido.pedido_id;
     }
     self.pedido = pedido;
- 
-    self.getItensPedido(pedido_id).then(res => {
-      self.itens = res;  
+
+    self.getItensPedido(pedido_id, null).then(res => {
+      self.itens = res;
       self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
-   
+
       this.loadingStart.dismiss();
     }, error => {
       this.loadingStart.dismiss(error);
@@ -114,39 +113,39 @@ export class CadastroComponent implements OnInit {
   async createPedidos() {
     let self = this;
     self.itens = [];
-  
+
 
     this.db.clientes
-    .where('cli_id')
-    .equals(Number(self.cliente_id))
-    .first()
-    .then(res => {  
-      self.pedido.codigo_forma_pagto = res.formapagto_id;
-      self.pedido.codigo_condicao_pagto = res.condicaopagto_id;
-      self.pedido.tipo_pedido = "P";
-      self.pedido.data_entrega = self.gerarDataDeEntregaPadrao();
-      self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
-      self.cliente = res;
+      .where('cli_id')
+      .equals(Number(self.cliente_id))
+      .first()
+      .then(res => {
+        self.pedido.codigo_forma_pagto = res.formapagto_id;
+        self.pedido.codigo_condicao_pagto = res.condicaopagto_id;
+        self.pedido.tipo_pedido = "P";
+        self.pedido.data_entrega = self.gerarDataDeEntregaPadrao();
+        self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
+        self.cliente = res;
 
-      self.listaPedidos(self.cliente_id);
+        self.listaPedidos(self.cliente_id);
 
-      if (res.formapagto_id == null) {
-        self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
-      }     
-      if (res.credito_bloqueado === "S") {
-        self.pedidosConfirm();
+        if (res.formapagto_id == null) {
+          self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
+        }
+        if (res.credito_bloqueado === "S") {
+          self.pedidosConfirm();
+          self.loadingStart.dismiss();
+
+        } else {
+          if (res.cli_totaltitulosvencidos > 0) {
+            self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);
+            self.loadingStart.dismiss();
+          }
+        }
         self.loadingStart.dismiss();
 
-      } else {
-        if (res.cli_totaltitulosvencidos > 0) {
-          self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);
-          self.loadingStart.dismiss();
-        }
-      }
-      self.loadingStart.dismiss();
 
-
-    });
+      });
   }
 
   gerarDataDeEntregaPadrao() {
@@ -179,7 +178,7 @@ export class CadastroComponent implements OnInit {
 
 
   }
-  async getItensPedido(pedido_id) {
+  async getItensPedido(pedido_id, tabela_id) {
     const self = this;
     var itensArray = [];
     var produtosArray = [];
@@ -203,6 +202,9 @@ export class CadastroComponent implements OnInit {
                     i.descricao = prod && prod.descricaoproduto ?
                       prod.descricaoproduto :
                       "N/I";
+                    if (tabela_id) {
+                      i = this.recalcularItem(i, prod, tabela_id);
+                    }
                     itensArray.push(i);
                     if (index == itens.length - 1) {
                       return resolve(itensArray);
@@ -560,5 +562,87 @@ export class CadastroComponent implements OnInit {
       .toString(16)
       .substring(1);
   }
+
+  /// update price 
+  async mudarTabelaPreco() {
+
+    const loading = await this.loadCtrl.create({
+      message: 'Atualizando tabela de preços do pedido. Aguarde!'
+    });
+    loading.present();
+
+    this.getItensPedido(this.pedido.pedido_id, this.pedido.codigo_tabela_preco).then(
+      res => {
+        console.log("chamou getItensPedido ao trocar tabela", res);
+
+        this.itens = res;
+
+        this.atualizarTotalPedido();
+        loading.dismiss();
+      }
+    );
+  }
+  atualizarTotalPedido() {
+    this.pedido.total_pedido = 0;
+    this.itens.map(i => {
+      var item = parseFloat(i.valor_total_item);
+      var total_pedido = parseFloat(this.pedido.total_pedido);
+      var soma_itens = total_pedido + item;
+
+      this.pedido.total_pedido = soma_itens.toFixed(2);
+    });
+  }
+  recalcularItem(item, produto, tabela_id) {
+    var strTabelas = produto.tabelas;
+    var tabelas = strTabelas.split("|");
+
+    tabelas.forEach(tabela => {
+      var campos = tabela.split("-");
+
+      if (campos[0] == tabela_id) {
+        console.log("pegar os valores desta tabela:", campos);
+
+        var valor = campos[1];
+        valor = valor.replace(",", ".");
+        item = this.recalculaPrecoComDesconto(item, parseFloat(valor));
+      }
+    });
+
+    return item;
+  }
+
+  recalculaPrecoComDesconto(produto, valor) {
+    var preco_unitario_bruto = parseFloat(produto.preco_unitario_bruto);
+    var preco_unitario_comdesconto = parseFloat(
+      produto.preco_unitario_comdesconto
+    );
+    var quantidade = parseFloat(produto.quantidade);
+
+    var diferenca = preco_unitario_bruto - preco_unitario_comdesconto;
+    var porcentagem = diferenca / preco_unitario_bruto;
+
+    console.log(
+      "desconto para ser reaplicado: ",
+      preco_unitario_bruto,
+      preco_unitario_comdesconto,
+      diferenca,
+      porcentagem,
+      valor
+    );
+
+    produto.preco_unitario_bruto = valor;
+
+    if (diferenca != 0) {
+      produto.preco_unitario_comdesconto = valor - valor * porcentagem;
+    } else {
+      produto.preco_unitario_comdesconto = valor;
+    }
+
+    var valor_total = produto.preco_unitario_comdesconto * quantidade;
+    produto.valor_total_item = valor_total.toFixed(2);
+
+    return produto;
+  }
+
 
 }

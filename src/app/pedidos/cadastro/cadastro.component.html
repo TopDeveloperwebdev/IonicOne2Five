@@ -70,7 +70,7 @@
             <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
 
-        <select [(ngModel)]="pedido.codigo_tabela_preco" required name="codigo_tabela_preco">
+        <select [(ngModel)]="pedido.codigo_tabela_preco" required name="codigo_tabela_preco" (change)="mudarTabelaPreco()">
           <option value="">Selecione a Tabela</option>
           <option value="{{tabela.tabela_id}}" *ngFor="let tabela of tabelas">
             {{tabela.descricaotabela}}</option>
