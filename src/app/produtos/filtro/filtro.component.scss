@@ -1,3 +1,15 @@
 .close-btn {
     position: absolute;
 }
+
+.check-container {
+    display: flex;
+    border: 1px solid #dedbdb;
+    ion-label {
+        margin: 5px;
+    }
+    ion-checkbox {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+}

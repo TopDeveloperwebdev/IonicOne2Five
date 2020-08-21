@@ -23,29 +23,46 @@
         <span class="input-label">Produto </span>
         <ion-input type="text" [(ngModel)]="produtoEscolhido.descricao" readonly name="descricao"></ion-input>
       </label>
+
             <label class="item item-input item-stacked-label">
-        <ion-input type="phone" [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true"
-          *ngIf="calculaDesconto(addProdutoForm);" name="desconto" ui-number-mask
-          [(ngModel)]="produtoEscolhido.desc_unitario_percentual" #desconto="ngModel"></ion-input>
+        <div class="input-label">Desconto (%) <small *ngIf="!isValidate" style="color: red;">deve ser
+            menor que ({{descontoPermitido}}%)</small></div>
+        <div>
+          <input type="phone" [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true"
+            (keyup)="calculaDesconto(addProdutoForm)" name="desconto" currencyMask #desconto="ngModel"
+            [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+            [(ngModel)]="produtoEscolhido.desc_unitario_percentual">
+        </div>
+
       </label>
+
             <label class="item item-input item-stacked-label">
-        <span class="input-label">Preço </span>
-        <ion-input name="preco_unitario_bruto" type="text" [(ngModel)]="produtoEscolhido.preco_unitario_bruto"
-          ui-money-mask="2"></ion-input>
+        <div class="input-label">Preço</div>
+        <div>
+          <input currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" name="preco_unitario_bruto"
+            type="text" [(ngModel)]="produtoEscolhido.preco_unitario_bruto" />
+        </div>
       </label>
+
             <label class="item item-input item-stacked-label">
-        <span class="input-label">Acréscimo (%)</span>
-        <ion-input name="acrescimo" type="phone" [(ngModel)]="produtoEscolhido.acrescimo"
-          (keyup)="atualizarPreco(addProdutoForm);" ui-number-mask
-          [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true"></ion-input>
+        <div class="input-label">Acréscimo (%)</div>
+        <div>
+          <input currencyMask name="acrescimo" type="phone" [(ngModel)]="produtoEscolhido.acrescimo"
+            [options]="{ prefix: '', thousands: '.', decimal: ',' }" (keyup)="atualizarPreco(addProdutoForm);"
+            ui-number-mask [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" />
+        </div>
+
       </label>
+
             <label class="item item-input item-stacked-label">
-        <span class="input-label">Preço de Venda</span>
-        <ion-input name="preco_unitario_comdesconto" type="phone"
-          [(ngModel)]="produtoEscolhido.preco_unitario_comdesconto" [disabled]="produtoEscolhido.promocao == 'S'"
-          (blur)="calculaPrecoComDesconto(addProdutoForm);"
-          [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" ui-money-mask="2">
-        </ion-input>
+        <div class="input-label">Preço de Venda</div>
+        <div>
+          <input name="preco_unitario_comdesconto" type="phone" currencyMask
+            [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+            [(ngModel)]="produtoEscolhido.preco_unitario_comdesconto" (blur)="calculaPrecoComDesconto(addProdutoForm);"
+            [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" />
+        </div>
+
       </label>
             <!-- <label class="item item-input">
     <span class="input-label">Quantidade</span>
@@ -64,7 +81,7 @@
             <label class="item item-input item-stacked-label">
         <span class="input-label">Total</span>
         <ion-input name="valor_total_item" type="text" [(ngModel)]="produtoEscolhido.valor_total_item" ui-money-mask="2"
-        readonly></ion-input>
+          readonly></ion-input>
       </label>
         </div>
 
@@ -72,7 +89,7 @@
       <i class="icon ion-search"></i>
       Mais Detalhes
     </button>
-        <button class="button button-block button-assertive" [disabled]="!addProdutoForm.valid" (click)="confirmaProdutoPedido(addProdutoForm)">
+        <button class="button button-block button-assertive" [disabled]="!addProdutoForm.valid || !isValidate" (click)="confirmaProdutoPedido(addProdutoForm)">
       <i class="icon ion-checkmark"></i>
       Confirmar
     </button>

@@ -450,7 +450,7 @@ export class ListaComponent implements OnInit {
     .then((data) => {
       this.filtro = data['data'].filtro;
       this.tabela_id = data['data'].tabela_id;
-      console.log('this', this.filtro , this.tabela_id);
+      console.log('this----------', this.filtro , this.tabela_id);
       this.produtoInit();
 
     });

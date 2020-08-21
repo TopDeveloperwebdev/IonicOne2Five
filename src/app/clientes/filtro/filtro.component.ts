@@ -42,9 +42,9 @@ export class FiltroComponent implements OnInit {
     else {
       this.categoria_id = this.filtro.categoria_id;
     }
-    this.filtro.tipopesquisa = "1";
+   
     if (!this.filtro.hasOwnProperty('tipopesquisa')) {
-      this.tipopesquisa = "";
+      this.tipopesquisa = "1";
     } else {
       this.tipopesquisa = this.filtro.tipopesquisa;
     }

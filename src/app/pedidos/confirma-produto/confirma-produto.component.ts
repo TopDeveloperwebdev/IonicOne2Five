@@ -16,6 +16,8 @@ export class ConfirmaProdutoComponent implements OnInit {
   comissoes_produto: any;
   itens: any;
   pedido: any;
+  descontoPermitido : any;
+  isValidate=true;
   @Input() produtoEscolhido: any;
   constructor(
     public loadCtrl: LoadingController,
@@ -134,10 +136,12 @@ export class ConfirmaProdutoComponent implements OnInit {
 
     if (desconto > desc_permitido) {
       // alert('O DESCONTO NÃO PODE SER MAIOR DO QUE ' + desc_permitido + ' %.');
-      // this.descontoPermitido = desc_permitido;
-
+       this.descontoPermitido = desc_permitido;
+     
+       this.isValidate= false;
+       
     } else {
-
+      this.isValidate= true;
       var preco_tabela = parseFloat(
         this.produtoEscolhido.preco_unitario_bruto
       );
@@ -183,6 +187,16 @@ export class ConfirmaProdutoComponent implements OnInit {
       this.produtoEscolhido.acrescimo = 0.0;
       this.produtoEscolhido.desc_unitario_percentual = 0.0; //
     }
+  
+    if (this.produtoEscolhido.desc_unitario_percentual > desc_permitido) {
+      // alert('O DESCONTO NÃO PODE SER MAIOR DO QUE ' + desc_permitido + ' %.');
+     
+      this.isValidate= false;
+  } else {
+
+      this.isValidate= true;
+  }
+
     var valor_total = preco_unitario_comdesconto * quantidade;
     this.produtoEscolhido.valor_total_item = valor_total.toFixed(2);
   }

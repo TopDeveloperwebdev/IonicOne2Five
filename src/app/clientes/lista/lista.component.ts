@@ -131,7 +131,7 @@ export class ListaComponent implements OnInit {
         text: 'Cadastro',
         icon: 'create',
         handler: () => {
-          this.navCtl.navigateForward('clientes/cadastro');
+          this.navCtl.navigateForward(['clientes/cadastro', { 'cliente_id': cliente_id}]);
         }
       }, {
         text: 'Títulos',

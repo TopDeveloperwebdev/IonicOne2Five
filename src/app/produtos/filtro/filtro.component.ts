@@ -16,10 +16,10 @@ export class FiltroComponent implements OnInit {
   descricaoproduto = "";
   marcaSelecionada: any;
   tipoSelecionado: any;
-
+  Copyfiltro : any;
   @Input() filtro: any;
   @Input() tabela_id: any;
-  produtoEmPromocao = "";
+  produtoEmPromocao : any;
   constructor(public modalController: ModalController, public dbService: DBService) {
     this.db = dbService;
     // this.filtro = {};
@@ -50,7 +50,8 @@ export class FiltroComponent implements OnInit {
         descricao: 'Pesquisa Início Descrição'
       }
     ];
-
+    this.Copyfiltro = {};
+    Object.assign(this.Copyfiltro, this.filtro);
     self.tipoPesquisa = this.pesquisas[0].id;
     if (!this.filtro.hasOwnProperty('tipoPesquisa')) {
       this.tipoPesquisa = "";
@@ -64,15 +65,15 @@ export class FiltroComponent implements OnInit {
       this.marcaSelecionada = this.filtro.inf_marca;
     }
     if (!this.filtro.hasOwnProperty('produtoEmPromocao')) {
-      this.produtoEmPromocao = "";
+      this.produtoEmPromocao = false;
     } else {
-      this.marcaSelecionada = this.filtro.produtoEmPromocao;
+      this.produtoEmPromocao = this.filtro.produtoEmPromocao;
     }
 
     if (!this.filtro.hasOwnProperty('tipoSelecionado')) {
       this.tipoSelecionado = "";
     } else {
-      this.marcaSelecionada = this.filtro.inf_produto;
+      this.tipoSelecionado = this.filtro.inf_produto;
     }
     if (!this.filtro.hasOwnProperty('descricaoproduto')) {
       this.descricaoproduto = "";
@@ -83,13 +84,12 @@ export class FiltroComponent implements OnInit {
   }
 
 
-  dismiss(filtro) {
-    console.log('dismass');
-    this.modalController.dismiss({ filtro: this.filtro, tabela_id: this.tabela_id });
+  dismiss() {   
+    this.modalController.dismiss({ filtro: this.Copyfiltro, tabela_id: this.tabela_id });
   }
 
   limparFiltro() {
-    this.modalController.dismiss(this.filtro);
+    this.modalController.dismiss({ filtro: {}, tabela_id: this.tabela_id });
   }
   filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {
     if (marcaSelecionada != "") {
@@ -109,9 +109,9 @@ export class FiltroComponent implements OnInit {
     if (produtoEmPromocao != false) {
       this.filtro.produtoEmPromocao = 'S';
     }
-    else {
+   else {
       delete this.filtro.produtoEmPromocao;
-    }
+   }
 
     if (descricaoproduto != "") {
       this.filtro.descricaoproduto = descricaoproduto.toUpperCase();

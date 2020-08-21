@@ -19,15 +19,35 @@
         <ion-item-sliding *ngFor="let item of itens">
             <ion-item class="item">
                 <div>
-                    <b>Cod: {{item.compras_item_codigoproduto}}</b>
+                    <b>codigo: {{item.compras_item_codigoproduto}}</b>
                     <div>
                         <p>
-                            {{item.compras_item_descricaoproduto}}
+                            nome : {{item.compras_item_descricaoproduto}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            Unidade: {{item.compras_item_unidadadeproduto}}
+                            unidade: {{item.compras_item_unidadadeproduto}}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            quant : {{ item.quant}}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            total_item: {{Floor(item.total_item)}}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            total_desconto: {{Floor(item.total_desconto)}}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            total_comissao: {{Floor(item.total_comissao)}}
                         </p>
                     </div>
                 </div>

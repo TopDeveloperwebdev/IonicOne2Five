@@ -173,8 +173,8 @@ export class SincronizarPage implements OnInit {
         num_visitas = res[2];
         loading.dismiss();
         this.sincronizarSaidaAlert(num_pedidos, num_clientes, num_visitas);
-      }, function (error) {
-
+      }, (error) => {
+        console.log('erro' , error);
         this.presentToast('PROBLEMAS NO SINCRONISMO DE SAÍDA.');
         loading.dismiss();
       });

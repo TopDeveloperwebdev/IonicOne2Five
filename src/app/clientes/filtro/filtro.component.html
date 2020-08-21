@@ -7,8 +7,7 @@
 <ion-content class="padding">
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select [(ngModel)]="tipopesquisa" [ngModelOptions]="{standalone: true}">
-        <option value="">Selecione a forma de pesquisa</option>
+      <select [(ngModel)]="tipopesquisa" [ngModelOptions]="{standalone: true}">      
         <option value="{{pesquisa.id}}" *ngFor="let pesquisa of pesquisas">{{pesquisa.descricao}}</option>
       </select>
     </label>

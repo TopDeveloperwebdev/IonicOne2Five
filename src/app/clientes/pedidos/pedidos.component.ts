@@ -254,6 +254,7 @@ export class PedidosComponent implements OnInit {
         });
         loading.dismiss();
         self.confirmAlert('Mensagem', 'Pedido duplicado com sucesso');
+        this.listaPedidos(this.cliente_id);
       });
   }
   guid() {

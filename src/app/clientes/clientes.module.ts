@@ -14,7 +14,7 @@ import { FiltroComponent } from './filtro/filtro.component';
 import { MotiCadastroComponent } from './motivonaovenda/cadastro/cadastro.component';
 import { FiltroPedidosComponent } from './filtro-pedidos/filtro-pedidos.component';
 import { naovendaListaComponent } from './motivonaovenda/lista/lista.component';
-import {NgxMaskIonicModule} from 'ngx-mask-ionic'
+import { NgxMaskIonicModule} from 'ngx-mask-ionic'
 @NgModule({
   imports: [
     CommonModule,

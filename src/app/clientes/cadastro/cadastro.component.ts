@@ -3,6 +3,7 @@ import { ModalController, LoadingController, AlertController, NavController } fr
 import { DBService } from '../../services/DB.service';
 import { NgForm } from '@angular/forms';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-cadastro',
   templateUrl: './cadastro.component.html',
@@ -25,17 +26,28 @@ export class CadastroComponent implements OnInit {
   ];
   cliente: any;
   db: any;
+  cliente_id: any;
 
 
-  constructor(public alertCtrl: AlertController, public modalController: ModalController, private dbService: DBService, public navCtrl: NavController, public loadCtrl: LoadingController, private formBuilder: FormBuilder) {
+  constructor(public alertCtrl: AlertController, public modalController: ModalController, private dbService: DBService, public navCtrl: NavController, public loadCtrl: LoadingController, private formBuilder: FormBuilder, public route: ActivatedRoute) {
     this.db = dbService;
-    this.cliente = { cli_id: null ,atividade_id : '',cli_codigocidadeentrega : ''};
+    this.cliente = { cli_id: null, atividade_id: '', cli_codigocidadeentrega: '' };
   }
 
   async ngOnInit() {
     this.atividades = await this.dbService.table('atividade').toArray();
     this.cidades = await this.dbService.table('cidade').toArray();
+
+    this.cliente_id = this.route.snapshot.params['cliente_id'];
+
+    if (this.cliente_id) {
+      this.db.clientes.where('cli_id').equals(Number(this.cliente_id)).first().then(cliente => {
+        this.cliente = cliente;
+        console.log('this.cliente' , this.cliente);
+      });
+    }
   }
+
   async salvar(form: NgForm) {
     if (form.valid) {
 

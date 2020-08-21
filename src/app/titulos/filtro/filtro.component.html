@@ -23,14 +23,16 @@
             <div class="form-errors" *ngIf="inicio.hasError()">
                 <div class="form-error" ng-message="required">Campo Obrigatório</div>
             </div>
-
+            <div class="form-errors" *ngIf="filtro.fim != null && filtro.inicio == null">
+                <div class="form-error" *ngIf="filtro.fim != null && filtro.inicio == null">Campo Obrigatório</div>
+            </div>
             <label class="item item-input">
                 <label style="font-size: 12px;">Até: </label>
             <ion-input type="date" name="fim" [(ngModel)]="filtro.fim" [required]="filtro.inicio != null" #fim="ngModel">
             </ion-input>
             </label>
-            <div class="form-errors" *ngIf="inicio.hasError()">
-                <div class="form-error" ng-message="required">Campo Obrigatório</div>
+            <div class="form-errors" *ngIf="filtro.fim == null && filtro.inicio != null">
+                <div class="form-error" *ngIf="filtro.fim == null && filtro.inicio != null">Campo Obrigatório</div>
             </div>
 
         </div>

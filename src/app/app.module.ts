@@ -11,7 +11,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NgxCurrencyModule } from "ngx-currency";
-import {NgxMaskIonicModule} from 'ngx-mask-ionic'
+import {NgxMaskIonicModule} from 'ngx-mask-ionic';
+import { CurrencyMaskModule } from "ng2-currency-mask";
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -21,7 +22,8 @@ import {NgxMaskIonicModule} from 'ngx-mask-ionic'
     AppRoutingModule,
     HttpClientModule,
     NgxCurrencyModule,
-    NgxMaskIonicModule.forRoot()
+    NgxMaskIonicModule.forRoot(),
+    CurrencyMaskModule
 
   ],
   providers: [

@@ -35,7 +35,7 @@ export class RelatorioComprasComponent implements OnInit {
         .toArray()
         .then(function (res2) { return res2 })
     ]).subscribe(res => {    
-      self.itens = this.getGroupTables(res[0], res[1]);
+      self.itens = this.getGroupTables(res[0], res[1]);   
      
     })
 

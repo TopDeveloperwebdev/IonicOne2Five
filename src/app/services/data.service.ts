@@ -237,7 +237,7 @@ export class dataService {
             { headers: this.headers }
         );
     }
-   
+
     excluir(visita_id: any) {
         return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/visita/excluir?visita_id=${visita_id}`,
             { headers: this.headers }
@@ -252,7 +252,7 @@ export class dataService {
                 pedidos.map((pedido) => {
                     var cod_pedido = pedido.cod_pedido_mob;
                     self.db.itempedido.where('pedido_id').equals(cod_pedido).toArray().then(function (itenspedido) {
-                        this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/pedido?
+                        self.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/pedido?
                         pedido_id=${pedido.pedido_id}&&
                         vendedor_id=${pedido.vendedor_id}&&
                         cliente_id=${pedido.cliente_id}&&
@@ -273,8 +273,8 @@ export class dataService {
                         itens=${JSON.stringify(itenspedido)} `,
                             { headers: this.headers }
                         ).subscribe(response => {
-                            var pedido_id_web = response.pedido_id;
-                            var ids_itens_web = response.itens_id;
+                            var pedido_id_web = response['pedido_id'];
+                            var ids_itens_web = response['itens_id'];
                             self.db.pedido.update(cod_pedido, { pedido_id: pedido_id_web, enviado: 'S' });
                             ids_itens_web.map(function (value) {
                                 self.db.itempedido.update(value.id_app, {
@@ -284,7 +284,9 @@ export class dataService {
                             });
                         },
                             err => {
+
                                 this.loadingController.dismiss();
+                                console.log('err', err);
                                 alert('Problemas ao enviar/atualizar pedidos para o servidor.');
                                 return false;
                             });
@@ -400,8 +402,8 @@ export class dataService {
         });
 
     }
-    getApagarPedido(pedido_id) {       
-      return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/pedido/excluir?pedido_id=${pedido_id}`,
+    getApagarPedido(pedido_id) {
+        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/pedido/excluir?pedido_id=${pedido_id}`,
             { headers: this.headers }
         );
     }

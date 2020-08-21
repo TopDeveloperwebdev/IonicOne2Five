@@ -114,14 +114,17 @@ export class MotiCadastroComponent implements OnInit {
           self.navCtrl.navigateRoot(['clientes/naovendalist', { 'cliente_id': visita.cliente_id, 'nomecliente': visita.nomecliente }]);
           loading.dismiss();
         }).catch(function (error) {
-          loading.dismiss();
+         
           alert('Erro! Não foi possivel cadastrar/alterar a visita.');
-          console.log(error);
+          console.log(error);     
+          loading.dismiss();     
         });
       }, err => {
+        console.log('err',err);
         visita.latitude_gravacao = 0;
         visita.longitude_gravacao = 0;
         alert("Localização não encontrada.");
+        loading.dismiss();
         this.navCtrl.navigateForward(['clientes/naovendalist', { 'cliente_id': visita.cliente_id, 'nomecliente': visita.nomecliente }]);
       })
     }

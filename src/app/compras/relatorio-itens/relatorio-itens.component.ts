@@ -23,23 +23,52 @@ export class RelatorioItensComponent implements OnInit {
   ngOnInit() {
     let self = this;
     self.filtro = {};
-    self.getComprasItens(self.filtro);
+    self.getComprasItens();
   }
 
-  getComprasItens(filtro) {
+  getComprasItens() {
     let self = this;
     self.db.compras_item
       .toArray()
       .then(function (res) {
-       console.log('item' , res);
-        self.filterItems(filtro, res).then(filterItems => {
-          self.comprasDataservice = filterItems;
-          self.pushClients(self.page_limit);
-        })
+        console.log('item', res);
+    
+        self.comprasDataservice = self.getGroupTables(res);       
+        self.pushClients(self.page_limit);
+        // self.filterItems(filtro, res).then(filterItems => {
+
+        // })
 
       });
   }
-
+  getGroupTables(ciTable) {
+    
+    let ci_cp = {};
+    ciTable.map((ci) => {     
+      let rowKey = ci.compras_item_codigoproduto + ci.compras_item_descricaoproduto + ci.compras_item_unidadadeproduto;
+      if (!ci_cp[rowKey]) {
+        ci_cp[rowKey] = { cliente_nome: '', quant: 0, total_item: 0, total_desconto: 0, total_comissao: 0 };
+      }
+      ci_cp[rowKey].compras_item_codigoproduto = ci.compras_item_codigoproduto;
+      ci_cp[rowKey].compras_item_descricaoproduto = ci.compras_item_descricaoproduto;
+      ci_cp[rowKey].compras_item_unidadadeproduto = ci.compras_item_unidadadeproduto;
+      ci_cp[rowKey].quant += Number(ci.compras_item_quantidade);
+      ci_cp[rowKey].total_item += Number(ci.compras_item_precototal);
+      ci_cp[rowKey].total_desconto += (Number(ci.compras_item_precotabela) -
+        Number(ci.compras_item_precounitario)) * ci.compras_item_quantidade;
+      ci_cp[rowKey].total_comissao += Number(ci.compras_item_comissaovaloritem);  
+    })
+    let items = [];
+    Object.values(ci_cp).forEach(value => {
+      items.push(value);
+    });
+   
+    
+    return items;
+  }
+  Floor(number) {
+    return Math.floor(number).toFixed(2)
+  }
   async filterItems(filtro, res) {
     const self = this;
     let filterItems = res.filter(function (where) {
@@ -65,6 +94,7 @@ export class RelatorioItensComponent implements OnInit {
     })
 
   }
+
   pushClients(page_limit) {
     this.itens = this.comprasDataservice.slice(0, page_limit);
 
@@ -98,7 +128,7 @@ export class RelatorioItensComponent implements OnInit {
     modal.onDidDismiss()
       .then((data) => {
         let filtro = data['data'];
-        self.getComprasItens(filtro);
+        self.getComprasItens();
       });
 
     return await modal.present();
