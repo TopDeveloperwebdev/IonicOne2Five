@@ -31,14 +31,18 @@ export class PedidosComponent implements OnInit {
     public conexaoService: ConexaoService,
     public dataService: dataService) {
 
-    this.cliente_id = this.route.snapshot.params['cliente_id'];
-
-    this.nomecliente = this.route.snapshot.params['nomecliente'];
+   
     this.db = dbService;
   }
 
-  ngOnInit() {
+  ionViewDidEnter(){
+    this.cliente_id = this.route.snapshot.params['cliente_id'];
+    this.nomecliente = this.route.snapshot.params['nomecliente'];
     this.listaPedidos(this.cliente_id);
+    console.log('render');
+  }
+  ngOnInit(){
+
   }
   async confirmAlert(header, message) {
     const alert = await this.alertCtrl.create({
@@ -149,13 +153,13 @@ export class PedidosComponent implements OnInit {
   cadastro(cliente_id, nomecliente) {
     let totalPedidos = this.totalPedidos(this.pedidos);
     localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
-    this.navCtl.navigateForward(['pedidos/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
+    this.navCtl.navigateForward(['pedidos/cadastro', {'is' : 'create', 'cliente_id': cliente_id, 'nomecliente': nomecliente}]);
   }
-  alterar(p, nomecliente) {
+  alterar(p,cliente_id, nomecliente) {
     let totalPedidos = this.totalPedidos(this.pedidos);
     localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
     let pedido = JSON.stringify(p);
-    this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido, 'nomecliente': nomecliente }]);
+    this.navCtl.navigateForward(['pedidos/cadastro', { 'is' : 'edit','pedido': pedido,'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
 
   async filter() {

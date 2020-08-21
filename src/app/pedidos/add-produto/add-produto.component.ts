@@ -14,8 +14,8 @@ export class AddProdutoComponent implements OnInit {
   db: any;
   listaProdutos = [];
   listaProdutosDataservice: any;
-  tabelas : any;
-  tabela_id : any;
+  tabelas: any;
+  tabela_id: any;
   page_limit = 50;
   increaseItems = 50;
   produtoEscolhido: any;
@@ -57,30 +57,31 @@ export class AddProdutoComponent implements OnInit {
     loading.present();
     this.tabelas = await this.db.tabela.toArray();
     this.tabela_id = this.tabelas[0].tabela_id;
-   
+
     this.ListaProdutos(self.filtro).then(res => {
       let produtos;
       produtos = res;
-      this.listaProdutosDataservice = produtos.map(function (produto, index) {
+      this.listaProdutosDataservice = produtos.map((produto, index) => {
         var p;
         p = produto;
-        
         p.precotabela = "";
         self.db.produto_tabela.where('[produto_id+tabela_id]')
           .equals([p.produto_id, self.tabela_id.toString()])
           .first()
-          .then(function (res) {
-            console.log('res --', res);
+          .then((res) => {
             if (res && res.precotabela) {
               p.precotabela = self.toNumber(res.precotabela);
             }
+            if (index == produtos.length - 1) {
+              this.pushClients(this.page_limit);
+              loading.dismiss();
+            }
             return p;
-
           });
-        return p;
+          return p;
+
       });
-      this.pushClients(this.page_limit);
-      loading.dismiss();
+
     },
       err => {
         loading.dismiss();
@@ -363,8 +364,8 @@ export class AddProdutoComponent implements OnInit {
 
   dismiss() {
     console.log('dismass');
-    this.modalCtrl.dismiss({itens : this.itens , pedido : this.pedido});
-   // this.itens, this.pedido
+    this.modalCtrl.dismiss({ itens: this.itens, pedido: this.pedido });
+    // this.itens, this.pedido
   }
   addProdutoPedido(produto) {
     let self = this;

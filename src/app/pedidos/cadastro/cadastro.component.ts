@@ -70,10 +70,11 @@ export class CadastroComponent implements OnInit {
       { codigo: "B", nome: "Bônus" },
       { codigo: "T", nome: "Troca" },
       { codigo: "O", nome: "Orçamento" }
-    ];
+    ];   
     self.nomecliente = self.route.snapshot.params['nomecliente'];
-
-    if (self.cliente_id) {
+    self.cliente_id = self.route.snapshot.params['cliente_id'];
+    let is = self.route.snapshot.params['is'];
+    if (is == 'create') {
       this.createPedidos();
     } else {
       this.editPedios();
@@ -98,16 +99,14 @@ export class CadastroComponent implements OnInit {
       pedido_id = pedido.pedido_id;
     }
     self.pedido = pedido;
-    console.log('selfp', self.pedido);
+ 
     self.getItensPedido(pedido_id).then(res => {
-      self.itens = res;
-      console.log('sdf', self.itens);
-
+      self.itens = res;  
       self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
-
+   
       this.loadingStart.dismiss();
     }, error => {
-      this.loadingStart.dismiss();
+      this.loadingStart.dismiss(error);
       self.presentConfirm();
     });
 
@@ -115,42 +114,39 @@ export class CadastroComponent implements OnInit {
   async createPedidos() {
     let self = this;
     self.itens = [];
-    self.nomecliente = self.route.snapshot.params['nomecliente'];
-    self.cliente_id = self.route.snapshot.params['cliente_id'];
+  
 
     this.db.clientes
-      .where("cli_id")
-      .equals(Number(self.cliente_id))
-      .first()
-      .then(function (res) {
-        self.pedido.codigo_forma_pagto = res.formapagto_id;
-        self.pedido.codigo_condicao_pagto = res.condicaopagto_id;
-        self.pedido.tipo_pedido = "P";
-        self.pedido.data_entrega = self.gerarDataDeEntregaPadrao();
+    .where('cli_id')
+    .equals(Number(self.cliente_id))
+    .first()
+    .then(res => {  
+      self.pedido.codigo_forma_pagto = res.formapagto_id;
+      self.pedido.codigo_condicao_pagto = res.condicaopagto_id;
+      self.pedido.tipo_pedido = "P";
+      self.pedido.data_entrega = self.gerarDataDeEntregaPadrao();
+      self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
+      self.cliente = res;
 
-        self.nomecliente = self.nomecliente;
-        self.cliente = res;
+      self.listaPedidos(self.cliente_id);
 
-        self.listaPedidos(self.cliente_id);
-
-        if (res.formapagto_id == null) {
-          self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
-        }
-
+      if (res.formapagto_id == null) {
+        self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
+      }     
+      if (res.credito_bloqueado === "S") {
+        self.pedidosConfirm();
         self.loadingStart.dismiss();
-        if (res.credito_bloqueado === "S") {
-          self.pedidosConfirm();
+
+      } else {
+        if (res.cli_totaltitulosvencidos > 0) {
+          self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);
           self.loadingStart.dismiss();
-
-        } else {
-          if (res.cli_totaltitulosvencidos > 0) {
-            self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);
-            self.loadingStart.dismiss();
-          }
         }
+      }
+      self.loadingStart.dismiss();
 
 
-      });
+    });
   }
 
   gerarDataDeEntregaPadrao() {
@@ -188,33 +184,39 @@ export class CadastroComponent implements OnInit {
     var itensArray = [];
     var produtosArray = [];
     return new Promise((resolve, reject) => {
-      self.dbService.table('itempedido').toArray().then(
-        res => {
-          let itens = res.filter(function (where) {
-            return where.pedido_id == pedido_id;
-          })
-          itens.map(function (item, index) {
-            var i;
-            i = item;
-            return self.dbService.table('produto').toArray().then(res => {
-              let prod;
-              prod = res.filter(function (where) {
-                return where.produto_id == i.codigo_produto;
-              })
+      self.db.itempedido
+        .where('pedido_id')
+        .equals(pedido_id)
+        .toArray()
+        .then(
+          itens => {
+            if (itens.length) {
+              itens.map((item, index) => {
+                var i;
+                i = item;
+                return self.dbService.table('produto')
+                  .where('produto_id')
+                  .equals(i.codigo_produto)
+                  .toArray().then(res => {
+                    let prod;
+                    prod = res;
+                    i.descricao = prod && prod.descricaoproduto ?
+                      prod.descricaoproduto :
+                      "N/I";
+                    itensArray.push(i);
+                    if (index == itens.length - 1) {
+                      return resolve(itensArray);
+                    }
+                  })
+              });
+            } else {
+              return resolve(itensArray);
+            }
 
-              i.descricao = prod && prod.descricaoproduto ?
-                prod.descricaoproduto :
-                "N/I";
-              itensArray.push(i);
-              if (index == itens.length - 1) {
-                return resolve(itensArray);
-              }
-            })
+          },
+          err => {
+            return reject(err);
           });
-        },
-        err => {
-          return reject(err);
-        });
     });
 
   }
@@ -229,7 +231,7 @@ export class CadastroComponent implements OnInit {
           role: 'cancel',
           cssClass: 'button button-assertive',
           handler: () => {
-            this.navCtrl.navigateForward(['pedidos/lista', { 'cliente_id': this.pedido.cliente_id, 'nomecliente': this.nomecliente }]);
+            this.navCtrl.navigateForward(['pedidos/lista', { 'cliente_id': this.cliente_id, 'nomecliente': this.nomecliente }]);
           }
         }
       ]
@@ -347,7 +349,7 @@ export class CadastroComponent implements OnInit {
   }
 
   totalPedidos(filtro) {
-    console.log('epei', filtro);
+
     if (typeof filtro != "undefined" && filtro.length > 0) {
       var total = 0.0;
       for (var i in filtro) {
@@ -423,9 +425,7 @@ export class CadastroComponent implements OnInit {
           let id = self.guid();
           itempedido = {
             item_id: id,
-            pedido_id: pedidoObj.pedido_id ?
-              pedidoObj.cod_pedido_mob :
-              pedidoObj.pedido_id,
+            pedido_id: pedidoObj.pedido_id,
             codigo_produto: value.codigo_produto,
             descricao: value.descricao,
             quantidade: value.quantidade,
@@ -435,11 +435,12 @@ export class CadastroComponent implements OnInit {
             valor_total_item: value.valor_total_item,
             enviado: "N"
           };
+
           self.db.itempedido.add(itempedido);
         });
       }).then(function () {
         loading.dismiss();
-        self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': pedido.cliente_id, 'nomecliente': this.nomecliente }]);
+        self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': self.cliente_id, 'nomecliente': self.nomecliente }]);
       }).catch(function (error) {
         console.log('erro', error);
         loading.dismiss();
@@ -478,6 +479,7 @@ export class CadastroComponent implements OnInit {
   }
 
   salvar(pedido, itens) {
+    console.log('pedido', pedido, itens);
     const itensCount = itens ? itens.length : 0;
 
     if (!itensCount || itensCount == 0) {
