@@ -6,7 +6,8 @@ import { AddProdutoComponent } from '../add-produto/add-produto.component'
 import { Geolocation } from '@ionic-native/geolocation/ngx'
 
 import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
-
+import { NgForm } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 @Component({
   selector: 'app-cadastro',
   templateUrl: './cadastro.component.html',
@@ -30,7 +31,8 @@ export class CadastroComponent implements OnInit {
   cliente_id: any;
   loadingStart: any;
   limit: any;
-  pedidos: []
+  pedidos: any;
+  user: any;
   constructor(
     public route: ActivatedRoute,
     public loadCtrl: LoadingController,
@@ -47,13 +49,15 @@ export class CadastroComponent implements OnInit {
   async ngOnInit() {
 
     const self = this;
+    self.itens = [];
     this.loadingStart = await self.loadCtrl.create({
       message: 'Aguarde!'
     });
     this.loadingStart.present();
+
     self.cliente_id = self.route.snapshot.params['cliente_id'];
-    let user = await this.dbService.table('usuario').toArray();
-    this.pedido_valor_minimo = user[0].valor_minimo_pedido;
+    self.user = await this.dbService.table('usuario').toArray();
+    this.pedido_valor_minimo = self.user[0].valor_minimo_pedido;
     this.valor_minimo_obrigatorio = true;
     this.valor_pedido_minimo = 0;
     this.mostrar_pedido_minimo = false;
@@ -67,20 +71,20 @@ export class CadastroComponent implements OnInit {
       { codigo: "T", nome: "Troca" },
       { codigo: "O", nome: "Orçamento" }
     ];
+    self.nomecliente = self.route.snapshot.params['nomecliente'];
 
     if (self.cliente_id) {
       this.createPedidos();
     } else {
       this.editPedios();
     }
-   
+
 
   }
   editPedios() {
     let self = this;
-    self.nomecliente = self.route.snapshot.params['nomecliente'];
     let pedido = JSON.parse(self.route.snapshot.params['pedido']);
-    self.cliente = {};
+
     let dataHora = pedido.data_entrega.split(" ");
     pedido.data_entrega = dataHora[0];
 
@@ -98,7 +102,9 @@ export class CadastroComponent implements OnInit {
     self.getItensPedido(pedido_id).then(res => {
       self.itens = res;
       console.log('sdf', self.itens);
+
       self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
+
       this.loadingStart.dismiss();
     }, error => {
       this.loadingStart.dismiss();
@@ -124,12 +130,13 @@ export class CadastroComponent implements OnInit {
 
         self.nomecliente = self.nomecliente;
         self.cliente = res;
-       
+
         self.listaPedidos(self.cliente_id);
 
         if (res.formapagto_id == null) {
           self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
         }
+
         self.loadingStart.dismiss();
         if (res.credito_bloqueado === "S") {
           self.pedidosConfirm();
@@ -141,7 +148,7 @@ export class CadastroComponent implements OnInit {
             self.loadingStart.dismiss();
           }
         }
-       
+
 
       });
   }
@@ -162,19 +169,17 @@ export class CadastroComponent implements OnInit {
     return proximaData;
   }
   async listaPedidos(cliente_id) {
-    this.dbService.table('pedido').toArray().then(res => {
-      return res.filter(function (where) {
-        return where.cliente_id === Number(cliente_id);
-      })
-    }).then(function (items) {
-      this.pedidos = items.map(function (pedido) {
+
+    this.dbService.table('pedido').where('cliente_id').equals(Number(cliente_id)).toArray().then(res => {
+
+      this.pedidos = res.map(function (pedido) {
         if (!pedido.hasOwnProperty('enviado')) {
           pedido.enviado = 'S';
         }
         return pedido;
       });
 
-    });
+    })
 
 
   }
@@ -224,7 +229,7 @@ export class CadastroComponent implements OnInit {
           role: 'cancel',
           cssClass: 'button button-assertive',
           handler: () => {
-            this.navCtrl.navigateForward(['pedidos/lista', { 'cliente_id': this.pedido.cliente_id }]);
+            this.navCtrl.navigateForward(['pedidos/lista', { 'cliente_id': this.pedido.cliente_id, 'nomecliente': this.nomecliente }]);
           }
         }
       ]
@@ -342,18 +347,45 @@ export class CadastroComponent implements OnInit {
   }
 
   totalPedidos(filtro) {
+    console.log('epei', filtro);
     if (typeof filtro != "undefined" && filtro.length > 0) {
       var total = 0.0;
       for (var i in filtro) {
         total += parseFloat(filtro[i].total_pedido);
       }
 
+
       return total.toFixed(2);
     } else {
       return 0;
     }
   }
+  async setPedidoMinimo() {
 
+    const loading = await this.loadCtrl.create({
+      message: 'Aguarde'
+    });
+    loading.present();
+    var condicao = Number(this.pedido.codigo_condicao_pagto);
+
+    this.db.condicoe
+      .where("condicao_id")
+      .equals(condicao)
+      .first()
+      .then(res => {
+
+        if (res.valor_minimo_pedido > 0) {
+          this.pedido_valor_minimo = res.valor_minimo_pedido;
+          this.valor_minimo_obrigatorio = res.valor_minimo_obrigatorio;
+          this.valor_pedido_minimo = res.valor_minimo_pedido;
+        } else {
+          this.pedido_valor_minimo = this.user.valor_minimo_pedido;
+          this.valor_minimo_obrigatorio = true;
+        }
+
+        loading.dismiss();
+      });
+  }
   //////// get result 
 
   async gravarPedido(pedido, itens, lat, lng) {
@@ -379,6 +411,7 @@ export class CadastroComponent implements OnInit {
       message: 'Salvando Pedido. Aguarde'
     });
     loading.present();
+
     this.db.pedido.put(pedidoObj);
     this.db.itempedido
       .where("pedido_id")
@@ -387,8 +420,7 @@ export class CadastroComponent implements OnInit {
       .then(function () {
         itens.map(function (value) {
           var itempedido;
-
-          let id = this.guid();
+          let id = self.guid();
           itempedido = {
             item_id: id,
             pedido_id: pedidoObj.pedido_id ?
@@ -407,7 +439,7 @@ export class CadastroComponent implements OnInit {
         });
       }).then(function () {
         loading.dismiss();
-        self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': pedido.cliente_id, 'nomecliente': '' }]);
+        self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': pedido.cliente_id, 'nomecliente': this.nomecliente }]);
       }).catch(function (error) {
         console.log('erro', error);
         loading.dismiss();
@@ -495,27 +527,36 @@ export class CadastroComponent implements OnInit {
       cliente.cli_totaltitulosavencer
     ).toFixed(2);
   }
-  guid() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
+
+  calculateLimit(cliente, pedidos) {
+    const limitcliente = this.limiteDisponivel(cliente);
+    const limitpedidos = this.totalPedidos(pedidos);
+
+    if (limitcliente) {
+      return Number(limitcliente) - Number(limitpedidos);
     }
 
+  }
+  guid() {
     return (
-      s4() +
-      s4() +
+      this.s4() +
+      this.s4() +
       "-" +
-      s4() +
+      this.s4() +
       "-" +
-      s4() +
+      this.s4() +
       "-" +
-      s4() +
+      this.s4() +
       "-" +
-      s4() +
-      s4() +
-      s4()
+      this.s4() +
+      this.s4() +
+      this.s4()
     );
+  }
+  s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
   }
 
 }
