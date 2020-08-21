@@ -2,7 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { DBService } from '../../services/DB.service';
 import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
-import { FiltroComponent } from '../filtro/filtro.component';
+
+import { FiltroComponent } from '../../produtos/filtro/filtro.component';
 import { ComissoesComponent } from '../../produtos/comissoes/comissoes.component'
 @Component({
   selector: 'app-add-produto',

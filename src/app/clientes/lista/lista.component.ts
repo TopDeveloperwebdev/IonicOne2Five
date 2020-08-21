@@ -37,12 +37,12 @@ export class ListaComponent implements OnInit {
     loading.present();
     let usertemp = await this.dbService.table('usuario').toArray();
     this.usuario = usertemp[0];
+
     this.clientesDataservice = [];
     console.log('res', this.filtro);
     this.clientesDataservice = this.filterItems(this.filtro).then(res => {
 
       this.clientesDataservice = res;
-      console.log('res1', res);
       this.pushClients(this.page_limit);
       loading.dismiss();
     });
@@ -51,25 +51,24 @@ export class ListaComponent implements OnInit {
 
     return this.db.clientes.orderBy('cli_razaosocial').toArray().then(res => {
       return res.filter(function (where) {
-      
         let cli_razaosocial = true;
         let cli_totaltitulosvencidos = true;
         let categoria_id = true;
         let atividade_id = true;
         let responsavel_id = true;
         let dia_visita = true;
-        
+
         if (filtro.hasOwnProperty('cli_razaosocial')) {
-     
+
           if (filtro.tipopesquisa == "2") {
-            console.log('2' , filtro.tipopesquisa);
+            console.log('2', filtro.tipopesquisa);
             var str = new RegExp('^' + filtro.cli_razaosocial, 'i');
             cli_razaosocial = str.test(where.cli_razaosocial)
           } else {
             var str = new RegExp(filtro.cli_razaosocial);
-          
-            cli_razaosocial = str.test(where.cli_razaosocial);       
-           
+
+            cli_razaosocial = str.test(where.cli_razaosocial);
+
           }
         }
 

@@ -112,9 +112,7 @@ export class CadastroComponent implements OnInit {
   }
   async createPedidos() {
     let self = this;
-    self.itens = [];
-
-
+    self.itens = [];   
     this.db.clientes
       .where('cli_id')
       .equals(Number(self.cliente_id))
@@ -138,11 +136,11 @@ export class CadastroComponent implements OnInit {
 
         } else {
           if (res.cli_totaltitulosvencidos > 0) {
-            self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);
-            self.loadingStart.dismiss();
+            self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);           
           }
+          self.loadingStart.dismiss();
         }
-        self.loadingStart.dismiss();
+       
 
 
       });
@@ -196,7 +194,7 @@ export class CadastroComponent implements OnInit {
                 return self.dbService.table('produto')
                   .where('produto_id')
                   .equals(i.codigo_produto)
-                  .toArray().then(res => {
+                  .first().then(res => {
                     let prod;
                     prod = res;
                     i.descricao = prod && prod.descricaoproduto ?
@@ -593,7 +591,7 @@ export class CadastroComponent implements OnInit {
     });
   }
   recalcularItem(item, produto, tabela_id) {
-    var strTabelas = produto.tabelas;
+    var strTabelas = produto.tabelas;    
     var tabelas = strTabelas.split("|");
 
     tabelas.forEach(tabela => {

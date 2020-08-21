@@ -30,7 +30,7 @@ export class FiltroComponent implements OnInit {
 
     this.db.tabela.toArray().then(function (tabelas) {
       self.tabelas = tabelas;
-      console.log('tables' , self.tabelas);
+      console.log('tables', self.tabelas);
     });
     self.db.marcas_produto.toArray().then(function (res) {
       self.marcas = res;
@@ -91,26 +91,39 @@ export class FiltroComponent implements OnInit {
   limparFiltro() {
     this.modalController.dismiss(this.filtro);
   }
-  filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {  
+  filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {
     if (marcaSelecionada != "") {
       this.filtro.inf_marca = marcaSelecionada;
+    }
+    else {
+      delete this.filtro.inf_marca;
     }
 
     if (tipoSelecionado != "") {
       this.filtro.inf_produto = tipoSelecionado;
     }
+    else {
+      delete this.filtro.inf_produto;
+    }
 
-    if (typeof produtoEmPromocao != 'undefined' && produtoEmPromocao != false) {
+    if (produtoEmPromocao != false) {
       this.filtro.produtoEmPromocao = 'S';
+    }
+    else {
+      delete this.filtro.produtoEmPromocao;
     }
 
     if (descricaoproduto != "") {
       this.filtro.descricaoproduto = descricaoproduto.toUpperCase();
+    } else {
+      delete this.filtro.descricaoproduto;
     }
     if (tipoPesquisa != "") {
       this.filtro.tipoPesquisa = tipoPesquisa;
+    } else {
+      delete this.filtro.tipoPesquisa;
     }
-    
+
     this.modalController.dismiss({ filtro: this.filtro, tabela_id: this.tabela_id });
 
   }
