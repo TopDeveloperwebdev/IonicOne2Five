@@ -47,13 +47,13 @@ export class RelatorioComprasComponent implements OnInit {
   getGroupTables(ciTable, cpTable) {
     let ci_cp = {};
     cpTable.map((cp) => {
-      if (cp.compras_cliente_nome) {
-        let rowKey = cp.compras_cliente_nome;
-        if (!ci_cp[rowKey]) {
-          ci_cp[rowKey] = { cliente_nome: '', quant: 0, total_item: 0, total_desconto: 0, total_comissao: 0 };
-        }
-        ciTable.map((ci) => {
+      if (cp.compras_cliente_nome) {     
+        ciTable.map((ci) => {          
           if (ci.compras_id === cp.compras_id && ci) {
+            let rowKey = cp.compras_cliente_nome;
+            if (!ci_cp[rowKey]) {
+              ci_cp[rowKey] = { cliente_nome: '', quant: 0, total_item: 0, total_desconto: 0, total_comissao: 0 };
+            }
             ci_cp[rowKey].cliente_nome = rowKey;
             ci_cp[rowKey].quant += Number(ci.compras_item_quantidade);
             ci_cp[rowKey].total_item += Number(ci.compras_item_precototal);

@@ -112,7 +112,7 @@ export class CadastroComponent implements OnInit {
   }
   async createPedidos() {
     let self = this;
-    self.itens = [];   
+    self.itens = [];
     this.db.clientes
       .where('cli_id')
       .equals(Number(self.cliente_id))
@@ -130,17 +130,18 @@ export class CadastroComponent implements OnInit {
         if (res.formapagto_id == null) {
           self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
         }
+        self.pedido.cliente_id = Number(self.cliente_id);
         if (res.credito_bloqueado === "S") {
           self.pedidosConfirm();
           self.loadingStart.dismiss();
 
         } else {
           if (res.cli_totaltitulosvencidos > 0) {
-            self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);           
+            self.alertConfirm("Atenção!", "Cliente com Titulos Vencidos no total de R$ " + res.cli_totaltitulosvencidos);
           }
           self.loadingStart.dismiss();
         }
-       
+
 
 
       });
@@ -159,7 +160,14 @@ export class CadastroComponent implements OnInit {
         break;
     }
     proximaData.setDate(hoje.getDate() + diasAcrescentar);
-    return proximaData;
+    var dd = proximaData.getDate();
+
+    var mm = proximaData.getMonth() + 1;
+    var yyyy = proximaData.getFullYear();
+
+    let d = dd < 10 ? '0' : '';
+    let m = mm < 10 ? '0' : '';
+    return yyyy + '-' + m + mm + '-' + d + dd;
   }
   async listaPedidos(cliente_id) {
 
@@ -398,9 +406,10 @@ export class CadastroComponent implements OnInit {
       pedidoObj.pedido_id = id;
     }
 
-    pedidoObj.data_entrega = pedido.data_entrega;
 
-    pedidoObj.vendedor_id = this.db.table('usuario').vendedor_id;
+    pedidoObj.data_entrega = pedido.data_entrega;
+    let temp = await this.db.table('usuario').toArray();
+    pedidoObj.vendedor_id = temp[0].vendedor_id;
     pedidoObj.urgente = pedido.urgente == true ? "S" : "N";
     pedidoObj.data_gravacao = new Date();
     pedidoObj.hora_gravacao = new Date();
@@ -414,37 +423,42 @@ export class CadastroComponent implements OnInit {
     });
     loading.present();
 
-    this.db.pedido.put(pedidoObj);
-    this.db.itempedido
-      .where("pedido_id")
-      .equals(pedidoObj.pedido_id)
-      .delete()
-      .then(function () {
-        itens.map(function (value) {
-          var itempedido;
-          let id = self.guid();
-          itempedido = {
-            item_id: id,
-            pedido_id: pedidoObj.pedido_id,
-            codigo_produto: value.codigo_produto,
-            descricao: value.descricao,
-            quantidade: value.quantidade,
-            preco_unitario_bruto: value.preco_unitario_bruto,
-            desc_unitario_percentual: value.desc_unitario_percentual,
-            preco_unitario_comdesconto: value.preco_unitario_comdesconto,
-            valor_total_item: value.valor_total_item,
-            enviado: "N"
-          };
+    this.db.pedido.put(pedidoObj).then(res => {
+      this.db.itempedido
+        .where("pedido_id")
+        .equals(pedidoObj.pedido_id)
+        .delete()
+        .then(function () {
+          itens.map(function (value) {
+            var itempedido;
+            let id = self.guid();
+            itempedido = {
+              item_id: id,
+              pedido_id: pedidoObj.pedido_id,
+              codigo_produto: value.codigo_produto,
+              descricao: value.descricao,
+              quantidade: value.quantidade,
+              preco_unitario_bruto: value.preco_unitario_bruto,
+              desc_unitario_percentual: value.desc_unitario_percentual,
+              preco_unitario_comdesconto: value.preco_unitario_comdesconto,
+              valor_total_item: value.valor_total_item,
+              enviado: "N"
+            };
 
-          self.db.itempedido.add(itempedido);
+            self.db.itempedido.add(itempedido);
+          });
+        }).then(function () {
+          loading.dismiss();
+          self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': self.cliente_id, 'nomecliente': self.nomecliente }]);
+        }).catch(function (error) {
+          console.log('erro', error);
+          loading.dismiss();
         });
-      }).then(function () {
-        loading.dismiss();
-        self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': self.cliente_id, 'nomecliente': self.nomecliente }]);
-      }).catch(function (error) {
-        console.log('erro', error);
-        loading.dismiss();
-      });
+    }).catch(error => {
+      console.log('erro', error);
+      loading.dismiss();
+    });
+
   }
   alterarProdutoPedido(produto, index) {
     let produtoEscolhido = produto;
@@ -591,7 +605,7 @@ export class CadastroComponent implements OnInit {
     });
   }
   recalcularItem(item, produto, tabela_id) {
-    var strTabelas = produto.tabelas;    
+    var strTabelas = produto.tabelas;
     var tabelas = strTabelas.split("|");
 
     tabelas.forEach(tabela => {

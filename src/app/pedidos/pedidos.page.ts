@@ -62,10 +62,7 @@ export class PedidosPage implements OnInit {
             if (!p.hasOwnProperty("enviado")) {
               p.enviado = "S";
             }
-            if (!p.hasOwnProperty("enviado")) {
-              p.enviado = "S";
-            }
-
+            
             self.db.clientes
               .where("cli_id")
               .equals(p.cliente_id)
@@ -94,48 +91,80 @@ export class PedidosPage implements OnInit {
     });
 
   }
-
-  async filterItems(filtro, res) {
+  filterItems(filtro) {
     const self = this;
-
-    console.log('res', res);
-
-    let resultItems = res.filter(function (where) {
-      let dateRange;
-      let dataInicio = Date.parse(filtro.inicio);
-      let dataFim = Date.parse(filtro.fim);
-      let datatipo_pedido = filtro.tipo_pedido;
-      let datasituacao = filtro.situacao;
-      dateRange = true;
+    const filters = self.pedidos.filter(function (where) {
+      console.log('where', where);
+      const comando = [];
+      let cData = filtro.criterioData;
+      let dateRange = true;
       let tipo_pedido = true;
       let situacao = true;
-      let enviado = false;
+      console.log('this.filto', filtro);
       if (filtro.hasOwnProperty('inicio')) {
-        dateRange = (Date.parse(where.data_gravacao) >= dataInicio && Date.parse(where.data_gravacao) <= dataFim)
-      }
-      if (filtro.hasOwnProperty('fim')) {
-        dateRange = (Date.parse(where.data_entrega) >= dataInicio && Date.parse(where.data_entrega) <= dataFim)
+        let dataInicio = Date.parse(filtro.inicio);
+        let dataFim = Date.parse(filtro.fim);
+        if (cData === 'C') {
+          dateRange = (Date.parse(where.data_gravacao + ' 00:00:00') >=
+            dataInicio && Date.parse(where.data_gravacao + ' 00:00:00') <= dataFim)
+        } else {
+          dateRange = (Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') >=
+            dataInicio && Date.parse(where.data_entrega.substring(0, 10) + ' 00:00:00') <= dataFim)
+        }
       }
       if (filtro.hasOwnProperty('tipo_pedido')) {
         tipo_pedido = (where.tipo_pedido == filtro.tipo_pedido);
       }
       if (filtro.hasOwnProperty('situacao')) {
-        situacao = (where.situacao == filtro.situacao);
+        situacao = (where.enviado == filtro.situacao);
       }
-      if (where.hasOwnProperty('enviado') && where.enviado == 'N') {
-        enviado = true;
-      } else if (where.hasOwnProperty('enviado') && where.enviado == 'S' && Date.parse(Date()) == Date.parse(where.data_gravacao.substring(0, 10))) {
-        enviado = true;
-      }
-      return (dateRange && tipo_pedido && situacao && enviado);
-
+      return (dateRange && tipo_pedido && situacao)
     });
 
-    return new Promise((resolve, reject) => {
-      return resolve(resultItems);
-    })
-
+    self.pedidos = filters;
   }
+  // async filterItems(filtro, res) {
+  //   const self = this;
+
+  //   console.log('res', filtro);
+
+  //   let resultItems = res.filter( where=> {
+  //     let dateRange;
+  //     let dataInicio = Date.parse(filtro.inicio);
+  //     let dataFim = Date.parse(filtro.fim);
+  //     let datatipo_pedido = filtro.tipo_pedido;
+  //     let datasituacao = filtro.situacao;
+  //     dateRange = true;
+  //     let tipo_pedido = true;
+  //     let situacao = true;
+  //     let enviado = false;
+  //     console.log('filtro' , where , filtro);
+  //     if (filtro.hasOwnProperty('inicio')) {
+  //       dateRange = (Date.parse(where.data_gravacao) >= dataInicio && Date.parse(where.data_gravacao) <= dataFim)
+  //     }
+  //     if (filtro.hasOwnProperty('fim')) {
+  //       dateRange = (Date.parse(where.data_entrega) >= dataInicio && Date.parse(where.data_entrega) <= dataFim)
+  //     }
+  //     if (filtro.hasOwnProperty('tipo_pedido')) {
+  //       tipo_pedido = (where.tipo_pedido == filtro.tipo_pedido);
+  //     }
+  //     if (filtro.hasOwnProperty('situacao')) {
+  //       situacao = (where.situacao == filtro.situacao);
+  //     }
+  //     if (where.hasOwnProperty('enviado') && where.enviado == 'N') {
+  //       enviado = true;
+  //     } else if (where.hasOwnProperty('enviado') && where.enviado == 'S' && Date.parse(Date()) == Date.parse(where.data_gravacao.substring(0, 10))) {
+  //       enviado = true;
+  //     }
+  //     return (dateRange && tipo_pedido && situacao && enviado);
+
+  //   });
+
+  //   return new Promise((resolve, reject) => {
+  //     return resolve(resultItems);
+  //   })
+
+  // }
   tipoPedidoFilter(input) {
     const tipos = [
       { codigo: 'P', nome: 'Pedido' },
