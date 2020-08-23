@@ -52,25 +52,25 @@ export class FiltroComponent implements OnInit {
     ];
     this.Copyfiltro = {};
     Object.assign(this.Copyfiltro, this.filtro);
-    self.tipoPesquisa = this.pesquisas[0].id;
-    if (!this.filtro.hasOwnProperty('tipoPesquisa')) {
-      this.tipoPesquisa = "";
+   
+    if (!this.filtro.hasOwnProperty('tipopesquisa')) {
+      this.tipoPesquisa = this.pesquisas[0].id;
     }
     else {
-      this.tipoPesquisa = this.filtro.tipoPesquisa;
+      this.tipoPesquisa = this.filtro.tipopesquisa;
     }
-    if (!this.filtro.hasOwnProperty('marcaSelecionada')) {
+    if (!this.filtro.hasOwnProperty('inf_marca')) {
       this.marcaSelecionada = "";
     } else {
       this.marcaSelecionada = this.filtro.inf_marca;
     }
-    if (!this.filtro.hasOwnProperty('produtoEmPromocao')) {
+    if (!this.filtro.hasOwnProperty('produtoempromocao')) {
       this.produtoEmPromocao = false;
     } else {
-      this.produtoEmPromocao = this.filtro.produtoEmPromocao;
+      this.produtoEmPromocao = this.filtro.produtoempromocao;
     }
 
-    if (!this.filtro.hasOwnProperty('tipoSelecionado')) {
+    if (!this.filtro.hasOwnProperty('inf_produto')) {
       this.tipoSelecionado = "";
     } else {
       this.tipoSelecionado = this.filtro.inf_produto;
@@ -107,10 +107,10 @@ export class FiltroComponent implements OnInit {
     }
 
     if (produtoEmPromocao != false) {
-      this.filtro.produtoEmPromocao = 'S';
+      this.filtro.produtoempromocao = 'S';
     }
    else {
-      delete this.filtro.produtoEmPromocao;
+      delete this.filtro.produtoempromocao;
    }
 
     if (descricaoproduto != "") {
@@ -119,9 +119,9 @@ export class FiltroComponent implements OnInit {
       delete this.filtro.descricaoproduto;
     }
     if (tipoPesquisa != "") {
-      this.filtro.tipoPesquisa = tipoPesquisa;
+      this.filtro.tipopesquisa = tipoPesquisa;
     } else {
-      delete this.filtro.tipoPesquisa;
+      delete this.filtro.tipopesquisa;
     }
 
     this.modalController.dismiss({ filtro: this.filtro, tabela_id: this.tabela_id });

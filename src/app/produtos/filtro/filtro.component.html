@@ -16,8 +16,7 @@
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-            <select [(ngModel)]="tipoPesquisa" [ngModelOptions]="{standalone: true}">
-                <option value="">Selecione a pesquisa</option>
+            <select [(ngModel)]="tipoPesquisa" [ngModelOptions]="{standalone: true}">           
                 <option value="{{pesquisa.id}}" *ngFor="let pesquisa of pesquisas">{{pesquisa.descricao}}</option>
             </select>
         </label>

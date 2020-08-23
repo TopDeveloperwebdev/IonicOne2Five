@@ -3,7 +3,7 @@
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
         </button>
     </ion-menu-button>
-    <ion-title>Itens</ion-title>
+    <ion-title>Compra por Produto</ion-title>
 </ion-header>
 <ion-content class="padding">
     <h4 class="assertive">
@@ -19,42 +19,42 @@
         <ion-item-sliding *ngFor="let item of itens">
             <ion-item class="item">
                 <div>
-                    <b>codigo: {{item.compras_item_codigoproduto}}</b>
+                    <b>Código: {{item.compras_item_codigoproduto}}</b>
                     <div>
                         <p>
-                            nome : {{item.compras_item_descricaoproduto}}
+                            Produto : {{item.compras_item_descricaoproduto}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            unidade: {{item.compras_item_unidadadeproduto}}
+                            Und: {{item.compras_item_unidadadeproduto}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            quant : {{ item.quant}}
+                            Quant : {{ item.quant}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            total_item: {{Floor(item.total_item)}}
+                            Total: {{item.total_item | currency:"R$":"symbol"}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            total_desconto: {{Floor(item.total_desconto)}}
+                            Desconto: {{item.total_desconto | currency:"R$":"symbol"}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            total_comissao: {{Floor(item.total_comissao)}}
+                            Comissão: {{item.total_comissao | currency:"R$":"symbol"}}
                         </p>
                     </div>
                 </div>
             </ion-item>
 
             <ion-item-options side="end">
-                <ion-item-option class="button-assertive" color="danger" (click)="detailItem(item.compras_item_codigoproduto)">CLIETNS
+                <ion-item-option class="button-assertive" color="danger" (click)="detailItem(item.compras_item_codigoproduto)">CLIENTES
                 </ion-item-option>
             </ion-item-options>
         </ion-item-sliding>

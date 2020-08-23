@@ -1,46 +1,38 @@
-<ion-header class="bar-assertive ">
+
+
+    <ion-header class="bar-assertive ">
     <ion-menu-button side="left">
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-  </button>
+        </button>
     </ion-menu-button>
     <ion-title>Pedidos</ion-title>
-      <button class="button close-btn" (click)="filter();">
-    <i class="ion-funnel "></i>
-  </button>
+    <button class="button close-btn" (click)="filter(); ">
+        <i class="ion-funnel "></i>
+    </button>
 </ion-header>
-    <ion-content class="padding">
-        <h4 class="assertive">
-          <small>Quantidade de Pedidos: {{pedidostodos.length}}</small>
-          <br />
-          <small>Total de Pedidos: {{totalPedidos(pedidostodos) | currency:"R$":"symbol"}}</small>
-        </h4>
-        <ion-list>
-         <ion-item-sliding *ngFor="let pedido of pedidostodos">
-           
-              <ion-item (click)="alterar(pedido, pedido.nomecliente);"  >
-                <div>
-                    Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido| currency:"R$":"symbol"}}
-                     <div>
-                  <p class="assertive">
-                    <b>Cliente:</b> {{pedido.nomecliente}}
-                </p>
-                </div>
-                <div>
-                     <p>
-                         <small>{{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}</small>
-                    </p>
-                </div>
-                <div>
-                    <p>Tipo: {{pedido.tipo_pedido}}</p>    
-                </div>
-                </div>   
-            </ion-item>
+<ion-content class="padding">
+    <h4 class="assertive">       
+        <small>Quantidade de Pedidos: {{pedidos.length}}</small>
+        <br />
+        <small>Total de Pedidos: {{totalPedidos(pedidos) | currency:"R$":"symbol"}}</small>
+    </h4>
+    <ion-list>
+        <ion-item-sliding *ngFor="let pedido of pedidos">
+            <ion-item class="item" (click)="alterar(pedido);">
+                <ion-row>
+                    <p>Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido | currency:"R$":"symbol"}}</p>
 
+                    <p>
+                        {{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}
+                    </p>
+                    <p>Tipo: {{tipoPedidoFilter(pedido.tipo_pedido)}}</p>
+                </ion-row>
+            </ion-item>
+            <ion-item class="assertive" *ngIf="pedidos.length == 0">Não existem pedidos para este cliente.</ion-item>
             <ion-item-options side="end">
-                <ion-item-option class="button-positive" (click)="duplicarPedido(pedido)" >Duplicar</ion-item-option>
-                <ion-item-option class="button-assertive" color="danger" (click)="apagarPedido(pedido)" >Apagar</ion-item-option>
+                <ion-item-option (click)="apagarPedido(pedido)" class="button-assertive" color="danger">Apagar</ion-item-option>
+                <ion-item-option (click)="duplicarPedido(pedido)" class="button-positive">Duplicar</ion-item-option>
             </ion-item-options>
         </ion-item-sliding>
-            <ion-item class="assertive" *ngIf="!pedidostodos.length">Não existem pedidos no sistema.</ion-item>
-        </ion-list>
-    </ion-content>
+    </ion-list>
+</ion-content>

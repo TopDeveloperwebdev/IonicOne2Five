@@ -1,5 +1,5 @@
 <ion-header class="bar bar-header bar-assertive ">
-    <ion-title class="filter-bar">Detail Item</ion-title>
+    <ion-title class="filter-bar">Produto por Clientes</ion-title>
     <button class="button close-btn" (click)="dismiss({})">
   <i class="ion-close-round"></i>
 </button>
@@ -10,25 +10,25 @@
         <ion-item-sliding *ngFor="let item of itens">
             <ion-item class="item">
                 <div>
-                    <b>cliente_nome: {{item.cliente_nome}}</b>
+                    <b>Cliente: {{item.cliente_nome}}</b>
                     <div>
                         <p>
-                            quant : {{ item.quant}}
+                            Quant : {{ item.quant | currency:"R$":"symbol"}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            total_item: {{Floor(item.total_item)}}
+                            Total: {{item.total_item | currency:"R$":"symbol"}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            total_desconto: {{Floor(item.total_desconto)}}
+                            Desconto: {{item.total_desconto | currency:"R$":"symbol"}}
                         </p>
                     </div>
                     <div>
                         <p>
-                            total_comissao: {{Floor(item.total_comissao)}}
+                            Comissão: {{item.total_comissao | currency:"R$":"symbol"}}
                         </p>
                     </div>
 

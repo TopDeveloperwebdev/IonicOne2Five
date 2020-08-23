@@ -4,4 +4,7 @@ ion-list :first {
 
 .item {
     padding: 16px 1px !important;
+    .item-div {
+        width: 100%;
+    }
 }

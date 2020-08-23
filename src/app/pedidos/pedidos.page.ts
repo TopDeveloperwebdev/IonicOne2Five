@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, ModalController, LoadingController } from '@ionic/angular';
 import { FiltroComponent } from './filtro/filtro.component'
 import { DBService } from '../services/DB.service';
-import { promise } from 'protractor';
+import { NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { ConexaoService } from '../services/conexao.service';
+import { dataService } from '../services/data.service';
+
 
 @Component({
   selector: 'app-pedidos',
@@ -11,7 +13,7 @@ import { promise } from 'protractor';
 })
 
 export class PedidosPage implements OnInit {
-  pedidos = [];
+  pedidos: any;
 
   filtro = {};
   nomecliente = '';
@@ -24,28 +26,30 @@ export class PedidosPage implements OnInit {
     public dbService: DBService,
     public navCtl: NavController,
     public modalController: ModalController,
-    public loadCtrl: LoadingController) {
+    public loadCtrl: LoadingController,
+    public toastController: ToastController,
+    public alertCtrl: AlertController,  
+    public conexaoService: ConexaoService,
+    public dataService: dataService) {
     this.db = dbService;
-    this.pedidostodos = [];
+    this.pedidos = [];
   }
 
   async ngOnInit() {
+    this.filtro = { situacao: 'N' };
+    this.pushPedidos(this.filtro);
 
+  }
+  async pushPedidos(filtro) {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
     let self = this;
-
     self.executaFiltro = true;
-    let filtro = {};
-    self.pedidostodos = await this.listaPedidosTodos(filtro);
-
+    self.pedidos = await this.listaPedidosTodos(filtro);
     loading.dismiss();
-
-
   }
-
   async listaPedidosTodos(filtro) {
     var prodArray = [];
     let self = this;
@@ -62,7 +66,7 @@ export class PedidosPage implements OnInit {
             if (!p.hasOwnProperty("enviado")) {
               p.enviado = "S";
             }
-            
+
             self.db.clientes
               .where("cli_id")
               .equals(p.cliente_id)
@@ -79,11 +83,9 @@ export class PedidosPage implements OnInit {
                 tempPedidos.push(p);
                 if (pedidos.length - 1 == index) {
 
+                  let filters = self.filterItems(filtro, tempPedidos);
 
-                  self.filterItems(filtro, tempPedidos).then(res => {
-                    return resolve(res);
-                  })
-
+                  return resolve(filters);
                 }
               });
           });
@@ -91,16 +93,14 @@ export class PedidosPage implements OnInit {
     });
 
   }
-  filterItems(filtro) {
+  filterItems(filtro, pedidos) {
     const self = this;
-    const filters = self.pedidos.filter(function (where) {
-      console.log('where', where);
+    const filters = pedidos.filter((where, index) => {
       const comando = [];
       let cData = filtro.criterioData;
       let dateRange = true;
       let tipo_pedido = true;
       let situacao = true;
-      console.log('this.filto', filtro);
       if (filtro.hasOwnProperty('inicio')) {
         let dataInicio = Date.parse(filtro.inicio);
         let dataFim = Date.parse(filtro.fim);
@@ -115,56 +115,17 @@ export class PedidosPage implements OnInit {
       if (filtro.hasOwnProperty('tipo_pedido')) {
         tipo_pedido = (where.tipo_pedido == filtro.tipo_pedido);
       }
+
       if (filtro.hasOwnProperty('situacao')) {
+
         situacao = (where.enviado == filtro.situacao);
       }
+
       return (dateRange && tipo_pedido && situacao)
     });
-
-    self.pedidos = filters;
+    return filters;
   }
-  // async filterItems(filtro, res) {
-  //   const self = this;
 
-  //   console.log('res', filtro);
-
-  //   let resultItems = res.filter( where=> {
-  //     let dateRange;
-  //     let dataInicio = Date.parse(filtro.inicio);
-  //     let dataFim = Date.parse(filtro.fim);
-  //     let datatipo_pedido = filtro.tipo_pedido;
-  //     let datasituacao = filtro.situacao;
-  //     dateRange = true;
-  //     let tipo_pedido = true;
-  //     let situacao = true;
-  //     let enviado = false;
-  //     console.log('filtro' , where , filtro);
-  //     if (filtro.hasOwnProperty('inicio')) {
-  //       dateRange = (Date.parse(where.data_gravacao) >= dataInicio && Date.parse(where.data_gravacao) <= dataFim)
-  //     }
-  //     if (filtro.hasOwnProperty('fim')) {
-  //       dateRange = (Date.parse(where.data_entrega) >= dataInicio && Date.parse(where.data_entrega) <= dataFim)
-  //     }
-  //     if (filtro.hasOwnProperty('tipo_pedido')) {
-  //       tipo_pedido = (where.tipo_pedido == filtro.tipo_pedido);
-  //     }
-  //     if (filtro.hasOwnProperty('situacao')) {
-  //       situacao = (where.situacao == filtro.situacao);
-  //     }
-  //     if (where.hasOwnProperty('enviado') && where.enviado == 'N') {
-  //       enviado = true;
-  //     } else if (where.hasOwnProperty('enviado') && where.enviado == 'S' && Date.parse(Date()) == Date.parse(where.data_gravacao.substring(0, 10))) {
-  //       enviado = true;
-  //     }
-  //     return (dateRange && tipo_pedido && situacao && enviado);
-
-  //   });
-
-  //   return new Promise((resolve, reject) => {
-  //     return resolve(resultItems);
-  //   })
-
-  // }
   tipoPedidoFilter(input) {
     const tipos = [
       { codigo: 'P', nome: 'Pedido' },
@@ -192,14 +153,11 @@ export class PedidosPage implements OnInit {
     } else {
       return 0;
     }
-  };
+  }
   cadastro(cliente_id, nomecliente) {
     this.navCtl.navigateForward(['pedidos/cadastro', { 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
-  alterar(p, nomecliente) {
-    let pedido = JSON.stringify(p);
-    this.navCtl.navigateForward(['pedidos/cadastro', { 'pedido': pedido, 'nomecliente': nomecliente }]);
-  };
+
   async filter() {
 
     const modal = await this.modalController.create({
@@ -212,31 +170,130 @@ export class PedidosPage implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        let filtro = data['data']; // Here's your selected user!
-        this.listaPedidosTodos(filtro);
+        this.filtro = data['data']; // Here's your selected user!
+        this.pushPedidos(this.filtro);
       });
 
     return await modal.present();
   }
+  alterar(p) {     
+    let pedido = JSON.stringify(p);  
+    this.navCtl.navigateForward(['pedidos/cadastro', { 'is': 'edit', 'pedido': pedido, 'nomecliente': p.nomecliente }]);
+  }
+  async apagarPedido(pedido) {
+    let self = this;
+    if (isNaN(pedido.pedido_id)) {
+      const loading = await this.loadCtrl.create({
+        message: 'Apagando pedido. Aguarde!'
+      });
+      loading.present();
+      this.apagarPedidoAPP(pedido.pedido_id).then(res => {
+        loading.dismiss();
+        this.pushPedidos(this.filtro);
+      });
+    } else {
+      if (this.conexaoService.conexaoOnline()) {
 
-  // filter('filtroInicial', function($filter){
-  //   return function(input, executaFiltro){
-  //     var filtro = [];
-  //     if(typeof input != 'undefined' && typeof executaFiltro != 'undefined'){
-  //       input.map(function(value){
+        const loading = await this.loadCtrl.create({
+          message: 'Apagando pedido. Aguarde!'
+        });
+        loading.present();
 
-  //         if(value.hasOwnProperty('enviado') && value.enviado == 'N'){
-  //           filtro.push(value);
-  //         }else if(value.hasOwnProperty('enviado') &&
-  //           value.enviado == 'S' &&
-  //           Date.parse(new Date()) == Date.parse(value.data_gravacao.substring(0, 10))){
-  //           filtro.push(value);
-  //         }
-  //       });
-  //       return filtro;
-  //     }else{
-  //       return input;
-  //     }
-  //   }
-  // });
+        this.dataService.getApagarPedido(pedido.pedido_id);
+
+        self.apagarPedidoAPP(pedido.pedido_id).then(res => {
+          loading.dismiss();
+          this.pushPedidos({});
+        })
+      } else {
+        this.confirmAlert('Atenção!', 'Não é possivel remover este pedido sem estar conectado a internet.')
+      }
+    }
+  }
+  async apagarPedidoAPP(pedido_id) {
+    return Promise.all(
+      [
+        this.db.pedido.where("pedido_id").equals(pedido_id).delete(),
+        this.db.itempedido.where("pedido_id").equals(pedido_id).delete()
+      ]);
+  }
+  async duplicarPedido(pedido) {
+    let self = this;
+    const loading = await this.loadCtrl.create({
+      message: 'Duplicando pedido. Aguarde!'
+    });
+    loading.present();
+
+    var novo_pedido_id = this.guid();
+    var novoPedido;
+    var id_pedido;
+
+    if (isNaN(pedido.pedido_id)) {
+      id_pedido = pedido.cod_pedido_mob;
+    } else {
+      id_pedido = pedido.pedido_id;
+    }
+    novoPedido = pedido;
+    novoPedido.pedido_id = novo_pedido_id;
+    novoPedido.cod_pedido_mob = novo_pedido_id;
+    novoPedido.enviado = "N";
+    this.db.pedido.add(novoPedido);
+
+    this.db.itempedido
+      .where("pedido_id")
+      .equals(id_pedido)
+      .toArray()
+      .then(res => {
+        res.map(item => {
+          var novoItem;
+          novoItem = item;
+          novoItem.item_id = this.guid();
+          novoItem.pedido_id = novo_pedido_id;
+          novoItem.enviado = "N";
+          self.db.table('itempedido').add(novoItem);
+        });
+        loading.dismiss();
+        self.confirmAlert('Mensagem', 'Pedido duplicado com sucesso');
+        this.pushPedidos(this.filtro);
+      });
+  }
+  guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+
+    return (
+      s4() +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      "-" +
+      s4() +
+      s4() +
+      s4()
+    );
+  }
+  async confirmAlert(header, message) {
+    const alert = await this.alertCtrl.create({
+      header: header,
+      message: message,
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          cssClass: 'button button-assertive',
+          handler: () => {
+            this.pushPedidos(this.filtro); 
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 }

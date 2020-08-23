@@ -27,6 +27,7 @@ export class FiltroComponent implements OnInit {
     descricao: 'Pesquisa Início Descrição'
   }
   ];
+  Copyfiltro : any;
   @Input() filtro: any;
 
 
@@ -36,6 +37,9 @@ export class FiltroComponent implements OnInit {
     this.atividades = await this.dbService.table('atividade').toArray();
     this.categorias = await this.dbService.table('categoria').toArray();
     this.responsaveis = await this.dbService.table('responsavel').toArray();
+    this.Copyfiltro = {};
+    Object.assign(this.Copyfiltro, this.filtro);
+    console.log('this.filtro' ,this.filtro);
     if (!this.filtro.hasOwnProperty('categoria_id')) {
       this.categoria_id = "";
     }
@@ -76,7 +80,7 @@ export class FiltroComponent implements OnInit {
 
   }
   dismiss() {
-    this.modalController.dismiss(this.filtro);
+    this.modalController.dismiss(this.Copyfiltro);
   }
 
   limparFiltro = function () {
@@ -84,6 +88,7 @@ export class FiltroComponent implements OnInit {
     this.modalController.dismiss(this.filtro);
   }
   Filtrar(tipopesquisa, cli_razaosocial, apenasClientesAtraso, categoria_id, responsavel_id, atividade_id, dia_visita) {
+    console.log('categoria_id',categoria_id);
     if (tipopesquisa) {
       this.filtro.tipopesquisa = tipopesquisa;
     }
@@ -96,6 +101,7 @@ export class FiltroComponent implements OnInit {
     }
 
     if (categoria_id != "") {
+   
       this.filtro.categoria_id = categoria_id;
     }
     else {
@@ -123,8 +129,6 @@ export class FiltroComponent implements OnInit {
     else {
       delete this.filtro.dia_visita;
     }
-
-    console.log('this.fitro', this.filtro);
     this.modalController.dismiss(this.filtro);
   }
 }

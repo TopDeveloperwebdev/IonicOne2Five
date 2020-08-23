@@ -25,9 +25,9 @@
     </div>
     <div class="list">
         <label class="item item-input item-stacked-label">
-      <select [(ngModel)]="categoria_id" [ngModelOptions]="{standalone: true}">
+      <select [(ngModel)]="categoria_id"  name="categoria_id">
         <option value="">Selecione a Categoria</option>
-        <option value="{{categorias.categoria_id}}" *ngFor="let categoria of categorias">
+        <option value="{{categoria.categoria_id}}" *ngFor="let categoria of categorias">
           {{categoria.descricaocategoria}}</option>
       </select>
     </label>

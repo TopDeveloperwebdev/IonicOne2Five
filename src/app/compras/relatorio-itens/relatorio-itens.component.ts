@@ -32,8 +32,8 @@ export class RelatorioItensComponent implements OnInit {
       .toArray()
       .then(function (res) {
         console.log('item', res);
-    
-        self.comprasDataservice = self.getGroupTables(res);       
+
+        self.comprasDataservice = self.getGroupTables(res);
         self.pushClients(self.page_limit);
         // self.filterItems(filtro, res).then(filterItems => {
 
@@ -42,9 +42,9 @@ export class RelatorioItensComponent implements OnInit {
       });
   }
   getGroupTables(ciTable) {
-    
+
     let ci_cp = {};
-    ciTable.map((ci) => {     
+    ciTable.map((ci) => {
       let rowKey = ci.compras_item_codigoproduto + ci.compras_item_descricaoproduto + ci.compras_item_unidadadeproduto;
       if (!ci_cp[rowKey]) {
         ci_cp[rowKey] = { cliente_nome: '', quant: 0, total_item: 0, total_desconto: 0, total_comissao: 0 };
@@ -52,18 +52,20 @@ export class RelatorioItensComponent implements OnInit {
       ci_cp[rowKey].compras_item_codigoproduto = ci.compras_item_codigoproduto;
       ci_cp[rowKey].compras_item_descricaoproduto = ci.compras_item_descricaoproduto;
       ci_cp[rowKey].compras_item_unidadadeproduto = ci.compras_item_unidadadeproduto;
+      ci_cp[rowKey].compras_item_precototal = ci.compras_item_precototal;
+      ci_cp[rowKey].compras_item_comissaovaloritem = ci.compras_item_comissaovaloritem;
       ci_cp[rowKey].quant += Number(ci.compras_item_quantidade);
       ci_cp[rowKey].total_item += Number(ci.compras_item_precototal);
       ci_cp[rowKey].total_desconto += (Number(ci.compras_item_precotabela) -
         Number(ci.compras_item_precounitario)) * ci.compras_item_quantidade;
-      ci_cp[rowKey].total_comissao += Number(ci.compras_item_comissaovaloritem);  
+      ci_cp[rowKey].total_comissao += Number(ci.compras_item_comissaovaloritem);
     })
     let items = [];
     Object.values(ci_cp).forEach(value => {
       items.push(value);
     });
-   
-    
+
+
     return items;
   }
   Floor(number) {
@@ -96,7 +98,9 @@ export class RelatorioItensComponent implements OnInit {
   }
 
   pushClients(page_limit) {
+
     this.itens = this.comprasDataservice.slice(0, page_limit);
+
 
   }
   // async filterModal() {

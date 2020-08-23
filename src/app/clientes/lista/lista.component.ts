@@ -15,7 +15,7 @@ export class ListaComponent implements OnInit {
   usuario: any;
   page_limit = 50;
   increaseItems = 50;
-  filtro = {};
+  filtro : any;
   db: any;
   valueEmittedFromChildComponent: object = {};
   constructor(
@@ -28,9 +28,10 @@ export class ListaComponent implements OnInit {
     this.db = dbService;
   }
   ngOnInit() {
-    this.clientsInit();
+    this.filtro = {};
+    this.clientsInit(this.filtro);
   }
-  async clientsInit() {
+  async clientsInit(filtro) {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
@@ -39,8 +40,8 @@ export class ListaComponent implements OnInit {
     this.usuario = usertemp[0];
 
     this.clientesDataservice = [];
-    console.log('res', this.filtro);
-    this.clientesDataservice = this.filterItems(this.filtro).then(res => {
+  
+    this.clientesDataservice = this.filterItems(filtro).then(res => {
 
       this.clientesDataservice = res;
       this.pushClients(this.page_limit);
@@ -50,7 +51,7 @@ export class ListaComponent implements OnInit {
   async filterItems(filtro) {
 
     return this.db.clientes.orderBy('cli_razaosocial').toArray().then(res => {
-      return res.filter(function (where) {
+      return res.filter(function (where) { 
         let cli_razaosocial = true;
         let cli_totaltitulosvencidos = true;
         let categoria_id = true;
@@ -118,7 +119,7 @@ export class ListaComponent implements OnInit {
   async opcoes(cliente_id, razaosocial) {
     console.log('asdfasd', razaosocial);
     const actionSheet = await this.actionSheetController.create({
-      header: 'Albums',
+      header: 'Opções',
       cssClass: 'my-custom-class',
       buttons: [{
         text: 'Pedidos',
@@ -165,7 +166,7 @@ export class ListaComponent implements OnInit {
     modal.onDidDismiss()
       .then((data) => {
         this.filtro = data['data']; // Here's your selected user!        
-        this.clientsInit();
+        this.clientsInit(this.filtro);
       });
 
     return await modal.present();

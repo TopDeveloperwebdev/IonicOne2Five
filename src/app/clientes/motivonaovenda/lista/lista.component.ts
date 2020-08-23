@@ -129,7 +129,9 @@ async ionViewDidEnter(){
   alterar(visita) {
     this.navCtrl.navigateForward(['clientes/naovendacadastro', { 'visita': JSON.stringify(visita) }]);
   }
-
+  backtopage(){
+    this.navCtrl.navigateForward('clientes');
+  }
 
 
 }

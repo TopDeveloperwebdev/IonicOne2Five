@@ -56,36 +56,38 @@ export class ListaComponent implements OnInit {
       let situacao = filtro.situacao;
       let dataHoje = new Date().toDateString();
       let filtroResult = false;
-      console.log('this.filtro' , filtro , (typeof filtro.inicio != 'undefined'), (typeof situacao != 'undefined') );
-   
+      let datavencimento = where.datavencimento.split(' ')[0];
+      console.log('this.filtro', filtro, (typeof filtro.inicio != 'undefined'), (typeof situacao != 'undefined'));
+
       if (typeof filtro.inicio != 'undefined' && typeof situacao != 'undefined') {
-        if (situacao == 'V') {        
-          if (Date.parse(where.datavencimento) >= dataInicio &&
-            Date.parse(where.datavencimento) <= dataFim &&
-            Date.parse(where.datavencimento) < Date.parse(dataHoje)) {
-            filtroResult = true;           
-          }
-        } else {
-          if (Date.parse(where.datavencimento) >= dataInicio &&
-            Date.parse(where.datavencimento) <= dataFim &&
-            Date.parse(where.datavencimento) >= Date.parse(dataHoje)) {
-              filtroResult = true;
-          }
-        }
-        console.log('filtroResult',filtroResult);
-      } else if (typeof filtro.inicio != 'undefined') {
-        if (Date.parse(where.datavencimento) >= dataInicio &&
-          Date.parse(where.datavencimento) <= dataFim) {
-          filtroResult = true;
-        }
-      } else if (typeof situacao != 'undefined') {
-        if (situacao == 'A') {
-          console.log('Date.parse(dataHoje)',Date.parse(dataHoje),Date.parse(where.datavencimento), where.datavencimento , dataHoje );
-          if (Date.parse(where.datavencimento) >= Date.parse(dataHoje)) {
+        if (situacao == 'V') {
+          if (Date.parse(datavencimento) >= dataInicio &&
+            Date.parse(datavencimento) <= dataFim &&
+            Date.parse(datavencimento) < Date.parse(dataHoje)) {
             filtroResult = true;
           }
         } else {
-          if (Date.parse(where.datavencimento) < Date.parse(dataHoje)) {
+          if (Date.parse(datavencimento) >= dataInicio &&
+            Date.parse(datavencimento) <= dataFim &&
+            Date.parse(datavencimento) >= Date.parse(dataHoje)) {
+            filtroResult = true;
+          }
+        }
+
+      } else if (typeof filtro.inicio != 'undefined') {
+        if (Date.parse(datavencimento) >= dataInicio &&
+          Date.parse(datavencimento) <= dataFim) {
+          filtroResult = true;
+        }
+        console.log('filtroResult-------', Date.parse(datavencimento),datavencimento, dataInicio, dataFim);
+      } else if (typeof situacao != 'undefined') {
+        if (situacao == 'A') {
+          console.log('Date.parse(dataHoje)', Date.parse(dataHoje), Date.parse(datavencimento), datavencimento, dataHoje);
+          if (Date.parse(datavencimento) >= Date.parse(dataHoje)) {
+            filtroResult = true;
+          }
+        } else {
+          if (Date.parse(datavencimento) < Date.parse(dataHoje)) {
             filtroResult = true;
           }
         }

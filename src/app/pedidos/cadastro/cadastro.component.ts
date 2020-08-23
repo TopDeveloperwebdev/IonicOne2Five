@@ -16,7 +16,7 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 export class CadastroComponent implements OnInit {
   nomecliente: any;
   urgente: any;
-  pedido: any = [];
+  pedido: any = {};
   itens: any;
   cliente: any;
   condicoes: any;
@@ -84,8 +84,11 @@ export class CadastroComponent implements OnInit {
   editPedios() {
     let self = this;
     let pedido = JSON.parse(self.route.snapshot.params['pedido']);
-
-    let dataHora = pedido.data_entrega.split(" ");
+    console.log('pedido', pedido);
+    let dataHora;
+    if (pedido.data_entrega.split(" ")) {
+      dataHora = pedido.data_entrega.split(" ");
+    }
     pedido.data_entrega = dataHora[0];
 
 
@@ -239,7 +242,12 @@ export class CadastroComponent implements OnInit {
           role: 'cancel',
           cssClass: 'button button-assertive',
           handler: () => {
-            this.navCtrl.navigateForward(['pedidos/lista', { 'cliente_id': this.cliente_id, 'nomecliente': this.nomecliente }]);
+            if (this.cliente_id) {
+              this.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': this.cliente_id, 'nomecliente': this.nomecliente }]);
+            }
+            else {
+              this.navCtrl.navigateForward('pedidos');
+            }
           }
         }
       ]
@@ -423,41 +431,42 @@ export class CadastroComponent implements OnInit {
     });
     loading.present();
 
-    this.db.pedido.put(pedidoObj).then(res => {
-      this.db.itempedido
-        .where("pedido_id")
-        .equals(pedidoObj.pedido_id)
-        .delete()
-        .then(function () {
-          itens.map(function (value) {
-            var itempedido;
-            let id = self.guid();
-            itempedido = {
-              item_id: id,
-              pedido_id: pedidoObj.pedido_id,
-              codigo_produto: value.codigo_produto,
-              descricao: value.descricao,
-              quantidade: value.quantidade,
-              preco_unitario_bruto: value.preco_unitario_bruto,
-              desc_unitario_percentual: value.desc_unitario_percentual,
-              preco_unitario_comdesconto: value.preco_unitario_comdesconto,
-              valor_total_item: value.valor_total_item,
-              enviado: "N"
-            };
+    this.db.pedido.put(pedidoObj);
+    this.db.itempedido
+      .where("pedido_id")
+      .equals(pedidoObj.pedido_id)
+      .delete()
+      .then(function () {
+        itens.map(function (value) {
+          var itempedido;
+          let id = self.guid();
+          itempedido = {
+            item_id: id,
+            pedido_id: pedidoObj.pedido_id,
+            codigo_produto: value.codigo_produto,
+            descricao: value.descricao,
+            quantidade: value.quantidade,
+            preco_unitario_bruto: value.preco_unitario_bruto,
+            desc_unitario_percentual: value.desc_unitario_percentual,
+            preco_unitario_comdesconto: value.preco_unitario_comdesconto,
+            valor_total_item: value.valor_total_item,
+            enviado: "N"
+          };
 
-            self.db.itempedido.add(itempedido);
-          });
-        }).then(function () {
-          loading.dismiss();
-          self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': self.cliente_id, 'nomecliente': self.nomecliente }]);
-        }).catch(function (error) {
-          console.log('erro', error);
-          loading.dismiss();
+          self.db.itempedido.add(itempedido);
         });
-    }).catch(error => {
-      console.log('erro', error);
-      loading.dismiss();
-    });
+      }).then(function () {
+        loading.dismiss();
+        if (self.cliente_id) {
+          self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': self.cliente_id, 'nomecliente': self.nomecliente }]);
+        }
+        else {
+          self.navCtrl.navigateForward('pedidos');
+        }
+      }).catch(function (error) {
+        console.log('erro', error);
+        loading.dismiss();
+      });
 
   }
   alterarProdutoPedido(produto, index) {

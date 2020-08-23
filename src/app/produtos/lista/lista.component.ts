@@ -40,7 +40,8 @@ export class ListaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.produtoInit();
+    this.filtro = {};
+    this.produtoInit(this.filtro);
   }
 
   async presentConfirm() {
@@ -58,7 +59,7 @@ export class ListaComponent implements OnInit {
     });
     await alert.present();
   }
-  async produtoInit() {
+  async produtoInit(filtro) {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
@@ -66,20 +67,20 @@ export class ListaComponent implements OnInit {
     let self = this;
     this.tabelas = await this.db.tabela.toArray();
     this.tabela_id = this.tabelas[0].tabela_id;
+    console.log('filtro', filtro);
+    // this.pesquisas = [
+    //   {
+    //     id: 1,
+    //     descricao: 'Pesquisa Geral'
+    //   },
+    //   {
+    //     id: 2,
+    //     descricao: 'Pesquisa Início Descrição'
+    //   }
+    // ];
 
-    this.pesquisas = [
-      {
-        id: 1,
-        descricao: 'Pesquisa Geral'
-      },
-      {
-        id: 2,
-        descricao: 'Pesquisa Início Descrição'
-      }
-    ];
-
-    this.tipoPesquisa = this.pesquisas[0].id;
-    this.ListaProdutos(this.filtro).then(res => {
+    // this.tipoPesquisa = this.pesquisas[0].id;
+    this.ListaProdutos(filtro).then(res => {
       let produtos;
       produtos = res;
 
@@ -121,7 +122,6 @@ export class ListaComponent implements OnInit {
   async ListaProdutos(filtro) {
 
     if (!isNaN(this.tabela_id)) {
-      console.log('filtor', filtro);
       var DB_Produto = await this.db.produto.orderBy('descricaoproduto');
 
       if (
@@ -365,9 +365,11 @@ export class ListaComponent implements OnInit {
           .where('inf_produto')
           .equals(filtro.inf_produto);
       } else if (filtro.hasOwnProperty('produtoempromocao')) {
+
         DB_Produto = this.db.produto
           .where('produtoempromocao')
           .equals(filtro.produtoempromocao);
+      
       }
 
       return new Promise((resolve, reject) => {
@@ -405,7 +407,7 @@ export class ListaComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-             
+
 
       });
 
@@ -443,17 +445,17 @@ export class ListaComponent implements OnInit {
       cssClass: 'my-custom-class',
       componentProps: {
         filtro: this.filtro,
-        tabela_id : this.tabela_id
+        tabela_id: this.tabela_id
       }
     });
     modal.onDidDismiss()
-    .then((data) => {
-      this.filtro = data['data'].filtro;
-      this.tabela_id = data['data'].tabela_id;
-      console.log('this----------', this.filtro , this.tabela_id);
-      this.produtoInit();
+      .then((data) => {
+        this.filtro = data['data'].filtro;
+        this.tabela_id = data['data'].tabela_id;
+        console.log('this----------', this.filtro, this.tabela_id);
+        this.produtoInit(this.filtro);
 
-    });
+      });
     return await modal.present();
   }
 }

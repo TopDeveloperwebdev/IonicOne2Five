@@ -150,17 +150,7 @@ export class PedidosComponent implements OnInit {
       return 0;
     }
   }
-  cadastro(cliente_id, nomecliente) {
-    let totalPedidos = this.totalPedidos(this.pedidos);
-    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
-    this.navCtl.navigateForward(['pedidos/cadastro', {'is' : 'create', 'cliente_id': cliente_id, 'nomecliente': nomecliente}]);
-  }
-  alterar(p,cliente_id, nomecliente) {
-    let totalPedidos = this.totalPedidos(this.pedidos);
-    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
-    let pedido = JSON.stringify(p);
-    this.navCtl.navigateForward(['pedidos/cadastro', { 'is' : 'edit','pedido': pedido,'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
-  }
+ 
 
   async filter() {
     const modal = await this.modalController.create({
@@ -179,6 +169,17 @@ export class PedidosComponent implements OnInit {
       });
 
     return await modal.present();
+  }
+  cadastro(cliente_id, nomecliente) {
+    let totalPedidos = this.totalPedidos(this.pedidos);
+    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
+    this.navCtl.navigateForward(['pedidos/cadastro', {'is' : 'create', 'cliente_id': cliente_id, 'nomecliente': nomecliente}]);
+  }
+  alterar(p,cliente_id, nomecliente) {
+    let totalPedidos = this.totalPedidos(this.pedidos);
+    localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
+    let pedido = JSON.stringify(p);
+    this.navCtl.navigateForward(['pedidos/cadastro', { 'is' : 'edit','pedido': pedido,'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
   async apagarPedido(pedido) {
     let self = this;
