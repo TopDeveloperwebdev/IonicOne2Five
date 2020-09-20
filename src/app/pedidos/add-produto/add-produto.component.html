@@ -1,58 +1,106 @@
-<ion-header class="bar bar-header bar-assertive ">
-    <ion-title class="filter-bar ">Adicionar Produtos</ion-title>
-    <button class="button close-btn addproduto-filter" (click)="filter(); ">
-    <i class="ion-funnel "></i>
+<ion-header class="bar bar-header bar-assertive">
+  <ion-title class="filter-bar">Adicionar Produtos</ion-title>
+  <button class="button close-btn addproduto-filter" (click)="filter()">
+    <i class="ion-funnel"></i>
   </button>
-    <button class="button close-btn" (click)="dismiss()">
+  <button class="button close-btn" (click)="dismiss()">
     <i class="ion-close-round"></i>
   </button>
 </ion-header>
 <ion-content>
-    <ion-list class="padding">
-        <ion-item-sliding *ngFor="let produto of listaProdutos">
-            <ion-item class="item" [class]="{'balanced': produto.produtoempromocao == 'S'}" (click)="addProdutoPedido(produto);">
-                <div class="item-div">
-
-                    <div class="detail-item">
-
-                        <div style="display: flex;margin-bottom: 10px;" [class]="{'balanced': produto.produtoempromocao == 'S', 'assertive': produto.produtoemfalta == 'S', 'positive': produto.produtonovo == 'S'}">{{produto.descricaoproduto}}</div>
-
-                    </div>
-                    <div>
-                        <span style="font-size: 18px; color: #aaa !important;" [hidden]="!(produto.produtoembalagem && produto.produtoembalagem > 1)">
+  <ion-list class="padding">
+    <ion-item-sliding *ngFor="let produto of listaProdutos">
+      <ion-item
+        class="item"
+        [class]="{ balanced: produto.produtoempromocao == 'S' }"
+        (click)="addProdutoPedido(produto)"
+      >
+        <div class="item-div">
+          <div class="detail-item">
+            <div
+              style="display: flex; margin-bottom: 10px"
+              [class]="{
+                balanced: produto.produtoempromocao == 'S',
+                assertive: produto.produtoemfalta == 'S',
+                positive: produto.produtonovo == 'S'
+              }"
+            >
+              {{ produto.descricaoproduto }}
+            </div>
+          </div>
+          <div>
+            <span
+              style="font-size: 18px; color: #aaa !important"
+              [hidden]="
+                !(produto.produtoembalagem && produto.produtoembalagem > 1)
+              "
+            >
               <small class="item-note-label">Unitário: </small>
-              <small *ngIf="(produto.produtoempromocao == 'S')">
-                {{produto.precopadrao/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":"symbol"}}
+              <small *ngIf="produto.produtoempromocao == 'S'">
+                {{
+                  produto.precopadrao /
+                    (produto.produtoembalagem ? produto.produtoembalagem : 1)
+                    | currency: "R$":"symbol"
+                }}
               </small>
-              <b
-                [class]="{'balanced': produto.produtoempromocao == 'S'}">{{(produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela)/(produto.produtoembalagem?produto.produtoembalagem:1) | currency:"R$":"symbol"}}</b>
+              <b [class]="{ balanced: produto.produtoempromocao == 'S' }">{{
+                (produto.produtoempromocao == "S"
+                  ? produto.preco_promocao
+                  : produto.precotabela) /
+                  (produto.produtoembalagem ? produto.produtoembalagem : 1)
+                  | currency: "R$":"symbol"
+              }}</b>
             </span>
+          </div>
 
-                    </div>
-
-                    <div>
-                        <span class="item-note" style="font-size: 18px; text-align: right;position: absolute; right: 11px; bottom: 0px;">
-              <small style="color: red; text-decoration: line-through; font-size: 12px;"
-                *ngIf="(produto.produtoempromocao == 'S')">
-                {{produto.precopadrao| currency:"R$":"symbol"}}
+          <div>
+            <span
+              class="item-note"
+              style="
+                font-size: 18px;
+                text-align: right;
+                position: absolute;
+                right: 11px;
+                bottom: 0px;
+              "
+            >
+              <small
+                style="
+                  color: red;
+                  text-decoration: line-through;
+                  font-size: 12px;
+                "
+                *ngIf="produto.produtoempromocao == 'S'"
+              >
+                {{ produto.precopadrao | currency: "R$":"symbol" }}
               </small>
-              <b
-                [class]="{'balanced': produto.produtoempromocao == 'S'}">{{produto.produtoempromocao == 'S'?produto.preco_promocao:produto.precotabela| currency:"R$":"symbol"}}</b>
+              <b [class]="{ balanced: produto.produtoempromocao == 'S' }">{{
+                produto.produtoempromocao == "S"
+                  ? produto.preco_promocao
+                  : (produto.precotabela | currency: "R$":"symbol")
+              }}</b>
             </span>
-                    </div>
-
-                </div>
-            </ion-item>
-            <ion-item-options side="end">
-                <ion-item-option class="button-assertive" (click)="comissoes(produto.produto_id);" color="danger">Commisoes
-                </ion-item-option>
-                <ion-item-option class="button-positive" (click)="Fotos(produto);">FOTOS
-                </ion-item-option>
-            </ion-item-options>
-        </ion-item-sliding>
-        <ion-infinite-scroll (ionInfinite)="loadMore($event)">
-            <ion-infinite-scroll-content loadingSpinner="lines" loadingText="Loading more data...">
-            </ion-infinite-scroll-content>
-        </ion-infinite-scroll>
-    </ion-list>
+          </div>
+        </div>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option
+          class="button-assertive"
+          (click)="comissoes(produto.produto_id)"
+          color="danger"
+          >Commisoes
+        </ion-item-option>
+        <ion-item-option class="button-positive" (click)="Fotos(produto)"
+          >FOTOS
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="lines"
+        loadingText="Loading more data..."
+      >
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </ion-list>
 </ion-content>

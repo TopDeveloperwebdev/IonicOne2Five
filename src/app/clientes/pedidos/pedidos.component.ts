@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
-import { NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { ActionSheetController, NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
 // import { FiltroPedidosComponent } from '../filtro-pedidos/filtro-pedidos.component';
 import { FiltroComponent } from '../../pedidos/filtro/filtro.component';
 import { ConexaoService } from '../../services/conexao.service';
@@ -29,19 +29,20 @@ export class PedidosComponent implements OnInit {
     public alertCtrl: AlertController,
     public loadCtrl: LoadingController,
     public conexaoService: ConexaoService,
+    public actionSheetController: ActionSheetController,
     public dataService: dataService) {
 
-   
+
     this.db = dbService;
   }
 
-  ionViewDidEnter(){
+  ionViewDidEnter() {
     this.cliente_id = this.route.snapshot.params['cliente_id'];
     this.nomecliente = this.route.snapshot.params['nomecliente'];
     this.listaPedidos(this.cliente_id);
     console.log('render');
   }
-  ngOnInit(){
+  ngOnInit() {
 
   }
   async confirmAlert(header, message) {
@@ -150,7 +151,7 @@ export class PedidosComponent implements OnInit {
       return 0;
     }
   }
- 
+
 
   async filter() {
     const modal = await this.modalController.create({
@@ -163,12 +164,12 @@ export class PedidosComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        if(data['data']){
+        if (data['data']) {
           this.filtro = data['data']; // Here's your selected user!
           console.log('this.filtro', this.filter);
           this.listaPedidos(this.cliente_id);
         }
-     
+
       });
 
     return await modal.present();
@@ -176,13 +177,13 @@ export class PedidosComponent implements OnInit {
   cadastro(cliente_id, nomecliente) {
     let totalPedidos = this.totalPedidos(this.pedidos);
     localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
-    this.navCtl.navigateForward(['pedidos/cadastro', {'is' : 'create', 'cliente_id': cliente_id, 'nomecliente': nomecliente}]);
+    this.navCtl.navigateForward(['pedidos/cadastro', { 'is': 'create', 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
-  alterar(p,cliente_id, nomecliente) {
+  alterar(p, cliente_id, nomecliente) {
     let totalPedidos = this.totalPedidos(this.pedidos);
     localStorage.setItem('totalPedidos', JSON.stringify(totalPedidos));
     let pedido = JSON.stringify(p);
-    this.navCtl.navigateForward(['pedidos/cadastro', { 'is' : 'edit','pedido': pedido,'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
+    this.navCtl.navigateForward(['pedidos/cadastro', { 'is': 'edit', 'pedido': pedido, 'cliente_id': cliente_id, 'nomecliente': nomecliente }]);
   }
   async apagarPedido(pedido) {
     let self = this;
@@ -283,7 +284,42 @@ export class PedidosComponent implements OnInit {
       s4()
     );
   }
+  async opcoes(pedido, cliente_id, nomecliente) {
 
- 
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Opções',
+      cssClass: 'my-custom-class',
+      buttons: [{
+        text: 'Alterar Pedido',
+        role: 'create',
+        icon: 'list',
+        handler: () => {
+          this.alterar(pedido, cliente_id, nomecliente);
+        }
+      }, {
+        text: 'Excluir Pedido',
+        icon: 'create',
+        handler: () => {
+          this.apagarPedido(pedido)
+        }
+      }, {
+        text: 'Duplicar Pedido',
+        icon: 'albums',
+        handler: () => {
+          this.duplicarPedido(pedido)
+        }
+      }, {
+        text: 'Enviar Email',
+        icon: 'close-circle',
+        handler: () => {
+
+        }
+      }]
+
+    });
+    await actionSheet.present();
+  }
+
+
 }
 
