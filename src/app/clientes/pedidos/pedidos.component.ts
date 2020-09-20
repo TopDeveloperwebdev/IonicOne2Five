@@ -312,7 +312,8 @@ export class PedidosComponent implements OnInit {
         text: 'Enviar Email',
         icon: 'close-circle',
         handler: () => {
-
+          let pedidodata = JSON.stringify(pedido);
+          this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
         }
       }]
 

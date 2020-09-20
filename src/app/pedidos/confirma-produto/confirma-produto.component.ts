@@ -47,7 +47,7 @@ export class ConfirmaProdutoComponent implements OnInit {
       .toArray()
       .then(function (res) {
         self.comissoes_produto = res;
-        console.log('comissoes_produto',res);
+     
 
         loading.dismiss();
       });
@@ -73,7 +73,7 @@ export class ConfirmaProdutoComponent implements OnInit {
     this.produtoEscolhido.quantidade = this.produtoEscolhido.quantidade + 1;
     this.calculaPrecoPorQuantidade();
   }
-  dismiss(produto) {
+  dismiss(produto) { 
     this.modalCtrl.dismiss(produto);
   }
   selecionaComissao() {

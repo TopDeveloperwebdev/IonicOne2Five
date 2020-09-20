@@ -395,7 +395,7 @@ export class AddProdutoComponent implements OnInit {
       if (typeof p === "object") {
         this.WarningAlert(p);
       } else {
-
+       console.log('produto-------' ,produto);
         self.produtoEscolhido = {
           codigo_produto: produto.produto_id,
           dados_adicionais: produto.dados_adicionais,
@@ -421,7 +421,13 @@ export class AddProdutoComponent implements OnInit {
           data_fim_promocao: produto.data_fim_promocao,
           marca: produto.inf_marca,
           tipo: produto.inf_produto,
-          obs: produto.obs
+          obs: produto.obs,
+          http_img_1: produto.http_img_1,
+          http_img_2: produto.http_img_2,
+          http_img_3: produto.http_img_3,
+          http_img_4: produto.http_img_4,
+          http_img_5: produto.http_img_5,
+          http_img_6: produto.http_img_6,
         };
         //  $scope.confirmarProduto.show();
 

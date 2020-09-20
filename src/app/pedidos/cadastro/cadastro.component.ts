@@ -535,7 +535,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
     pedidoObj.latitude_gravacao = lat;
     pedidoObj.longitude_gravacao = lng;
     pedidoObj.total_itens = itens.length;
-    
+
     let self = this;
     const loading = await this.loadCtrl.create({
       message: 'Salvando Pedido. Aguarde'
@@ -548,8 +548,8 @@ export class CadastroComponent implements OnInit, OnDestroy {
       .delete()
       .then(() => {
         let itensCount = 0;
-        console.log('itens2' , itens);
-        itens.map((value) => {
+        console.log('itens2', itens);
+        itens.map((value) => {          
           var itempedido;
           let id = self.guid();
           itempedido = {
@@ -562,13 +562,19 @@ export class CadastroComponent implements OnInit, OnDestroy {
             desc_unitario_percentual: value.desc_unitario_percentual,
             preco_unitario_comdesconto: value.preco_unitario_comdesconto,
             valor_total_item: value.valor_total_item,
-            enviado: "N"
+            enviado: "N",
+            http_img_1: value.http_img_1,
+            http_img_2: value.http_img_2,
+            http_img_3: value.http_img_3,
+            http_img_4: value.http_img_4,
+            http_img_5: value.http_img_5,
+            http_img_6: value.http_img_6,
           };
 
           self.db.itempedido.add(itempedido).then(res => {
-            itensCount++;           
+            itensCount++;
             if (itens.length == itensCount) {
-                this.db.pedido.put(pedidoObj)
+              this.db.pedido.put(pedidoObj)
             }
           })
 
@@ -629,7 +635,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
     this.atualizarTotalPedido();
   }
   salvar(pedido, itens) {
-     console.log('itens' , itens);
+    console.log('itens', itens);
     const itensCount = itens ? itens.length : 0;
 
     if (!itensCount || itensCount == 0) {
