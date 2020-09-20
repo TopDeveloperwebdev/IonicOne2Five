@@ -46,8 +46,7 @@
                 <div class="form-error" *ngIf="filtro.fim == null && filtro.inicio != null">Campo Obrigatório</div>
             </div>
         </div>
-        <button class="button button-full button-assertive" (click)="filtrarPedidos(filtroPedidos)" [disabled]="!filtroPedidos.valid" type="submit">
-      Filtrar
-    </button>
+        <button class="button button-block button-assertive activated" [disabled]="!filtroPedidos.valid" (click)="filtrarPedidos(filtroPedidos);">Filtrar
+        </button>
     </form>
 </ion-content>

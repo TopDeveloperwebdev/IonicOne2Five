@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { LoadingController, AlertController, ModalController, NavController } from '@ionic/angular'
+import { LoadingController, AlertController, ModalController, NavController, Platform } from '@ionic/angular'
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { DBService } from '../../services/DB.service';
 import { AddProdutoComponent } from '../add-produto/add-produto.component'
 import { Geolocation } from '@ionic-native/geolocation/ngx'
@@ -8,12 +10,16 @@ import { Geolocation } from '@ionic-native/geolocation/ngx'
 import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
 import { NgForm } from '@angular/forms';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import { DatePipe } from '@angular/common';
+
+
 @Component({
   selector: 'app-cadastro',
   templateUrl: './cadastro.component.html',
   styleUrls: ['./cadastro.component.scss'],
 })
-export class CadastroComponent implements OnInit {
+export class CadastroComponent implements OnInit, OnDestroy {
   nomecliente: any;
   urgente: any;
   pedido: any = {};
@@ -33,6 +39,12 @@ export class CadastroComponent implements OnInit {
   limit: any;
   pedidos: any;
   user: any;
+  tabela_id: any;
+  filtro = {};
+
+  backButtonSubscription: Subscription;
+
+  private unsubscribeAll$ = new Subject<any>();
   constructor(
     public route: ActivatedRoute,
     public loadCtrl: LoadingController,
@@ -41,14 +53,27 @@ export class CadastroComponent implements OnInit {
     public modalCtrl: ModalController,
     public navCtrl: NavController,
     public geolocation: Geolocation,
+    private datePipe: DatePipe,
+    public platform: Platform
 
   ) {
-    this.db = dbService
+    this.db = dbService;
   }
 
   async ngOnInit() {
 
+
     const self = this;
+    this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(9999, () => {
+      document.addEventListener('backbutton', this.backButtonBehavior, false);
+    });
+
+    this.platform.backButton
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe(async () => {
+        await this.voltar();
+      });
+
     self.itens = [];
     this.loadingStart = await self.loadCtrl.create({
       message: 'Aguarde!'
@@ -64,6 +89,7 @@ export class CadastroComponent implements OnInit {
     this.condicoes = await this.dbService.table('condicoe').toArray();
     this.formas = await this.dbService.table('forma').toArray();
     this.tabelas = await this.dbService.table('tabela').toArray();
+    this.tabela_id = this.tabelas[0].tabela_id;
     this.tipos = [
       { codigo: "P", nome: "Pedido" },
       { codigo: "B", nome: "Bônus" },
@@ -73,6 +99,7 @@ export class CadastroComponent implements OnInit {
     self.nomecliente = self.route.snapshot.params['nomecliente'];
     self.cliente_id = self.route.snapshot.params['cliente_id'];
     let is = self.route.snapshot.params['is'];
+
     if (is == 'create') {
       this.createPedidos();
     } else {
@@ -81,6 +108,22 @@ export class CadastroComponent implements OnInit {
 
 
   }
+
+  ngOnDestroy() {
+    console.log('cadastroComponent:onDestroy');
+    this.unsubscribeAll$.next(null);
+    this.unsubscribeAll$.complete();
+    this.backButtonSubscription.unsubscribe();
+
+    document.removeEventListener('backbutton', this.backButtonBehavior);
+  }
+
+  backButtonBehavior(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+  }
+
   editPedios() {
     let self = this;
     let pedido = JSON.parse(self.route.snapshot.params['pedido']);
@@ -89,6 +132,7 @@ export class CadastroComponent implements OnInit {
     if (pedido.data_entrega.split(" ")) {
       dataHora = pedido.data_entrega.split(" ");
     }
+
     pedido.data_entrega = dataHora[0];
 
 
@@ -116,6 +160,16 @@ export class CadastroComponent implements OnInit {
   async createPedidos() {
     let self = this;
     self.itens = [];
+    let pedido;
+    pedido = {};
+    pedido.cod_pedido_mob = null;
+    pedido.pedido_id = null;
+    pedido.urgente = false;
+    pedido.total_itens = 0;
+    pedido.total_pedido = 0.0;
+    pedido.enviado = "N";
+    pedido.cliente_id = Number(self.cliente_id);
+    self.pedido = pedido;
     this.db.clientes
       .where('cli_id')
       .equals(Number(self.cliente_id))
@@ -133,7 +187,7 @@ export class CadastroComponent implements OnInit {
         if (res.formapagto_id == null) {
           self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
         }
-        self.pedido.cliente_id = Number(self.cliente_id);
+
         if (res.credito_bloqueado === "S") {
           self.pedidosConfirm();
           self.loadingStart.dismiss();
@@ -163,14 +217,9 @@ export class CadastroComponent implements OnInit {
         break;
     }
     proximaData.setDate(hoje.getDate() + diasAcrescentar);
-    var dd = proximaData.getDate();
 
-    var mm = proximaData.getMonth() + 1;
-    var yyyy = proximaData.getFullYear();
-
-    let d = dd < 10 ? '0' : '';
-    let m = mm < 10 ? '0' : '';
-    return yyyy + '-' + m + mm + '-' + d + dd;
+    let foramteDate = this.datePipe.transform(proximaData, "yyyy-MM-dd");
+    return foramteDate;
   }
   async listaPedidos(cliente_id) {
 
@@ -198,6 +247,7 @@ export class CadastroComponent implements OnInit {
         .toArray()
         .then(
           itens => {
+
             if (itens.length) {
               itens.map((item, index) => {
                 var i;
@@ -231,6 +281,40 @@ export class CadastroComponent implements OnInit {
     });
 
   }
+  async _getItensPedido(tabela_id) {
+    const self = this;
+    var itensArray = [];
+    return new Promise((resolve, reject) => {
+
+      if (self.itens.length) {
+        self.itens.map((item, index) => {
+          var i;
+          i = item;
+          return self.dbService.table('produto')
+            .where('produto_id')
+            .equals(i.codigo_produto)
+            .first().then(res => {
+              let prod;
+              prod = res;
+              i.descricao = prod && prod.descricaoproduto ?
+                prod.descricaoproduto :
+                "N/I";
+              if (tabela_id) {
+                i = this.recalcularItem(i, prod, tabela_id);
+              }
+              itensArray.push(i);
+              if (index == self.itens.length - 1) {
+                return resolve(itensArray);
+              }
+            })
+        });
+      } else {
+        return resolve(itensArray);
+      }
+    });
+
+  }
+
   async pedidosConfirm() {
     console.log('Alert Shown Method Accessed!');
     const alert = await this.alertCtrl.create({
@@ -258,7 +342,7 @@ export class CadastroComponent implements OnInit {
     console.log('Alert Shown Method Accessed!');
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
-      message: 'Problema ao carregar itens do pedido. Tente novamente.',
+      message: 'Problema ao Carregar a Consulta Tente novamente.',
       buttons: [
         {
           text: 'OK',
@@ -276,23 +360,29 @@ export class CadastroComponent implements OnInit {
       component: AddProdutoComponent,
       cssClass: 'my-custom-class',
       componentProps: {
+        'tabela_id': this.tabela_id,
         'pedido': this.pedido,
         'itens': this.itens,
-        'usuario': usuario
-
+        'usuario': usuario,
+        'filtro': this.filtro
       }
     });
     modal.onDidDismiss()
       .then((data) => {
         // Here's your selected user!
-        this.itens = data['data'].itens;
-        this.pedido = data['data'].pedido;
+        if (data['data']) {
+          this.itens = data['data'].itens;
+          this.pedido = data['data'].pedido;
+          this.filtro = data['data'].filtro;
+        }
+
       });
 
     return await modal.present();
   }
 
   async voltar() {
+
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
       message: 'O pedido não foi salvo, deseja sair mesmo assim?',
@@ -300,10 +390,22 @@ export class CadastroComponent implements OnInit {
         {
           text: 'Sim',
           cssClass: 'Yes button button-assertive',
+          handler: () => {
+            if (this.cliente_id) {
+              this.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': this.cliente_id, 'nomecliente': this.nomecliente }]);
+            }
+            else {
+              this.navCtrl.navigateForward('pedidos');
+            }
+          }
         },
+
         {
           text: "Não",
           cssClass: 'No button-assertive',
+          handler: () => {
+            // return false;
+          }
         }
       ]
     });
@@ -338,6 +440,12 @@ export class CadastroComponent implements OnInit {
     await alert.present();
   }
   async alertConfirm2(header, message, pedido, itens) {
+    var posOptions = {
+      timeout: 5000,
+      maximumAge: 3000,
+      enableHighAccuracy: true
+    };
+
     const alert = await this.alertCtrl.create({
       header: header,
       message: message,
@@ -347,7 +455,7 @@ export class CadastroComponent implements OnInit {
           role: 'cancel',
           cssClass: 'button button-assertive',
           handler: () => {
-            this.geolocation.getCurrentPosition().then(position => {
+            this.geolocation.getCurrentPosition(posOptions).then(position => {
               this.gravarPedido(
                 pedido,
                 itens,
@@ -407,6 +515,7 @@ export class CadastroComponent implements OnInit {
   //////// get result 
 
   async gravarPedido(pedido, itens, lat, lng) {
+
     var pedidoObj = pedido;
     var id = this.guid();
     if (pedido.cod_pedido_mob == null) {
@@ -415,29 +524,32 @@ export class CadastroComponent implements OnInit {
     }
 
 
-    pedidoObj.data_entrega = pedido.data_entrega;
+    pedidoObj.data_entrega = this.datePipe.transform(pedido.data_entrega, "yyyy-MM-dd");
     let temp = await this.db.table('usuario').toArray();
     pedidoObj.vendedor_id = temp[0].vendedor_id;
     pedidoObj.urgente = pedido.urgente == true ? "S" : "N";
-    pedidoObj.data_gravacao = new Date();
-    pedidoObj.hora_gravacao = new Date();
+    pedidoObj.data_gravacao = this.datePipe.transform(new Date(), "yyyy-MM-dd");
+    pedidoObj.hora_gravacao = this.datePipe.transform(new Date(), "HH:mm:ss");
+
     pedidoObj.enviado = "N";
     pedidoObj.latitude_gravacao = lat;
     pedidoObj.longitude_gravacao = lng;
-
+    pedidoObj.total_itens = itens.length;
+    
     let self = this;
     const loading = await this.loadCtrl.create({
       message: 'Salvando Pedido. Aguarde'
     });
     loading.present();
 
-    this.db.pedido.put(pedidoObj);
     this.db.itempedido
       .where("pedido_id")
       .equals(pedidoObj.pedido_id)
       .delete()
-      .then(function () {
-        itens.map(function (value) {
+      .then(() => {
+        let itensCount = 0;
+        console.log('itens2' , itens);
+        itens.map((value) => {
           var itempedido;
           let id = self.guid();
           itempedido = {
@@ -453,16 +565,26 @@ export class CadastroComponent implements OnInit {
             enviado: "N"
           };
 
-          self.db.itempedido.add(itempedido);
+          self.db.itempedido.add(itempedido).then(res => {
+            itensCount++;           
+            if (itens.length == itensCount) {
+                this.db.pedido.put(pedidoObj)
+            }
+          })
+
         });
-      }).then(function () {
+
+      }).then(() => {
         loading.dismiss();
+
         if (self.cliente_id) {
+          console.log('client_id', self.cliente_id);
           self.navCtrl.navigateForward(['clientes/pedidos', { 'cliente_id': self.cliente_id, 'nomecliente': self.nomecliente }]);
         }
         else {
           self.navCtrl.navigateForward('pedidos');
         }
+
       }).catch(function (error) {
         console.log('erro', error);
         loading.dismiss();
@@ -471,9 +593,6 @@ export class CadastroComponent implements OnInit {
   }
   alterarProdutoPedido(produto, index) {
     let produtoEscolhido = produto;
-    // produtoEscolhido.quantidade = parseFloat(
-    //   produtoEscolhido.quantidade
-    // );
     this.confirmarProduto(produtoEscolhido, index);
   }
 
@@ -490,19 +609,27 @@ export class CadastroComponent implements OnInit {
       .then((data) => {
         let producto = data['data'];
         this.itens[index] = producto;
+        this.atualizarTotalPedido();
       });
 
     return await modal.present();
   }
-  apagarProdutoPedido(index) {
+  apagarPedido(index) {
     var listaItens = this.itens;
     this.itens = listaItens.filter(function (element, i) {
       if (i != index) return element;
     });
   }
-
+  apagarProdutoPedido(produto) {
+    console.log('right')
+    this.apagarItemPedido(produto);
+  }
+  apagarItemPedido(produto) {
+    this.apagarPedido(produto);
+    this.atualizarTotalPedido();
+  }
   salvar(pedido, itens) {
-    console.log('pedido', pedido, itens);
+     console.log('itens' , itens);
     const itensCount = itens ? itens.length : 0;
 
     if (!itensCount || itensCount == 0) {
@@ -533,14 +660,16 @@ export class CadastroComponent implements OnInit {
     } else if (valor_pedido < valor_min_pedido.toFixed(2) && this.valor_minimo_obrigatorio == false) {
       this.alertConfirm2('Atenção!', 'O pedido vai ser gravado com valor inferior ao minimo de R$ " + valor_min_pedido.toFixed(2)', pedido, itens);
     } else {
-      this.geolocation.getCurrentPosition().then(position => {
+
+      this.geolocation.getCurrentPosition(posOptions).then(position => {
+
         this.gravarPedido(
           pedido,
           itens,
           position.coords.latitude,
           position.coords.longitude
         );
-      }, err => {
+      }).catch(function (error) {
         this.gravarPedido(pedido, itens, null, null);
       })
     }
@@ -591,8 +720,8 @@ export class CadastroComponent implements OnInit {
       message: 'Atualizando tabela de preços do pedido. Aguarde!'
     });
     loading.present();
-
-    this.getItensPedido(this.pedido.pedido_id, this.pedido.codigo_tabela_preco).then(
+    this.tabela_id = this.pedido.codigo_tabela_preco;
+    this._getItensPedido(this.pedido.codigo_tabela_preco).then(
       res => {
         console.log("chamou getItensPedido ao trocar tabela", res);
 
@@ -602,6 +731,7 @@ export class CadastroComponent implements OnInit {
         loading.dismiss();
       }
     );
+
   }
   atualizarTotalPedido() {
     this.pedido.total_pedido = 0;

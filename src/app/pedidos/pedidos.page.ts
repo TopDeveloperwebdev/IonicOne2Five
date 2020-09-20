@@ -38,6 +38,7 @@ export class PedidosPage implements OnInit {
   async ngOnInit() {
     this.filtro = { situacao: 'N' };
     this.pushPedidos(this.filtro);
+  
 
   }
   async pushPedidos(filtro) {
@@ -169,9 +170,12 @@ export class PedidosPage implements OnInit {
       }
     });
     modal.onDidDismiss()
-      .then((data) => {
-        this.filtro = data['data']; // Here's your selected user!
-        this.pushPedidos(this.filtro);
+      .then((data) => { 
+        if(data['data']){
+          this.filtro = data['data']; // Here's your selected user!
+          this.pushPedidos(this.filtro);
+        }
+     
       });
 
     return await modal.present();

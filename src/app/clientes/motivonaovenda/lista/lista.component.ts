@@ -35,7 +35,7 @@ async ionViewDidEnter(){
     message: 'Aguarde!'
   });
   loading.present();
-  this.cliente_id = this.route.snapshot.params['cliente_id'];
+  this.cliente_id = Number(this.route.snapshot.params['cliente_id']);
   this.listaVisitas = await this.db.visita_nao_venda.where('cliente_id').equals(this.cliente_id).toArray();
   loading.dismiss();
   this.nomecliente = this.route.snapshot.params['nomecliente'];
@@ -101,14 +101,16 @@ async ionViewDidEnter(){
         this.ionViewDidEnter();
       });
     } else {
-      if (this.conexaoService.conexaoOnline()) {
+      if (this.conexaoService.conexaoOnline()) {     
         this.DataService.excluir(visita.visita_id).subscribe(res => {
+          console.log('res' , res);
           this.db.visita_nao_venda.where('cod_visita_mob').equals(visita.cod_visita_mob).delete().then((res) => {
             loading.dismiss();
             this.ionViewDidEnter();
           });
         }, error => {
-          console.log(error);
+          console.log('erro' , error);
+          loading.dismiss();
           alert('Erro ao apagar visita no Web.');
         })
       } else {

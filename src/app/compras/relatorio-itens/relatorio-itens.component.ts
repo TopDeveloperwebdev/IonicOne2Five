@@ -64,7 +64,7 @@ export class RelatorioItensComponent implements OnInit {
     Object.values(ci_cp).forEach(value => {
       items.push(value);
     });
-
+    
 
     return items;
   }

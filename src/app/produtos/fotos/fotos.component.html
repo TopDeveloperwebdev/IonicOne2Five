@@ -9,25 +9,24 @@
         <h4 class="title">{{produto.descricaoproduto}}</h4>
     </div>
 
-
     <ion-slides pager="true" [options]="mySlideOptions">
         <ion-slide>
-            <img [src]="produto.http_img_1 ? produto.http_img_1 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
+            <img [src]="Replacehttps(produto.http_img_1) ? Replacehttps(produto.http_img_1) : 'https://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
         </ion-slide>
         <ion-slide>
-            <img [src]="produto.http_img_2 ? produto.http_img_2 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1555891270/ehck0c1jp2txo74kwygg.jpg'" />
+            <img [src]="Replacehttps(produto.http_img_2) ? Replacehttps(produto.http_img_2) : 'https://res.cloudinary.com/onedesenvolvimento/image/upload/v1555891270/ehck0c1jp2txo74kwygg.jpg'" />
         </ion-slide>
         <ion-slide>
-            <img [src]="produto.http_img_3 ? produto.http_img_3 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241478/ar5hqirazdtb6ffxjlc7.jpg'" />
+            <img [src]="Replacehttps(produto.http_img_3) ? Replacehttps(produto.http_img_3) : 'https://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241478/ar5hqirazdtb6ffxjlc7.jpg'" />
         </ion-slide>
         <ion-slide>
-            <img [src]="produto.http_img_4 ? produto.http_img_4 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241619/acqbpj8qgggwhvsuzcio.jpg'" />
+            <img [src]="Replacehttps(produto.http_img_4) ? Replacehttps(produto.http_img_4) : 'https://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241619/acqbpj8qgggwhvsuzcio.jpg'" />
         </ion-slide>
         <ion-slide>
-            <img [src]="produto.http_img_5 ? produto.http_img_5 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
+            <img [src]="Replacehttps(produto.http_img_5) ? Replacehttps(produto.http_img_5) : 'https://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
         </ion-slide>
         <ion-slide>
-            <img [src]="produto.http_img_6 ? produto.http_img_6 : 'http://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
+            <img [src]="Replacehttps(produto.http_img_6) ? Replacehttps(produto.http_img_6) : 'https://res.cloudinary.com/onedesenvolvimento/image/upload/v1556241511/edecweuqog38whrr0fbw.jpg'" />
         </ion-slide>
     </ion-slides>
 </ion-content>

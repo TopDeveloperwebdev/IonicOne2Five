@@ -1,6 +1,6 @@
 <ion-header class="bar bar-header bar-assertive ">
     <ion-title class="filter-bar">Confirmar Produto</ion-title>
-    <button class="button close-btn" (click)="dismiss()">
+    <button class="button close-btn" (click)="dismiss(null)">
     <i class="ion-close-round"></i>
   </button>
 </ion-header>
@@ -12,7 +12,7 @@
         <select [(ngModel)]="produtoEscolhido.comissao" (change)="selecionaComissao();"
           [disabled]="produtoEscolhido.promocao == 'S' && usuario.trava_edicao_promocao == true" name="comissao">
           <option value="">Selecione a Comissão</option>
-          <option [value]="toNumber(comissao.precoinicial)" *ngFor="let comissao of comissoes_produto">pristine
+          <option [value]="toNumber(comissao.precoinicial)" *ngFor="let comissao of comissoes_produto">Preço
             De {{toNumber(comissao.precoinicial) }}
             a {{toNumber(comissao.precofinal)}} =>
             {{toNumber(comissao.comissao) }}%

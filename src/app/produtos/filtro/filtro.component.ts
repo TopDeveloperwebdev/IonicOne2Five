@@ -29,8 +29,7 @@ export class FiltroComponent implements OnInit {
     let self = this;
 
     this.db.tabela.toArray().then(function (tabelas) {
-      self.tabelas = tabelas;
-      console.log('tables', self.tabelas);
+      self.tabelas = tabelas;     
     });
     self.db.marcas_produto.toArray().then(function (res) {
       self.marcas = res;
@@ -91,7 +90,8 @@ export class FiltroComponent implements OnInit {
   limparFiltro() {
     this.modalController.dismiss({ filtro: {}, tabela_id: this.tabela_id });
   }
-  filtrarProdutos(descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {
+  filtrarProdutos(tabela_id,descricaoproduto, marcaSelecionada, tipoSelecionado, produtoEmPromocao, tipoPesquisa) {
+     
     if (marcaSelecionada != "") {
       this.filtro.inf_marca = marcaSelecionada;
     }
@@ -118,13 +118,13 @@ export class FiltroComponent implements OnInit {
     } else {
       delete this.filtro.descricaoproduto;
     }
-    if (tipoPesquisa != "") {
+    if (tipoPesquisa != "") {     
       this.filtro.tipopesquisa = tipoPesquisa;
     } else {
       delete this.filtro.tipopesquisa;
     }
 
-    this.modalController.dismiss({ filtro: this.filtro, tabela_id: this.tabela_id });
+    this.modalController.dismiss({ filtro: this.filtro, tabela_id: tabela_id });
 
   }
 

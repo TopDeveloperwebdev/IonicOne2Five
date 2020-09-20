@@ -31,23 +31,53 @@ export class CadastroComponent implements OnInit {
 
   constructor(public alertCtrl: AlertController, public modalController: ModalController, private dbService: DBService, public navCtrl: NavController, public loadCtrl: LoadingController, private formBuilder: FormBuilder, public route: ActivatedRoute) {
     this.db = dbService;
-    this.cliente = { cli_id: null, atividade_id: '', cli_codigocidadeentrega: '' };
+    this.cliente = { cli_id: null, atividade_id: '', cli_codigocidadeentrega: '', cli_codigocidade: '' };
   }
 
   async ngOnInit() {
+
+
     this.atividades = await this.dbService.table('atividade').toArray();
     this.cidades = await this.dbService.table('cidade').toArray();
-
+    this.atividades.sort(this.compare1);
+    this.cidades.sort(this.compare2);
     this.cliente_id = this.route.snapshot.params['cliente_id'];
 
     if (this.cliente_id) {
       this.db.clientes.where('cli_id').equals(Number(this.cliente_id)).first().then(cliente => {
         this.cliente = cliente;
-        console.log('this.cliente' , this.cliente);
+        console.log('this.cliente', this.cliente, this.cliente.atividade_id);
       });
     }
   }
 
+
+  compare1(a, b) {
+    // Use toUpperCase() to ignore character casing
+    const bandA = a.descricaoatividade.toUpperCase();
+    const bandB = b.descricaoatividade.toUpperCase();
+
+    let comparison = 0;
+    if (bandA > bandB) {
+      comparison = 1;
+    } else if (bandA < bandB) {
+      comparison = -1;
+    }
+    return comparison;
+  }
+  compare2(a, b) {
+    // Use toUpperCase() to ignore character casing
+    const bandA = a.descricaocidade.toUpperCase();
+    const bandB = b.descricaocidade.toUpperCase();
+
+    let comparison = 0;
+    if (bandA > bandB) {
+      comparison = 1;
+    } else if (bandA < bandB) {
+      comparison = -1;
+    }
+    return comparison;
+  }
   async salvar(form: NgForm) {
     if (form.valid) {
 
@@ -64,6 +94,7 @@ export class CadastroComponent implements OnInit {
       this.cliente.cli_pessoafj = this.cliente.cli_cnpjcpf.length <= 11 ? 'F' : 'J';
       this.cliente.cli_razaosocial = this.cliente.cli_razaosocial.toUpperCase();
       this.cliente.cli_codigocidadeentrega = null;
+      this.cliente.cli_cnpjcpf = this.cliente.cli_cnpjcpf.replace(/[^0-9]+/g, '');
 
       this.cliente.cli_fantasia = this.cliente.cli_fantasia.toUpperCase();
 
@@ -120,8 +151,8 @@ export class CadastroComponent implements OnInit {
 
       if (this.cliente.cli_id == null) {
         this.cliente.cli_id = parseInt(this.cliente.cli_cnpjcpf);
-
         this.db.clientes.add(this.cliente);
+        console.log('this.cliente', this.cliente);
       } else {
         this.db.clientes.put(this.cliente);
       }

@@ -39,8 +39,10 @@ export class ListaComponent implements OnInit {
     this.usuario = JSON.parse(localStorage.getItem('user'));
   }
 
-  ngOnInit() {
+async  ngOnInit() {
     this.filtro = {};
+    this.tabelas = await this.db.tabela.toArray();
+    this.tabela_id = this.tabelas[0].tabela_id;
     this.produtoInit(this.filtro);
   }
 
@@ -48,7 +50,7 @@ export class ListaComponent implements OnInit {
     console.log('Alert Shown Method Accessed!');
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
-      message: 'Problema ao carregar itens do pedido. Tente novamente.',
+      message: 'Problema ao Carregar a Consulta Tente novamente.',
       buttons: [
         {
           text: 'OK',
@@ -59,36 +61,38 @@ export class ListaComponent implements OnInit {
     });
     await alert.present();
   }
+  compare(a, b) {
+    // Use toUpperCase() to ignore character casing
+    const bandA = a.descricaoproduto.toUpperCase();
+    const bandB = b.descricaoproduto.toUpperCase();
+
+    let comparison = 0;
+    if (bandA > bandB) {
+      comparison = 1;
+    } else if (bandA < bandB) {
+      comparison = -1;
+    }
+    return comparison;
+  }
+
   async produtoInit(filtro) {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
-    let self = this;
-    this.tabelas = await this.db.tabela.toArray();
-    this.tabela_id = this.tabelas[0].tabela_id;
-    console.log('filtro', filtro);
-    // this.pesquisas = [
-    //   {
-    //     id: 1,
-    //     descricao: 'Pesquisa Geral'
-    //   },
-    //   {
-    //     id: 2,
-    //     descricao: 'Pesquisa Início Descrição'
-    //   }
-    // ];
+    let self = this;   
 
-    // this.tipoPesquisa = this.pesquisas[0].id;
     this.ListaProdutos(filtro).then(res => {
+      console.log('ListaProdutos', res, filtro, self.tabela_id);
       let produtos;
       produtos = res;
-
+      produtos.sort(this.compare);
       this.listaProdutosDataservice = produtos.map(function (produto, index) {
         var p;
         p = produto;
 
         p.precotabela = "";
+
         self.db.produto_tabela.where('[produto_id+tabela_id]')
           .equals([p.produto_id, self.tabela_id.toString()])
           .first()
@@ -122,7 +126,7 @@ export class ListaComponent implements OnInit {
   async ListaProdutos(filtro) {
 
     if (!isNaN(this.tabela_id)) {
-      var DB_Produto = await this.db.produto.orderBy('descricaoproduto');
+      var DB_Produto = await this.db.produto;
 
       if (
         filtro.hasOwnProperty('descricaoproduto') &&
@@ -369,8 +373,10 @@ export class ListaComponent implements OnInit {
         DB_Produto = this.db.produto
           .where('produtoempromocao')
           .equals(filtro.produtoempromocao);
-      
+
       }
+
+
 
       return new Promise((resolve, reject) => {
         return resolve(DB_Produto.toArray());
@@ -378,6 +384,8 @@ export class ListaComponent implements OnInit {
 
     }
   }
+
+
   async Comissoes(produto_id) {
     const modal = await this.modalCtrl.create({
       component: ComissoesComponent,
@@ -450,10 +458,13 @@ export class ListaComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        this.filtro = data['data'].filtro;
-        this.tabela_id = data['data'].tabela_id;
-        console.log('this----------', this.filtro, this.tabela_id);
-        this.produtoInit(this.filtro);
+        if (data['data']) {
+          this.filtro = data['data'].filtro;
+          this.tabela_id = data['data'].tabela_id;
+          console.log('this.ta', this.tabela_id);
+          this.produtoInit(this.filtro);
+        }
+
 
       });
     return await modal.present();

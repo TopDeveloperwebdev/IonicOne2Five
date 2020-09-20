@@ -163,9 +163,12 @@ export class PedidosComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        this.filtro = data['data']; // Here's your selected user!
-        console.log('this.filtro', this.filter);
-        this.listaPedidos(this.cliente_id);
+        if(data['data']){
+          this.filtro = data['data']; // Here's your selected user!
+          console.log('this.filtro', this.filter);
+          this.listaPedidos(this.cliente_id);
+        }
+     
       });
 
     return await modal.present();

@@ -2,9 +2,18 @@ ion-list :first {
     margin-top: 55px;
 }
 
+.padding {
+    margin-top: 44px;
+}
+
 .item {
     padding: 16px 1px !important;
     .item-div {
         width: 100%;
+        .detail-item {
+            width: 90%;
+            margin-bottom: 3px;
+            white-space: normal;
+        }
     }
 }

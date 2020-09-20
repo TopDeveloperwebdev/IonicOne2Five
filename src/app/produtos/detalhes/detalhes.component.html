@@ -53,11 +53,11 @@
     </label>
         <label class="item">
       Custo
-      <span class="item-note" ng-show="vendedor_visualiza_custo == 'S'">
+      <span class="item-note" *ngIf="vendedor_visualiza_custo == 'S'">
         {{produto.custo | currency:"R$":"symbol"}}
       </span>
-      <span class="item-note" ng-show="vendedor_visualiza_custo == 'N'">
-        0,00
+      <span class="item-note" *ngIf="vendedor_visualiza_custo == 'N'">
+        R$0,00
       </span>
     </label>
         <label class="item">
@@ -96,7 +96,7 @@
         {{produto.produtoempromocao == 'S' ? 'Sim' : 'Não'}}
       </span>
       <br />
-      <small ng-show="produto.produtoempromocao == 'S'">De: {{produto.data_inicio_promocao | date:"dd/MM/yyyy"}} Até:
+      <small *ngIf="produto.produtoempromocao == 'S'">De: {{produto.data_inicio_promocao | date:"dd/MM/yyyy"}} Até:
         {{produto.data_fim_promocao | date:"dd/MM/yyyy"}}</small>
     </label>
         <label class="item">

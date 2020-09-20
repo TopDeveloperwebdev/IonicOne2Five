@@ -1,28 +1,29 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver } from '@angular/core';
 import { LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { DBService } from '../../services/DB.service';
 import { ConfirmaProdutoComponent } from '../confirma-produto/confirma-produto.component';
 
 import { FiltroComponent } from '../../produtos/filtro/filtro.component';
-import { ComissoesComponent } from '../../produtos/comissoes/comissoes.component'
+import { ComissoesComponent } from '../../produtos/comissoes/comissoes.component';
+import { FotosComponent } from '../../produtos/fotos/fotos.component';
 @Component({
   selector: 'app-add-produto',
   templateUrl: './add-produto.component.html',
   styleUrls: ['./add-produto.component.scss'],
 })
 export class AddProdutoComponent implements OnInit {
-  filtro = {};
   db: any;
   listaProdutos = [];
   listaProdutosDataservice: any;
   tabelas: any;
-  tabela_id: any;
   page_limit = 50;
   increaseItems = 50;
   produtoEscolhido: any;
   @Input() pedido: any;
   @Input() itens: any;
   @Input() usuario: any;
+  @Input() tabela_id: any;
+  @Input() filtro: any;
   constructor(
     public loadCtrl: LoadingController,
     public alertCtrl: AlertController,
@@ -32,14 +33,15 @@ export class AddProdutoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.produtoInit();
+    console.log('filtro', this.filtro);
+    this.produtoInit(this.filtro);
   }
 
   async presentConfirm() {
     console.log('Alert Shown Method Accessed!');
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
-      message: 'Problema ao carregar itens do pedido. Tente novamente.',
+      message: 'Problema ao Carregar a Consulta Tente novamente.',
       buttons: [
         {
           text: 'OK',
@@ -50,18 +52,34 @@ export class AddProdutoComponent implements OnInit {
     });
     await alert.present();
   }
-  async produtoInit() {
+  compare(a, b) {
+    // Use toUpperCase() to ignore character casing
+    const bandA = a.descricaoproduto.toUpperCase();
+    const bandB = b.descricaoproduto.toUpperCase();
+
+    let comparison = 0;
+    if (bandA > bandB) {
+      comparison = 1;
+    } else if (bandA < bandB) {
+      comparison = -1;
+    }
+    return comparison;
+  }
+
+
+  async produtoInit(filtro) {
     let self = this;
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
     });
     loading.present();
-    this.tabelas = await this.db.tabela.toArray();
-    this.tabela_id = this.tabelas[0].tabela_id;
 
-    this.ListaProdutos(self.filtro).then(res => {
+
+    this.ListaProdutos(filtro).then(res => {
       let produtos;
       produtos = res;
+
+      produtos.sort(this.compare);
       this.listaProdutosDataservice = produtos.map((produto, index) => {
         var p;
         p = produto;
@@ -79,12 +97,13 @@ export class AddProdutoComponent implements OnInit {
             }
             return p;
           });
-          return p;
+        return p;
 
       });
 
     },
       err => {
+        console.log('eror', err, this.filtro);
         loading.dismiss();
         this.presentConfirm();
       })
@@ -98,7 +117,7 @@ export class AddProdutoComponent implements OnInit {
     this.listaProdutos = this.listaProdutosDataservice.slice(0, page_limit);
   }
   async ListaProdutos(filtro) {
-    var DB_Produto = await this.db.produto.orderBy('descricaoproduto');
+    var DB_Produto = await this.db.produto;
 
     if (
       filtro.hasOwnProperty('descricaoproduto') &&
@@ -334,6 +353,7 @@ export class AddProdutoComponent implements OnInit {
       }
     } else if (filtro.hasOwnProperty('inf_marca')) {
       DB_Produto = this.db.produto.where('inf_marca').equals(filtro.inf_marca);
+
     } else if (filtro.hasOwnProperty('inf_produto')) {
       DB_Produto = this.db.produto
         .where('inf_produto')
@@ -343,6 +363,7 @@ export class AddProdutoComponent implements OnInit {
         .where('produtoempromocao')
         .equals(filtro.produtoempromocao);
     }
+    console.log('profduc', DB_Produto.toArray());
     return new Promise((resolve, reject) => {
       return resolve(DB_Produto.toArray());
     })
@@ -361,34 +382,18 @@ export class AddProdutoComponent implements OnInit {
       }, 500);
     })
 
-  };
+  }
 
   dismiss() {
-    console.log('dismass');
-    this.modalCtrl.dismiss({ itens: this.itens, pedido: this.pedido });
+    this.modalCtrl.dismiss({ itens: this.itens, pedido: this.pedido, filtro: this.filtro });
     // this.itens, this.pedido
   }
   addProdutoPedido(produto) {
     let self = this;
-    this.verificaProdutoLista(produto.produto_id).then(function (p) {
+    this.verificaProdutoLista(produto.produto_id).then(p => {
+
       if (typeof p === "object") {
-        const alert = this.alertCtrl.create({
-          header: 'Atenção!',
-          message: 'Este produto já existe na lista.',
-          buttons: [
-            {
-              text: 'OK',
-              role: 'cancel',
-              cssClass: 'button button-assertive',
-              onTap: function () {
-                console.log(p);
-                self.produtoEscolhido = p;
-                self.confirmarProduto(this.produtoEscolhido);
-              }
-            }
-          ]
-        });
-        alert.present();
+        this.WarningAlert(p);
       } else {
 
         self.produtoEscolhido = {
@@ -423,9 +428,29 @@ export class AddProdutoComponent implements OnInit {
         self.confirmarProduto(self.produtoEscolhido);
       }
     });
-  };
+  }
+  async WarningAlert(p) {
+    const alert = await this.alertCtrl.create({
+      header: 'Atenção!',
+      message: 'Este produto já existe na lista.',
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          cssClass: 'button button-assertive',
+          handler: () => {
+            console.log(p);
+            this.produtoEscolhido = p;
+            this.confirmarProduto(this.produtoEscolhido);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 
   async confirmarProduto(produtoEscolhido) {
+    let self = this;
     const modal = await this.modalCtrl.create({
       component: ConfirmaProdutoComponent,
       cssClass: 'my-custom-class',
@@ -437,8 +462,14 @@ export class AddProdutoComponent implements OnInit {
     modal.onDidDismiss()
       .then((data) => {
         let producto = data['data'];
+
         if (producto) {
-          this.confirmaProdutoPedido(producto);
+          self.confirmaProdutoPedido(producto);
+          setTimeout(() => {
+            self.modalCtrl.dismiss({ itens: self.itens, pedido: self.pedido, filtro: self.filtro });
+          }, 0.00001);
+
+
         }
       });
 
@@ -465,6 +496,7 @@ export class AddProdutoComponent implements OnInit {
     return await modal.present();
   }
   async filtorProduto(produtoEscolhido) {
+
     const modal = await this.modalCtrl.create({
       component: ConfirmaProdutoComponent,
       cssClass: 'my-custom-class',
@@ -475,10 +507,29 @@ export class AddProdutoComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
+
         let producto = data['data'];
         if (producto) {
           this.confirmaProdutoPedido(producto);
         }
+      });
+
+    return await modal.present();
+  }
+  async Fotos(produto) {
+
+    const modal = await this.modalCtrl.create({
+      component: FotosComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        'produto': produto,
+
+      }
+    });
+    modal.onDidDismiss()
+      .then((data) => {
+
+
       });
 
     return await modal.present();
@@ -497,10 +548,11 @@ export class AddProdutoComponent implements OnInit {
   //get new add produto
 
   confirmaProdutoPedido = function (produto) {
+    console.log('produto', produto);
     this.apagarItemPedido(produto);
     this.itens.push(produto);
     this.atualizarTotalPedido();
-    console.log('this.itens', this.itens, this.pedido);
+
   };
   apagarItemPedido(produto) {
     this.apagarProdutoPedido(produto);
@@ -509,6 +561,7 @@ export class AddProdutoComponent implements OnInit {
   apagarProdutoPedido(produto) {
     var listaItens = this.itens;
     this.itens = listaItens.filter(function (element) {
+      console.log('element', element, produto);
       if (element != produto) return element;
     });
   }
@@ -520,6 +573,7 @@ export class AddProdutoComponent implements OnInit {
       var soma_itens = total_pedido + item;
       this.pedido.total_pedido = soma_itens.toFixed(2);
     })
+
   }
   async filter() {
     const modal = await this.modalCtrl.create({
@@ -527,13 +581,19 @@ export class AddProdutoComponent implements OnInit {
       cssClass: 'my-custom-class',
       componentProps: {
         'filtro': this.filtro,
+        'tabela_id': this.tabela_id
 
       }
     });
     modal.onDidDismiss()
       .then((data) => {
-        this.filtro = data['data']; // Here's your selected user!
-        this.produtoInit();
+        if (data['data']) {
+          this.filtro = data['data'].filtro;
+          this.tabela_id = data['data'].tabela_id;
+          this.produtoInit(this.filtro);
+
+        }
+
       });
 
     return await modal.present();

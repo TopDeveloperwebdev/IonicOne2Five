@@ -15,16 +15,23 @@ export class dataService {
     public users: any;
     headers: any;
     db: any;
+    headerCustom = {
+        'Content-type': 'application/json'
+    }
     constructor(private httpClient: HttpClient, private dbService: DBService,
         private alertCtrl: AlertController, private loadingController: LoadingController) {
         this.db = dbService;
         this.headers = new HttpHeaders()
             .set("Accept", 'application/json')
             .set('Content-Type', 'application/json')
+            .set('Content-Type', 'multipart/form-data')
             .set('Access-Control-Allow-Origin', '*')
             .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
             .set('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
             .set('Access-Control-Allow-Credentials', 'true');
+
+
+
     }
     async confirmAlert(header, message) {
         const alert = await this.alertCtrl.create({
@@ -239,9 +246,10 @@ export class dataService {
     }
 
     excluir(visita_id: any) {
-        return this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/visita/excluir?visita_id=${visita_id}`,
-            { headers: this.headers }
-        )
+        let self = this;
+        return self.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/visita/excluir?visita_id=${visita_id}`,
+            { headers: self.headers }
+        );
     }
     sincronizarSaida() {
         let self = this;
@@ -249,86 +257,107 @@ export class dataService {
         return forkJoin([
             self.db.pedido.where('tipo_pedido').notEqual('O').and(function (where) { return where.enviado == 'N'; }).toArray().then((pedidos) => {
                 pedidos_num = pedidos.length;
-                pedidos.map((pedido) => {
-                    var cod_pedido = pedido.cod_pedido_mob;
-                    self.db.itempedido.where('pedido_id').equals(cod_pedido).toArray().then(function (itenspedido) {
-                        self.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/pedido?
-                        pedido_id=${pedido.pedido_id}&&
-                        vendedor_id=${pedido.vendedor_id}&&
-                        cliente_id=${pedido.cliente_id}&&
-                        tipo_pedido=${pedido.tipo_pedido}&&
-                        data_entrega=${pedido.data_entrega}&&
-                        condicao_pagto_id=${pedido.codigo_forma_pagto}&&
-                        tabela_id=${pedido.tabela_id}&&
-                        observacao=${pedido.observacao}&&
-                        num_itens=${pedido.num_itens}&&                    
-                        total_itens=${pedido.total_itens}&&
-                        percentual_desconto=${pedido.percentual_desconto}&&
-                        total_pedido=${pedido.total_pedido}&&
-                        urgente=${pedido.urgente}&&
-                        data_gravacao=${pedido.data_gravacao}&&
-                        hora_gravacao=${pedido.hora_gravacao}&&
-                        latitude_gravacao=${pedido.latitude_gravacao}&&
-                        longitude_gravacao=${pedido.longitude_gravacao}&&
-                        itens=${JSON.stringify(itenspedido)} `,
-                            { headers: this.headers }
-                        ).subscribe(response => {
-                            var pedido_id_web = response['pedido_id'];
-                            var ids_itens_web = response['itens_id'];
-                            self.db.pedido.update(cod_pedido, { pedido_id: pedido_id_web, enviado: 'S' });
-                            ids_itens_web.map(function (value) {
-                                self.db.itempedido.update(value.id_app, {
-                                    pedido_id: pedido_id_web,
-                                    enviado: 'S'
-                                });
-                            });
-                        },
-                            err => {
+                console.log("adasdfasdfsd", pedidos);
+                pedidos.map((pedido, index) => {
+                    var cod_pedido = pedido.pedido_id;
 
-                                this.loadingController.dismiss();
-                                console.log('err', err);
-                                alert('Problemas ao enviar/atualizar pedidos para o servidor.');
-                                return false;
-                            });
+                    self.db.itempedido.where('pedido_id').equals(cod_pedido).toArray().then(itenspedido => {
+
+                        self.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/pedido`,
+                            {
+                                pedido_id: pedido.pedido_id,
+                                vendedor_id: pedido.vendedor_id,
+                                cliente_id: pedido.cliente_id,
+                                tipo_pedido: pedido.tipo_pedido,
+                                data_entrega: pedido.data_entrega,
+                                condicao_pagto_id: pedido.codigo_condicao_pagto,
+                                forma_pagto_id: pedido.codigo_forma_pagto,
+                                tabela_id: pedido.codigo_tabela_preco,
+                                observacao: pedido.observacao,
+                                num_itens: pedido.numero_itens,
+                                total_itens: pedido.total_itens,
+                                percentual_desconto: pedido.desc_financ_percentual,
+                                total_pedido: pedido.total_pedido,
+                                urgente: pedido.urgente,
+                                data_gravacao: pedido.data_gravacao,
+                                hora_gravacao: pedido.hora_gravacao,
+                                latitude_gravacao: pedido.latitude_gravacao,
+                                longitude_gravacao: pedido.longitude_gravacao,
+                                itens: JSON.stringify(itenspedido)
+
+                            }, { headers: self.headerCustom }).subscribe(response => {
+                                var pedido_id_web = response['pedido_id'];
+                                var ids_itens_web = response['itens_id'];
+
+                                self.db.pedido.where('pedido_id').equals(cod_pedido).first().then(res => {
+                                    res.enviado = 'S';
+                                    self.db.pedido.put(res);
+                                })
+                                ids_itens_web.map(function (value) {
+                                    self.db.itempedido.update(value.id_app, {
+                                        enviado: 'S'
+                                    });
+
+                                });
+                                if (pedidos_num == index + 1) {
+                                    return pedidos_num;
+                                }
+                            },
+                                err => {
+                                    return index;
+                                });
+
                     });
                 })
                 return pedidos_num;
             }),
             self.db.clientes.where('enviado').equals('N').toArray().then(function (clientes) {
                 num_clientes = clientes.length;
-                clientes.map(function (cliente) {
+                clientes.map((cliente, index) => {
                     var cliente = cliente;
-                    this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/cliente?cliente=${cliente}`,
-                        { headers: this.headers }
+                    console.log('cliente', cliente);
+                    self.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/cliente`,
+                        {
+                            cliente: cliente
+                        }
                     ).subscribe(res => {
                         self.db.clientes.update(cliente.cli_id, { enviado: 'S' });
-                        return num_clientes;
+                        if (num_clientes == index + 1) {
+                            return num_clientes;
+                        }
+
                     },
                         error => {
-                            this.loadingController.dismiss();
-                            alert('Problemas ao enviar/atualizar cliente para o servidor.');
+                            return index;
                         });
                 })
-                return num_clientes;
+                return num_clientes
             }),
             self.db.visita_nao_venda.where('enviado').equals('N').toArray().then(function (visitas) {
                 num_visitas = visitas.length;
-                visitas.map(function (visita) {
-                    this.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/visita?visita=${visita}`,
-                        { headers: this.headers }
+                visitas.map((visita, index) => {
+                    delete visita.nomecliente;
+                    self.httpClient.post(`${environment.AUTH_SERVER_ADDRESS}/inserir/visita`,
+                        {
+                            visita: visita
+                        }
                     ).subscribe(res => {
-                        self.db.visita_nao_venda.update(visita.cod_visita_mob, {
-                            enviado: 'S',
-                            visita_id: res.visita_id
-                        });
-                        return num_visitas;
+                        self.db.visita_nao_venda.where('cod_visita_mob').equals(visita.cod_visita_mob).first().then(res => {
+                            res.enviado = 'S';
+                            res.visita_id = res['visita_id'];
+                            console.log('res', res);
+                            self.db.visita_nao_venda.put(res);
+                        })
+                        if (num_visitas == index + 1) {
+                            return num_visitas;
+                        }
+
                     },
                         error => {
-                            this.loadingController.dismiss();
-                            alert('Problemas ao enviar/atualizar visita para o servidor.');
+                            return index;
                         });
                 });
-                return num_visitas;
+                return num_visitas
             })
         ]);
     }

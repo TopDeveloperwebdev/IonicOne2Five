@@ -110,9 +110,11 @@ export class ListaComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        self.filtro = data['data']; // Here's your selected user!
-
-        self.listaPedidos(self.filtro);
+        if(data['data']){
+          self.filtro = data['data']; // Here's your selected user!
+          self.listaPedidos(self.filtro);
+        }
+      
       });
 
     return await modal.present();

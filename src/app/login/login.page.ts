@@ -57,12 +57,13 @@ export class LoginPage implements OnInit {
     localStorage.setItem("Senha", this.Senha);
     var login = this.login;
     var senha = this.Senha;
-
+  
     this.userTable = this.DBService.table('usuario');
     let usuario = await this.userTable.toArray();
     usuario = usuario[0];
 
     if (usuario && usuario['vendedor_login'] === login) {
+      
 
       if (this.ConexaoService.conexaoOnline()) {
         this.AuthService.verificaUsuarioBloqueado(usuario['vendedor_id']).subscribe(res => {
@@ -104,10 +105,10 @@ export class LoginPage implements OnInit {
             loading.dismiss();
             navigator['app'].exitApp();
           }
-          else if (res['download_aplicativo'] === 'S') {
-            loading.dismiss();
-            this.presentToast('Você já fez o download em outro aparelho.');
-          }
+          // else if (res['download_aplicativo'] === 'S') {
+          //   loading.dismiss();
+          //   this.presentToast('Você já fez o download em outro aparelho.');
+          // }
           else {
             this.userTable.add(res);
             localStorage.setItem('sincronizar', 'true');

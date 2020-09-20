@@ -47,6 +47,7 @@ export class ConfirmaProdutoComponent implements OnInit {
       .toArray()
       .then(function (res) {
         self.comissoes_produto = res;
+        console.log('comissoes_produto',res);
 
         loading.dismiss();
       });
@@ -112,7 +113,9 @@ export class ConfirmaProdutoComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        let producto = data['data'];
+        if(data['data']){
+          let producto = data['data'];
+        }        
       });
     return await modal.present();
   }

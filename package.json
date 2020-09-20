@@ -27,7 +27,9 @@
     "@ionic/angular": "^5.0.0",
     "chart.js": "^2.9.3",
     "cordova-android": "^8.1.0",
+    "cordova-plugin-add-swift-support": "^2.0.2",
     "cordova-plugin-geolocation": "^4.0.2",
+    "cordova-plugin-nativegeocoder": "^3.4.1",
     "cordova-res": "^0.15.1",
     "dexie": "^3.0.2",
     "dexie-observable": "^1.0.0-beta.8",
@@ -81,9 +83,8 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-geolocation": {
-        "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
-      }
+      "cordova-plugin-geolocation": {},
+      "cordova-plugin-nativegeocoder": {}
     },
     "platforms": [
       "android"

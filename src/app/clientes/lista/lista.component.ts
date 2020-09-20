@@ -3,6 +3,7 @@ import { dataService } from '../../services/data.service';
 import { ActionSheetController, NavController, ModalController, LoadingController } from '@ionic/angular';
 import { FiltroComponent } from '../filtro/filtro.component';
 import { DBService } from '../../services/DB.service';
+
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.component.html',
@@ -78,19 +79,23 @@ export class ListaComponent implements OnInit {
         }
 
         if (filtro.hasOwnProperty('categoria_id')) {
-          categoria_id = (where.categoria_id != filtro.categoria_id);
+          categoria_id = (where.categoria_id == filtro.categoria_id);
+        
         }
 
         if (filtro.hasOwnProperty('atividade_id')) {
-          atividade_id = (where.atividade_id != filtro.atividade_id);
+         
+          atividade_id = (where.atividade_id == filtro.atividade_id);
         }
 
         if (filtro.hasOwnProperty('responsavel_id')) {
-          responsavel_id = (where.responsavel_id != filtro.responsavel_id);
+          responsavel_id = (where.responsavel_id == filtro.responsavel_id);
         }
 
         if (filtro.hasOwnProperty('dia_visita')) {
-          dia_visita = (where.dia_visita != filtro.dia_visita);
+                  
+          dia_visita = (where.dia_visita == filtro.dia_visita);
+        
         }
 
         return (cli_razaosocial && cli_totaltitulosvencidos && atividade_id && categoria_id && responsavel_id && dia_visita)
@@ -143,7 +148,7 @@ export class ListaComponent implements OnInit {
       }, {
         text: 'Motivos de Não Venda',
         icon: 'close-circle',
-        handler: () => {
+        handler: () => {        
           this.navCtl.navigateForward(['clientes/naovendalist', { 'cliente_id': cliente_id, 'nomecliente': razaosocial }]);
         }
       }]
@@ -151,6 +156,7 @@ export class ListaComponent implements OnInit {
     });
     await actionSheet.present();
   }
+
   cadastro() {
     this.navCtl.navigateForward('clientes/cadastro');
   }
@@ -165,8 +171,11 @@ export class ListaComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        this.filtro = data['data']; // Here's your selected user!        
-        this.clientsInit(this.filtro);
+        if(data['data']){
+          this.filtro = data['data']; // Here's your selected user!           
+          this.clientsInit(this.filtro);
+        }
+     
       });
 
     return await modal.present();

@@ -80,6 +80,7 @@ export class FiltroComponent implements OnInit {
 
   }
   dismiss() {
+    console.log('filtro' , this.Copyfiltro);
     this.modalController.dismiss(this.Copyfiltro);
   }
 
@@ -110,14 +111,14 @@ export class FiltroComponent implements OnInit {
 
 
     if (responsavel_id != "") {
-      this.filtro.responsavel_id = responsavel_id;
+      this.filtro.responsavel_id = Number(responsavel_id);
     } else {
       delete this.filtro.responsavel_id;
     }
 
 
     if (atividade_id != "") {
-      this.filtro.atividade_id = atividade_id;
+      this.filtro.atividade_id = Number(atividade_id);
     }
     else {
       delete this.filtro.atividade_id;

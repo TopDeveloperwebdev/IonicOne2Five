@@ -10,7 +10,7 @@
         <ion-item-sliding *ngFor="let item of itens">
             <ion-item class="item">
                 <div>
-                    <b>Cliente: {{item.cliente_nome}}</b>
+                    <b>Cliente: <span class="produto-span">{{item.cliente_nome}}</span></b>
                     <div>
                         <p>
                             Quant : {{ item.quant | currency:"R$":"symbol"}}

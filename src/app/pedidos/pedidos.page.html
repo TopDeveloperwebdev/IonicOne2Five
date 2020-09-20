@@ -21,7 +21,9 @@
             <ion-item class="item" (click)="alterar(pedido);">
                 <ion-row>
                     <p>Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido | currency:"R$":"symbol"}}</p>
-
+               <p class="assertive">
+                    <b>Cliente:</b> {{pedido.nomecliente}}
+                </p>
                     <p>
                         {{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}
                     </p>

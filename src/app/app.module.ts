@@ -13,6 +13,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NgxCurrencyModule } from "ngx-currency";
 import {NgxMaskIonicModule} from 'ngx-mask-ionic';
 import { CurrencyMaskModule } from "ng2-currency-mask";
+import {DatePipe} from '@angular/common';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -30,7 +31,7 @@ import { CurrencyMaskModule } from "ng2-currency-mask";
     StatusBar,
     SplashScreen,
     Geolocation,
-  
+    DatePipe,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

@@ -6,8 +6,16 @@
 
 .item {
     padding: 16px 1px;
+    .item-div {
+        width: 100%;
+        .detail-item {
+            width: 90%;
+            margin-bottom: 3px;
+            white-space: normal;
+        }
+    }
 }
 
 .padding {
-    --padding-top: 44px;
+    margin-top: 44px;
 }
