@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
+import { jsPDF } from "jspdf";
+import domtoimage from 'dom-to-image';
+
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
@@ -10,7 +13,7 @@ export class MessageComponent implements OnInit {
   pedido: any;
   cliente_id: ''
   db: any
-  itens : any
+  itens: any
   constructor(
     public route: ActivatedRoute,
     public dbService: DBService,
@@ -19,7 +22,7 @@ export class MessageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.itens =[];
+    this.itens = [];
     this.pedido = JSON.parse(this.route.snapshot.params['pedido']);
     this.cliente_id = this.route.snapshot.params['cliente_id'];
     console.log('pedido', this.pedido);
@@ -29,11 +32,31 @@ export class MessageComponent implements OnInit {
     } else {
       pedido_id = this.pedido.pedido_id;
     }
-   this.getItensPedido(pedido_id).then(res => {
-    this.itens = res;
-    console.log('this ' , this.itens);
-   });
+    this.getItensPedido(pedido_id).then(res => {
+      this.itens = res;
+      console.log('this ', this.itens);
+
+
+    });
+
   }
+
+
+  generatePdf() {
+    const div = document.getElementById('printable-area');
+    const options = { background: 'white', height: 845, width: 595 };
+    domtoimage.toPng(div, options).then((dataUrl) => {
+      //Initialize JSPDF
+      const doc = new jsPDF('p', 'mm', 'a4');
+      //Add image Url to PDF
+      doc.addImage(dataUrl, 'PNG', 0, 0, 210, 340);
+      //let data = doc.save('pdfDocument.pdf');
+      var binary = doc.output();
+      return binary ? btoa(binary) : "";
+    })
+
+  }
+
   async getItensPedido(pedido_id) {
     const self = this;
     var itensArray = [];

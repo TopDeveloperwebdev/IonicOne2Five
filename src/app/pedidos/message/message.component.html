@@ -1,3 +1,35 @@
-<p>
-asdfasdfasdfasdfd
-</p>
+<ion-content padding="true" class="has-header" id="printable-area">
+  <table >
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Produto</th>
+        <th>Quant</th>
+        <th>R$Unit</th>
+        <th>R$Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let iten of itens">
+        <td>{{iten.codigo_produto}}</td>
+        <td>
+          <div>
+            {{iten.descricao}}
+          </div>
+          <div>
+            <a href="{{iten.http_img_1}}">IMAGE1</a>
+            <a href="{{iten.http_img_2}}">IMAGE2</a>
+            <a href="{{iten.http_img_3}}">IMAGE3</a>
+            <a href="{{iten.http_img_4}}">IMAGE4</a>
+            <a href="{{iten.http_img_5}}">IMAGE5</a>
+            <a href="{{iten.http_img_6}}">IMAGE6</a>
+          </div>
+        </td>
+        <td>{{iten.quantidade}}</td>
+        <td>{{(iten.valor_total_item/iten.quantidade).toFixed(2)}}</td>
+        <td>{{iten.valor_total_item}}</td>
+      </tr>
+    </tbody>
+  </table>
+</ion-content>
+

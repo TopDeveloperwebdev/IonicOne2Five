@@ -1,11 +1,29 @@
 /* Empty. Add your own CSS if you like */
+// table
 
 .filter-bar {
     text-align: center !important;
     padding: 0px !important;
     color: white;
 }
-
+table {
+    width: 100% !important;
+}
+table thead{
+    border: 2px solid #54a5e3;
+    font-size: 9px;
+    font-weight: bold;
+  
+    
+}
+td, th {
+    padding: 10px !important;
+    font-size: 11px;
+    font-weight: bold;
+    a {
+        padding: 2px;
+    }    
+}
 .close-btn {
     box-shadow: 0px 0px 1px 1px red !important;
     height: 30px;
