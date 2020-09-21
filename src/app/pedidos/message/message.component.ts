@@ -35,24 +35,44 @@ export class MessageComponent implements OnInit {
     this.getItensPedido(pedido_id).then(res => {
       this.itens = res;
       console.log('this ', this.itens);
-
-
+      setTimeout(() => {
+        this.generatePdf();
+       
+      }, 1000); 
     });
-
   }
 
-
   generatePdf() {
+    let HTML_Width, HTML_Height, PDF_Width, PDF_Height, canvas_image_width, canvas_image_height, top_left_margin;
+    HTML_Width = document.getElementById('printable-area').clientWidth;
+    HTML_Height = document.getElementById('printable-area').clientHeight;
+    top_left_margin = 15;
+    PDF_Width;
+    PDF_Width = HTML_Width + (top_left_margin * 2);
+    PDF_Height = (1.5 * PDF_Width) + (top_left_margin * 2);
+    canvas_image_width = HTML_Width;
+    canvas_image_height = HTML_Height;
+
+    var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
     const div = document.getElementById('printable-area');
-    const options = { background: 'white', height: 845, width: 595 };
-    domtoimage.toPng(div, options).then((dataUrl) => {
+
+    domtoimage.toPng(div).then((dataUrl) => {
       //Initialize JSPDF
-      const doc = new jsPDF('p', 'mm', 'a4');
+      var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
       //Add image Url to PDF
-      doc.addImage(dataUrl, 'PNG', 0, 0, 210, 340);
+      pdf.addImage(dataUrl, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+      console.log('totalPDFPages', PDF_Width, PDF_Height);
+      for (var i = 1; i <= totalPDFPages; i++) {
+        pdf.addPage();
+        pdf.addImage(dataUrl, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+      }
+
+      // pdf.save("HTML-Document.pdf");
       //let data = doc.save('pdfDocument.pdf');
-      var binary = doc.output();
-      return binary ? btoa(binary) : "";
+    //  var binary = pdf.output();
+     // return binary ? btoa(binary) : "";
+       document.getElementById('printable-area').style.visibility='hidden';
+      
     })
 
   }
