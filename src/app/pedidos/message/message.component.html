@@ -1,6 +1,64 @@
-<ion-content padding="true" class="has-header" >
+<ion-content padding="true" class="has-header">
+  <div class="list list-inset" style="background: transparent">
+    <div class="logo-Email">E-mailer</div>
+    <form #formEmail="ngForm" novalidate name="formEmail" class="padding message">
+      <label class="item item-input">
+        To:
+        <ion-input
+          type="text"
+          placeholder="Usuário"
+          required
+          autofocus="true"
+          [(ngModel)]="To"
+          name="To"
+        ></ion-input>
+      </label>
+      <label class="item item-input">
+        Cc:
+        <input
+          type="text"
+          placeholder="Cc"
+          required
+          [(ngModel)]="Cc"
+          name="Cc"
+        />
+      </label>
+      <label class="item item-input attach-item">
+        <ion-icon name="attach" size="15"></ion-icon>
+        <img src="../assets/icon/download.jpg" />
+      </label>
+      <label class="item item-input">
+        Subject:
+        <input
+          type="text"
+          placeholder="Senha"
+          required
+          [(ngModel)]="subject"
+          name="subject"
+        />
+      </label>
+      <label class="item item-input">
+        Message:
+        <textarea
+          type="text"
+          placeholder="message"
+          required
+          [(ngModel)]="body"
+          name="body"
+        ></textarea>
+      </label>
+      <button
+        class="button button-block button-assertive"
+        (click)="sendEmail(formEmail)"
+        type="submit"
+        [disabled]="!formEmail.valid"
+      >
+        Send Your Message
+      </button>
+    </form>
+  </div>
   <div>
-    <table id="printable-area">
+    <table id="printable-area" style="margin-top: 100vh;">
       <thead>
         <tr>
           <th>Code</th>
@@ -12,27 +70,25 @@
       </thead>
       <tbody>
         <tr *ngFor="let iten of itens">
-          <td>{{iten.codigo_produto}}</td>
+          <td>{{ iten.codigo_produto }}</td>
           <td>
             <div>
-              {{iten.descricao}}
+              {{ iten.descricao }}
             </div>
             <div>
-              <a href="{{iten.http_img_1}}">IMAGE1</a>
-              <a href="{{iten.http_img_2}}">IMAGE2</a>
-              <a href="{{iten.http_img_3}}">IMAGE3</a>
-              <a href="{{iten.http_img_4}}">IMAGE4</a>
-              <a href="{{iten.http_img_5}}">IMAGE5</a>
-              <a href="{{iten.http_img_6}}">IMAGE6</a>
+              <a href="{{ iten.http_img_1 }}">IMAGE1</a>
+              <a href="{{ iten.http_img_2 }}">IMAGE2</a>
+              <a href="{{ iten.http_img_3 }}">IMAGE3</a>
+              <a href="{{ iten.http_img_4 }}">IMAGE4</a>
+              <a href="{{ iten.http_img_5 }}">IMAGE5</a>
+              <a href="{{ iten.http_img_6 }}">IMAGE6</a>
             </div>
           </td>
-          <td>{{iten.quantidade}}</td>
-          <td>{{(iten.valor_total_item/iten.quantidade).toFixed(2)}}</td>
-          <td>{{iten.valor_total_item}}</td>
+          <td>{{ iten.quantidade }}</td>
+          <td>{{ (iten.valor_total_item / iten.quantidade).toFixed(2) }}</td>
+          <td>{{ iten.valor_total_item }}</td>
         </tr>
       </tbody>
     </table>
   </div>
-
 </ion-content>
-

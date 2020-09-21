@@ -290,3 +290,29 @@ label.item.valid-lr {
     text-align: left;
     margin-left: 22px;
 }
+.message {
+    label {
+        padding: 10px !important;
+        margin: 10px 0px;
+        input {
+            background: none;
+        }
+        textarea {
+           min-height: 150px !important;
+        }
+       
+        
+    }
+    .attach-item {
+        display: flex;
+        justify-content: center;
+        ion-icon{
+            position: absolute;
+            left: 10px;
+            font-size: 29px;
+        }
+        img {
+            height: 50px;
+        }
+    }
+}

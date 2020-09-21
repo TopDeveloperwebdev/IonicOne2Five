@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
 import { jsPDF } from "jspdf";
 import domtoimage from 'dom-to-image';
-
+import { EmailComposer } from '@ionic-native/email-composer';
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
@@ -14,15 +14,22 @@ export class MessageComponent implements OnInit {
   cliente_id: ''
   db: any
   itens: any
+  to = 'max@mustermann.de'
+  cc ='erika@mustermann.de'  
+  attachments:any
+  subject = 'Cordova Icons'
+  body = 'How are you? Nice greetings from Leipzig'
   constructor(
     public route: ActivatedRoute,
     public dbService: DBService,
+    private emailComposer: EmailComposer
   ) {
     this.db = dbService;
   }
 
   ngOnInit() {
     this.itens = [];
+    this.attachments = [];
     this.pedido = JSON.parse(this.route.snapshot.params['pedido']);
     this.cliente_id = this.route.snapshot.params['cliente_id'];
     console.log('pedido', this.pedido);
@@ -37,8 +44,8 @@ export class MessageComponent implements OnInit {
       console.log('this ', this.itens);
       setTimeout(() => {
         this.generatePdf();
-       
-      }, 1000); 
+
+      }, 1000);
     });
   }
 
@@ -69,14 +76,35 @@ export class MessageComponent implements OnInit {
 
       // pdf.save("HTML-Document.pdf");
       //let data = doc.save('pdfDocument.pdf');
-    //  var binary = pdf.output();
-     // return binary ? btoa(binary) : "";
-       document.getElementById('printable-area').style.visibility='hidden';
-      
+      var binary = pdf.output();
+      let attachment = binary ? btoa(binary) : "";
+      this.attachments.push(attachment);
+      document.getElementById('printable-area').style.display = 'none';
+
     })
 
   }
+  sendEmail() {
+    this.emailComposer.isAvailable().then((available: boolean) => {
+      if (available) {
+        //Now we know we can send
+      }
+    });
 
+    let email = {
+      to: 'max@mustermann.de',
+      cc: 'erika@mustermann.de',
+      bcc: ['john@doe.com', 'jane@doe.com'],
+      attachments: [      
+        'base64:icon.png//iVBORw0KGgoAAAANSUhEUg...',
+       ],
+      subject: 'Cordova Icons',
+      body: 'How are you? Nice greetings from Leipzig',  
+    };
+
+    // Send a text message using default options
+    this.emailComposer.open(email);
+  }
   async getItensPedido(pedido_id) {
     const self = this;
     var itensArray = [];
