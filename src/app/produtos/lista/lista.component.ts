@@ -61,6 +61,21 @@ async  ngOnInit() {
     });
     await alert.present();
   }
+  async ErrorConfirm() {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Atenção!',
+      message: 'Nenhum Produto Located as Filter Used',
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          cssClass: 'button button-assertive',
+        }
+      ]
+    });
+    await alert.present();
+  }
   compare(a, b) {
     // Use toUpperCase() to ignore character casing
     const bandA = a.descricaoproduto.toUpperCase();
@@ -105,8 +120,11 @@ async  ngOnInit() {
           });
         return p;
       });
-
+      
       this.pushProducts(this.page_limit);
+      if(!res['length']){
+        this.ErrorConfirm();
+      }
       loading.dismiss();
     },
       err => {

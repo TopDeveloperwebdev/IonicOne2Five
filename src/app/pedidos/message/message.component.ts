@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
 import { jsPDF } from "jspdf";
 import domtoimage from 'dom-to-image';
-import { EmailComposer } from '@ionic-native/email-composer';
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
@@ -22,7 +22,7 @@ export class MessageComponent implements OnInit {
   constructor(
     public route: ActivatedRoute,
     public dbService: DBService,
-    private emailComposer: EmailComposer
+   private emailComposer: EmailComposer
   ) {
     this.db = dbService;
   }

@@ -52,6 +52,21 @@ export class AddProdutoComponent implements OnInit {
     });
     await alert.present();
   }
+  async ErrorConfirm() {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Atenção!',
+      message: 'Nenhum Produto Located as Filter Used',
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel',
+          cssClass: 'button button-assertive',
+        }
+      ]
+    });
+    await alert.present();
+  }
   compare(a, b) {
     // Use toUpperCase() to ignore character casing
     const bandA = a.descricaoproduto.toUpperCase();
@@ -78,29 +93,37 @@ export class AddProdutoComponent implements OnInit {
     this.ListaProdutos(filtro).then(res => {
       let produtos;
       produtos = res;
+      console.log('res' ,res['length']);
+    if (res['length']) {
+        produtos.sort(this.compare);
+        this.listaProdutosDataservice = produtos.map((produto, index) => {
+          var p;
+          p = produto;
+          p.precotabela = "";
+          self.db.produto_tabela.where('[produto_id+tabela_id]')
+            .equals([p.produto_id, self.tabela_id.toString()])
+            .first()
+            .then((res) => {
+              if (res && res.precotabela) {
+                p.precotabela = self.toNumber(res.precotabela);
+              }
+              if (index == produtos.length - 1) {
+                this.pushClients(this.page_limit);
+                loading.dismiss();
+              }
+              return p;
+            });
+          return p;
 
-      produtos.sort(this.compare);
-      this.listaProdutosDataservice = produtos.map((produto, index) => {
-        var p;
-        p = produto;
-        p.precotabela = "";
-        self.db.produto_tabela.where('[produto_id+tabela_id]')
-          .equals([p.produto_id, self.tabela_id.toString()])
-          .first()
-          .then((res) => {
-            if (res && res.precotabela) {
-              p.precotabela = self.toNumber(res.precotabela);
-            }
-            if (index == produtos.length - 1) {
-              this.pushClients(this.page_limit);
-              loading.dismiss();
-            }
-            return p;
-          });
-        return p;
-
-      });
-
+        });
+      
+      }
+      else {
+        this.listaProdutosDataservice = [];
+        this.pushClients(this.page_limit);
+        loading.dismiss();
+        this.ErrorConfirm();
+      }    
     },
       err => {
         console.log('eror', err, this.filtro);
@@ -395,7 +418,7 @@ export class AddProdutoComponent implements OnInit {
       if (typeof p === "object") {
         this.WarningAlert(p);
       } else {
-       console.log('produto-------' ,produto);
+        console.log('produto-------', produto);
         self.produtoEscolhido = {
           codigo_produto: produto.produto_id,
           dados_adicionais: produto.dados_adicionais,
