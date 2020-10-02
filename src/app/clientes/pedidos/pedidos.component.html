@@ -1,38 +1,88 @@
-<ion-header class="bar-assertive ">
-    <ion-menu-button side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-        </button>
-    </ion-menu-button>
-    <ion-title>Pedidos</ion-title>
-    <button class="button close-btn" (click)="filter(); ">
-        <i class="ion-funnel "></i>
-    </button>
+<ion-header class="bar-assertive">
+  <ion-menu-button side="left">
+    <button
+      class="button button-icon button-clear ion-navicon"
+      menu-toggle="left"
+    ></button>
+  </ion-menu-button>
+  <ion-title>Pedidos</ion-title>
+  <button class="button close-btn" (click)="filter()">
+    <i class="ion-funnel"></i>
+  </button>
 </ion-header>
 <ion-content class="padding">
-    <h4 class="assertive">
-        {{nomecliente}}
-        <br />
-        <small>Quantidade de Pedidos: {{pedidos.length}}</small>
-        <br />
-        <small>Total de Pedidos: {{totalPedidos(pedidos) | currency:"R$":"symbol"}}</small>
-    </h4>
-    <ion-list>
-        <ion-item-sliding *ngFor="let pedido of pedidos">
-            <ion-item class="item"  (click)="opcoes(pedido ,cliente_id, nomecliente); ">
-                <ion-row>
-                    <p>Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido | currency:"R$":"symbol"}}</p>
+  <h4 class="assertive">
+    {{ nomecliente }}
+    <br />
+    <small>Quantidade de Pedidos: {{ pedidos.length }}</small>
+    <br />
+    <small
+      >Total de Pedidos:
+      {{ totalPedidos(pedidos) | currency: "R$":"symbol" }}</small
+    >
+  </h4>
+  <ion-list>
+    <ion-item-sliding *ngFor="let pedido of pedidos">
+      <ion-item class="item" (click)="opcoes(pedido, cliente_id, nomecliente)">
+        <ion-row>
+          <p>
+            Entrega em:
+            {{ pedido.data_entrega.substring(0, 10) | date: "dd/MM/yyyy" }} -
+            {{ pedido.total_pedido | currency: "R$":"symbol" }}
+          </p>
 
-                    <p>
-                        {{pedido.enviado == 'S' ? 'ENVIADO' : 'NÃO ENVIADO'}}
-                    </p>
-                    <p>Tipo: {{tipoPedidoFilter(pedido.tipo_pedido)}}</p>
-                </ion-row>
-            </ion-item>
-            <ion-item class="assertive" *ngIf="pedidos.length == 0">Não existem pedidos para este cliente.</ion-item>
-        
-        </ion-item-sliding>
-    </ion-list>
+          <p>
+            {{ pedido.enviado == "S" ? "ENVIADO" : "NÃO ENVIADO" }}
+          </p>
+          <p>Tipo: {{ tipoPedidoFilter(pedido.tipo_pedido) }}</p>
+        </ion-row>
+      </ion-item>
+      <ion-item class="assertive" *ngIf="pedidos.length == 0"
+        >Não existem pedidos para este cliente.</ion-item
+      >
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>
-<button (click)="cadastro(cliente_id, nomecliente);" class="button button-assertive button-float">
-    <i class="icon ion-plus-round"></i>
+<button
+  (click)="cadastro(cliente_id, nomecliente)"
+  class="button button-assertive button-float"
+>
+  <i class="icon ion-plus-round"></i>
 </button>
+<div>
+
+  <table id="printable-area" style="margin-top: 100vh" style="display: none">
+    <thead>
+      <tr style="background-color: #e42112;">
+        <th>Code</th>
+        <th>Produto</th>
+        <th>Quant</th>
+        <th>R$Unit</th>
+        <th>R$Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let iten of itens">
+        <td>{{ iten.codigo_produto }}</td>
+        <td>
+          <div style="width: 100px;">
+            <div style="width: 100%">
+              {{ iten.descricao }}
+            </div>
+            <div style="width: 100%">
+              <a href="{{ iten.http_img_1 }}">IMAGE1</a>
+              <a href="{{ iten.http_img_2 }}">IMAGE2</a>
+              <a href="{{ iten.http_img_3 }}">IMAGE3</a>
+              <a href="{{ iten.http_img_4 }}">IMAGE4</a>
+              <a href="{{ iten.http_img_5 }}">IMAGE5</a>
+              <a href="{{ iten.http_img_6 }}">IMAGE6</a>
+            </div>
+          </div>
+        </td>
+        <td>{{ iten.quantidade }}</td>
+        <td>{{ (iten.valor_total_item / iten.quantidade).toFixed(2) }}</td>
+        <td>{{ iten.valor_total_item }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -14,6 +14,7 @@ import { NgxCurrencyModule } from "ngx-currency";
 import {NgxMaskIonicModule} from 'ngx-mask-ionic';
 import { CurrencyMaskModule } from "ng2-currency-mask";
 import {DatePipe} from '@angular/common';
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -31,6 +32,7 @@ import {DatePipe} from '@angular/common';
     StatusBar,
     SplashScreen,
     Geolocation,
+    EmailComposer,
     DatePipe,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

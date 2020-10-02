@@ -15,6 +15,7 @@ import { FiltroComponent } from './filtro/filtro.component';
 import {NgxMaskIonicModule} from 'ngx-mask-ionic';
 import { CurrencyMaskModule } from "ng2-currency-mask";
 import {MessageComponent} from './message/message.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -24,6 +25,7 @@ import {MessageComponent} from './message/message.component';
     NgxMaskIonicModule,
     CurrencyMaskModule
   ],
-  declarations: [PedidosPage,MessageComponent, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent,ConfirmaProdutoComponent ,FiltroComponent]
+  declarations: [PedidosPage,MessageComponent, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent,ConfirmaProdutoComponent ,FiltroComponent],
+
 })
 export class PedidosPageModule { }

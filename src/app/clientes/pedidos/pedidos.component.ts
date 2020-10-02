@@ -6,7 +6,12 @@ import { ActionSheetController, NavController, ModalController, ToastController,
 import { FiltroComponent } from '../../pedidos/filtro/filtro.component';
 import { ConexaoService } from '../../services/conexao.service';
 import { dataService } from '../../services/data.service';
-
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
+// import * as jsPDF from 'jspdf'; 
+// import * as autoTable from 'jspdf-autotable';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable'
+import domtoimage from 'dom-to-image';
 @Component({
   selector: 'app-pedidos',
   templateUrl: './pedidos.component.html',
@@ -19,7 +24,7 @@ export class PedidosComponent implements OnInit {
   nomecliente = '';
   cliente_id: '';
   db: any;
-
+  itens: any
   constructor(
     public route: ActivatedRoute,
     public dbService: DBService,
@@ -30,6 +35,7 @@ export class PedidosComponent implements OnInit {
     public loadCtrl: LoadingController,
     public conexaoService: ConexaoService,
     public actionSheetController: ActionSheetController,
+    public emailComposer: EmailComposer,
     public dataService: dataService) {
 
 
@@ -313,7 +319,8 @@ export class PedidosComponent implements OnInit {
         icon: 'close-circle',
         handler: () => {
           let pedidodata = JSON.stringify(pedido);
-          this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
+          this.sendEmail(pedido, cliente_id);
+          // this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
         }
       }]
 
@@ -321,6 +328,195 @@ export class PedidosComponent implements OnInit {
     await actionSheet.present();
   }
 
+  sendEmail(pedido, cliente_id) {
+    this.getItems(pedido);
 
+    // this.emailComposer.getClients().then((apps: []) => {
+    //   // Returns an array of configured email clients for the device
+    //   this.emailComposer.hasClient().then((isValid: boolean) => {
+    //     if (isValid) {
+    //       // Now we know we have a valid email client configured
+    //       // Not specifying an app will return true if at least one email client is configured
+    //       this.emailComposer.hasAccount().then((isValid: boolean) => {
+    //         if (isValid) {
+    //           // Now we know we have a valid email account configured
+    //           this.emailComposer.isAvailable().then((available: boolean) => {
+    //             if (available) {
+    //               // Now we know we can send an email, calls hasClient and hasAccount
+    //               // Not specifying an app will return true if at least one email client is configured
+    //             }
+
+    //           });
+    //         }
+    //       });
+    //     }
+    //   });
+    // });
+
+
+    // let email = {
+    //   to: 'gumeni79@gmail.com',
+    //   cc: 'vladimir.bognar.1979@gmail.com',
+    //   subject: 'Cordova Icons',
+    //   body: 'How are you? Nice greetings from Leipzig',
+    //   isHtml: false
+    // }
+
+    // // Send a text message using default options
+    // this.emailComposer.open(email);
+  }
+  getItems(pedido) {
+    let pedido_id;
+    if (isNaN(pedido.pedido_id)) {
+      pedido_id = pedido.cod_pedido_mob;
+    } else {
+      pedido_id = pedido.pedido_id;
+    }
+    this.getItensPedido(pedido_id).then(res => {
+      this.itens = res;
+      setTimeout(() => {
+        console.log('this', document.getElementById('printable-area'))
+        this.generatePDF();
+      }, 10);
+
+    })
+  }
+
+  async getItensPedido(pedido_id) {
+    const self = this;
+    var itensArray = [];
+    var produtosArray = [];
+    return new Promise((resolve, reject) => {
+      self.db.itempedido
+        .where('pedido_id')
+        .equals(pedido_id)
+        .toArray()
+        .then(
+          itens => {
+
+            if (itens.length) {
+              itens.map((item, index) => {
+                var i;
+                i = item;
+                return self.dbService.table('produto')
+                  .where('produto_id')
+                  .equals(i.codigo_produto)
+                  .first().then(res => {
+                    let prod;
+                    prod = res;
+                    i.descricao = prod && prod.descricaoproduto ?
+                      prod.descricaoproduto :
+                      "N/I";
+
+                    itensArray.push(i);
+                    if (index == itens.length - 1) {
+                      return resolve(itensArray);
+                    }
+                  })
+              });
+            } else {
+              return resolve(itensArray);
+            }
+
+          },
+          err => {
+            return reject(err);
+          });
+    });
+
+  }
+  generatePDF() {
+    var doc = new jsPDF('p', 'pt');
+    const pageWidth = doc.internal.pageSize.width;  //Optional
+
+    var res = doc.autoTableHtmlToJson(document.getElementById("printable-area"));
+
+    var header = function (data) {
+      doc.setFontSize(18);
+      doc.setTextColor(40);
+      doc.setFontStyle('normal');
+      
+      //doc.addImage(headerImgData, 'JPEG', data.settings.margin.left, 20, 50, 50);
+      
+
+    };
+
+    var options = {
+      beforePageContent: header,
+      margin: {
+        top: 180
+      },
+      startY: doc.autoTableEndPosY() + 120
+    };
+
+    doc.autoTable(res.columns, res.data, options);
+
+
+    const pages = doc.internal.getNumberOfPages();
+
+
+    const pageHeight = doc.internal.pageSize.height;  //Optional
+    doc.setFontSize(15);  //Optional
+
+    for (let j = 1; j < pages + 1; j++) {
+
+      let horizontalPos = pageWidth - 100;  //Can be fixed number
+      let verticalPos = pageHeight - 20;  //Can be fixed number
+
+      doc.setPage(j);
+      doc.setFontSize(11);
+      doc.text(`Seilte${j} von ${pages}`, horizontalPos, verticalPos);
+      let headerArea = `<div id="header-area" style="display: flex;width : 600px; justify-content: center ; position: relative;min-height: 80px;">
+         <div style="width : 100px; position: absolute; top: 60px; left: 40px">
+           <img src="../assets/img/LOGO_APP.png"  style="width : 70px;"/>
+         </div>
+         <div
+           style="color: #0b79ce;   
+             textAlign: center;
+             font-size: 30px;
+             font-style: italic;  
+             font-weight: bold;
+             border-top: 4px solid #0b79ce;
+             width: 300px;
+             padding: 19px;
+             border-bottom: 4px solid #0b79ce;
+             margin-left : auto;
+             margin-right : auto
+           "
+         >
+           Orçamento de Pedido de Compra
+         </div>
+       </div>`
+
+
+
+      let margins = {
+        top: 30,
+        bottom: 120,
+        left: 30,
+        right: 30,
+        width: pageWidth
+
+      };
+
+      doc.fromHTML(
+        headerArea, // HTML string or DOM elem ref.
+        margins.left, // x coord
+        margins.top, { // y coord
+        'width': margins.width - 2 * margins.left, // max width of content on PDF			
+      }, function (dispose) {
+    
+      
+    
+        if (j == pages) {
+          doc.save('pdfDownload.pdf');
+        }
+
+      })
+      // doc.setFontSize(12);//optional
+
+    }
+
+
+  }
 }
-
