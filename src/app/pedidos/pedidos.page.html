@@ -18,7 +18,7 @@
     </h4>
     <ion-list>
         <ion-item-sliding *ngFor="let pedido of pedidos">
-            <ion-item class="item" (click)="alterar(pedido);">
+            <ion-item class="item" (click)="opcoes(pedido);">
                 <ion-row>
                     <p>Entrega em: {{pedido.data_entrega.substring(0, 10) | date:"dd/MM/yyyy"}} - {{pedido.total_pedido | currency:"R$":"symbol"}}</p>
                <p class="assertive">
@@ -31,10 +31,10 @@
                 </ion-row>
             </ion-item>
             <ion-item class="assertive" *ngIf="pedidos.length == 0">Não existem pedidos para este cliente.</ion-item>
-            <ion-item-options side="end">
+            <!-- <ion-item-options side="end">
                 <ion-item-option (click)="apagarPedido(pedido)" class="button-assertive" color="danger">Apagar</ion-item-option>
                 <ion-item-option (click)="duplicarPedido(pedido)" class="button-positive">Duplicar</ion-item-option>
-            </ion-item-options>
+            </ion-item-options> -->
         </ion-item-sliding>
     </ion-list>
 </ion-content>

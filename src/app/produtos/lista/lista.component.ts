@@ -15,6 +15,7 @@ export class ListaComponent implements OnInit {
 
   page_limit = 50;
   increaseItems = 50;
+  pagina = 0;
   usuario: any;
   produtosDataservice: any;
   comissoes: any;
@@ -30,6 +31,7 @@ export class ListaComponent implements OnInit {
   tipoPesquisa: any;
   pesquisas: any;
   tabela_id: any;
+
   constructor(
     public loadCtrl: LoadingController,
     public alertCtrl: AlertController,
@@ -39,7 +41,7 @@ export class ListaComponent implements OnInit {
     this.usuario = JSON.parse(localStorage.getItem('user'));
   }
 
-async  ngOnInit() {
+  async ngOnInit() {
     this.filtro = {};
     this.tabelas = await this.db.tabela.toArray();
     this.tabela_id = this.tabelas[0].tabela_id;
@@ -65,7 +67,7 @@ async  ngOnInit() {
 
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
-      message: 'Nenhum Produto Located as Filter Used',
+      message: 'Nenhum Produto Localizado com o Filtro Utilizado',
       buttons: [
         {
           text: 'OK',
@@ -95,14 +97,14 @@ async  ngOnInit() {
       message: 'Aguarde!'
     });
     loading.present();
-    let self = this;   
+    let self = this;
 
-    this.ListaProdutos(filtro).then(res => {
+    this.ListaProdutos(filtro, this.pagina, this.page_limit).then(res => {
       console.log('ListaProdutos', res, filtro, self.tabela_id);
       let produtos;
       produtos = res;
       produtos.sort(this.compare);
-      this.listaProdutosDataservice = produtos.map(function (produto, index) {
+      this.listaProdutos = produtos.map(function (produto, index) {
         var p;
         p = produto;
 
@@ -120,9 +122,9 @@ async  ngOnInit() {
           });
         return p;
       });
-      
-      this.pushProducts(this.page_limit);
-      if(!res['length']){
+      console.log('this.listaProdutos',this.listaProdutos.length);
+      // this.pushProducts(this.page_limit);
+      if (!res['length']) {
         this.ErrorConfirm();
       }
       loading.dismiss();
@@ -141,7 +143,7 @@ async  ngOnInit() {
     console.log(';listaProdutos', this.listaProdutos);
   }
 
-  async ListaProdutos(filtro) {
+  async ListaProdutos(filtro, pagina, page_limit) {
 
     if (!isNaN(this.tabela_id)) {
       var DB_Produto = await this.db.produto;
@@ -397,7 +399,8 @@ async  ngOnInit() {
 
 
       return new Promise((resolve, reject) => {
-        return resolve(DB_Produto.toArray());
+        return resolve(DB_Produto.offset(pagina * page_limit)
+          .limit(page_limit).toArray());
       })
 
     }
@@ -444,16 +447,46 @@ async  ngOnInit() {
     let self = this;
     return new Promise((resolve) => {
       setTimeout(() => {
-        if (self.listaProdutosDataservice.length > self.page_limit + self.increaseItems) {
-          self.page_limit = self.page_limit + self.increaseItems;
-          self.pushProducts(self.page_limit);
-        }
+        // if (self.listaProdutosDataservice.length > self.page_limit + self.increaseItems) {
+        //   self.page_limit = self.page_limit + self.increaseItems;
+        //   self.pushProducts(self.page_limit);
+        // }
+        this.pagina++;         
+       
+        this.ListaProdutos(this.filtro, this.pagina, this.page_limit).then(res => {     
+          let produtos;
+          produtos = res;
+         
+          
+          let templistaProdutos = produtos.map(function (produto, index) {
+            var p;
+            p = produto;
+    
+            p.precotabela = "";
+    
+            self.db.produto_tabela.where('[produto_id+tabela_id]')
+              .equals([p.produto_id, self.tabela_id.toString()])
+              .first()
+              .then(function (res) {
+                if (res && res.precotabela) {
+                  p.precotabela = self.toNumber(res.precotabela);
+                }
+                return p;
+    
+              });
+            return p;
+          });
+          this.listaProdutos =  this.listaProdutos.concat(templistaProdutos);  
+          this.listaProdutos.sort(this.compare); 
+        })
+        
         $event.target.complete();
         resolve();
       }, 500);
     })
 
   }
+
 
   async detalhes(product0) {
     const modal = await this.modalCtrl.create({
@@ -480,6 +513,7 @@ async  ngOnInit() {
           this.filtro = data['data'].filtro;
           this.tabela_id = data['data'].tabela_id;
           console.log('this.ta', this.tabela_id);
+          this.pagina = 0;
           this.produtoInit(this.filtro);
         }
 

@@ -16,7 +16,8 @@ export class ListaComponent implements OnInit {
   usuario: any;
   page_limit = 50;
   increaseItems = 50;
-  filtro : any;
+  pagina = 0;
+  filtro: any;
   db: any;
   valueEmittedFromChildComponent: object = {};
   constructor(
@@ -41,79 +42,78 @@ export class ListaComponent implements OnInit {
     this.usuario = usertemp[0];
 
     this.clientesDataservice = [];
-  
-    this.clientesDataservice = this.filterItems(filtro).then(res => {
 
-      this.clientesDataservice = res;
-      this.pushClients(this.page_limit);
+    this.filterItems(filtro, this.pagina, this.page_limit).then(res => {
+      this.clientes = res;    
       loading.dismiss();
     });
   }
-  async filterItems(filtro) {
+  async filterItems(filtro, pagina, limite) {
 
-    return this.db.clientes.orderBy('cli_razaosocial').toArray().then(res => {
-      return res.filter(function (where) { 
-        let cli_razaosocial = true;
-        let cli_totaltitulosvencidos = true;
-        let categoria_id = true;
-        let atividade_id = true;
-        let responsavel_id = true;
-        let dia_visita = true;
+    return this.db.clientes.orderBy('cli_razaosocial').offset(pagina * limite)
+      .limit(limite).toArray().then(res => {
+        return res.filter(function (where) {
+          let cli_razaosocial = true;
+          let cli_totaltitulosvencidos = true;
+          let categoria_id = true;
+          let atividade_id = true;
+          let responsavel_id = true;
+          let dia_visita = true;
 
-        if (filtro.hasOwnProperty('cli_razaosocial')) {
+          if (filtro.hasOwnProperty('cli_razaosocial')) {
 
-          if (filtro.tipopesquisa == "2") {
-            console.log('2', filtro.tipopesquisa);
-            var str = new RegExp('^' + filtro.cli_razaosocial, 'i');
-            cli_razaosocial = str.test(where.cli_razaosocial)
-          } else {
-            var str = new RegExp(filtro.cli_razaosocial);
+            if (filtro.tipopesquisa == "2") {
+              var str = new RegExp('^' + filtro.cli_razaosocial, 'i');
+              cli_razaosocial = str.test(where.cli_razaosocial)
+            } else {
+              var str = new RegExp(filtro.cli_razaosocial);
 
-            cli_razaosocial = str.test(where.cli_razaosocial);
+              cli_razaosocial = str.test(where.cli_razaosocial);
+
+            }
+          }
+
+          if (filtro.hasOwnProperty('cli_totaltitulosvencidos')) {
+            cli_totaltitulosvencidos = (where.cli_totaltitulosvencidos != filtro.cli_totaltitulosvencidos);
+          }
+
+          if (filtro.hasOwnProperty('categoria_id')) {
+            categoria_id = (where.categoria_id == filtro.categoria_id);
 
           }
-        }
 
-        if (filtro.hasOwnProperty('cli_totaltitulosvencidos')) {
-          cli_totaltitulosvencidos = (where.cli_totaltitulosvencidos != filtro.cli_totaltitulosvencidos);
-        }
+          if (filtro.hasOwnProperty('atividade_id')) {
 
-        if (filtro.hasOwnProperty('categoria_id')) {
-          categoria_id = (where.categoria_id == filtro.categoria_id);
-        
-        }
+            atividade_id = (where.atividade_id == filtro.atividade_id);
+          }
 
-        if (filtro.hasOwnProperty('atividade_id')) {
-         
-          atividade_id = (where.atividade_id == filtro.atividade_id);
-        }
+          if (filtro.hasOwnProperty('responsavel_id')) {
+            responsavel_id = (where.responsavel_id == filtro.responsavel_id);
+          }
 
-        if (filtro.hasOwnProperty('responsavel_id')) {
-          responsavel_id = (where.responsavel_id == filtro.responsavel_id);
-        }
+          if (filtro.hasOwnProperty('dia_visita')) {
 
-        if (filtro.hasOwnProperty('dia_visita')) {
-                  
-          dia_visita = (where.dia_visita == filtro.dia_visita);
-        
-        }
+            dia_visita = (where.dia_visita == filtro.dia_visita);
 
-        return (cli_razaosocial && cli_totaltitulosvencidos && atividade_id && categoria_id && responsavel_id && dia_visita)
+          }
 
-      });
-    })
+          return (cli_razaosocial && cli_totaltitulosvencidos && atividade_id && categoria_id && responsavel_id && dia_visita)
+
+        });
+      })
   }
-  pushClients(page_limit) {
-    this.clientes = this.clientesDataservice.slice(0, page_limit);
-  }
+  // pushClients(page_limit) {
+
+  //   this.clientes = this.clientesDataservice.slice(0, page_limit);
+  // }
   loadMore($event) {
     return new Promise((resolve) => {
       setTimeout(() => {
-        if (this.clientesDataservice.length > this.page_limit + this.increaseItems) {
-          this.page_limit = this.page_limit + this.increaseItems;
-          this.pushClients(this.page_limit);
-        }
-
+        this.pagina++;
+         
+        this.filterItems(this.filtro, this.pagina, this.page_limit).then(res => {
+          this.clientes = this.clientes.concat(res);          
+        })      
         $event.target.complete();
         resolve();
       }, 500);
@@ -122,7 +122,6 @@ export class ListaComponent implements OnInit {
   };
 
   async opcoes(cliente_id, razaosocial) {
-    console.log('asdfasd', razaosocial);
     const actionSheet = await this.actionSheetController.create({
       header: 'Opções',
       cssClass: 'my-custom-class',
@@ -137,7 +136,7 @@ export class ListaComponent implements OnInit {
         text: 'Cadastro',
         icon: 'create',
         handler: () => {
-          this.navCtl.navigateForward(['clientes/cadastro', { 'cliente_id': cliente_id}]);
+          this.navCtl.navigateForward(['clientes/cadastro', { 'cliente_id': cliente_id }]);
         }
       }, {
         text: 'Títulos',
@@ -148,7 +147,7 @@ export class ListaComponent implements OnInit {
       }, {
         text: 'Motivos de Não Venda',
         icon: 'close-circle',
-        handler: () => {        
+        handler: () => {
           this.navCtl.navigateForward(['clientes/naovendalist', { 'cliente_id': cliente_id, 'nomecliente': razaosocial }]);
         }
       }]
@@ -171,11 +170,12 @@ export class ListaComponent implements OnInit {
     });
     modal.onDidDismiss()
       .then((data) => {
-        if(data['data']){
-          this.filtro = data['data']; // Here's your selected user!           
+        if (data['data']) {
+          this.filtro = data['data']; // Here's your selected user!    
+          this.pagina = 0;       
           this.clientsInit(this.filtro);
         }
-     
+
       });
 
     return await modal.present();

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FiltroComponent } from './filtro/filtro.component'
 import { DBService } from '../services/DB.service';
-import { NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { ActionSheetController, NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
 import { ConexaoService } from '../services/conexao.service';
 import { dataService } from '../services/data.service';
 
@@ -28,8 +28,9 @@ export class PedidosPage implements OnInit {
     public modalController: ModalController,
     public loadCtrl: LoadingController,
     public toastController: ToastController,
-    public alertCtrl: AlertController,  
+    public alertCtrl: AlertController,
     public conexaoService: ConexaoService,
+    public actionSheetController: ActionSheetController,
     public dataService: dataService) {
     this.db = dbService;
     this.pedidos = [];
@@ -38,7 +39,7 @@ export class PedidosPage implements OnInit {
   async ngOnInit() {
     this.filtro = { situacao: 'N' };
     this.pushPedidos(this.filtro);
-  
+
 
   }
   async pushPedidos(filtro) {
@@ -61,6 +62,7 @@ export class PedidosPage implements OnInit {
         .desc()
         .toArray()
         .then(function (pedidos) {
+
           pedidos.map((pedido, index) => {
             var p;
             p = pedido;
@@ -72,12 +74,15 @@ export class PedidosPage implements OnInit {
               .where("cli_id")
               .equals(p.cliente_id)
               .first()
-              .then(function (res) {
-                if (res.hasOwnProperty("cli_razaosocial")) {
-                  p.nomecliente = res.cli_razaosocial;
-                } else {
-                  p.nomecliente = res.cli_fantasia;
+              .then(function (res) {              
+                if (res) {
+                  if (res.hasOwnProperty("cli_razaosocial")) {
+                    p.nomecliente = res.cli_razaosocial;
+                  } else {
+                    p.nomecliente = res.cli_fantasia;
+                  }
                 }
+
 
                 var entrega = p.data_entrega.split(" ");
                 p.data_entrega = entrega[0];
@@ -170,18 +175,18 @@ export class PedidosPage implements OnInit {
       }
     });
     modal.onDidDismiss()
-      .then((data) => { 
-        if(data['data']){
+      .then((data) => {
+        if (data['data']) {
           this.filtro = data['data']; // Here's your selected user!
           this.pushPedidos(this.filtro);
         }
-     
+
       });
 
     return await modal.present();
   }
-  alterar(p) {     
-    let pedido = JSON.stringify(p);  
+  alterar(p) {
+    let pedido = JSON.stringify(p);
     this.navCtl.navigateForward(['pedidos/cadastro', { 'is': 'edit', 'pedido': pedido, 'nomecliente': p.nomecliente }]);
   }
   async apagarPedido(pedido) {
@@ -255,10 +260,9 @@ export class PedidosPage implements OnInit {
           novoItem.pedido_id = novo_pedido_id;
           novoItem.enviado = "N";
           self.db.table('itempedido').add(novoItem);
-        });
+        });     
         loading.dismiss();
         self.confirmAlert('Mensagem', 'Pedido duplicado com sucesso');
-        this.pushPedidos(this.filtro);
       });
   }
   guid() {
@@ -293,11 +297,50 @@ export class PedidosPage implements OnInit {
           role: 'cancel',
           cssClass: 'button button-assertive',
           handler: () => {
-            this.pushPedidos(this.filtro); 
+            this.pushPedidos(this.filtro);
           }
         }
       ]
     });
     await alert.present();
+  }
+  async opcoes(pedido) {
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Opções',
+      cssClass: 'my-custom-class',
+      buttons: [{
+        text: 'Alterar Pedido',
+        role: 'create',
+        icon: 'create-outline',
+        handler: () => {
+          this.alterar(pedido);
+        }
+      }, {
+        text: 'Excluir Pedido',
+        icon: 'trash-outline',
+        handler: () => {
+          this.apagarPedido(pedido)
+        }
+      }, {
+        text: 'Duplicar Pedido',
+        icon: 'copy-outline',
+        handler: () => {
+          this.duplicarPedido(pedido)
+        }
+      },
+        // {
+        //   text: 'Enviar Email',
+        //   icon: 'close-circle',
+        //   handler: () => {
+        //     let pedidodata = JSON.stringify(pedido);
+        //     this.sendEmail(pedido, cliente_id);
+        //     // this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
+        //   }
+        // }
+      ]
+
+    });
+    await actionSheet.present();
   }
 }

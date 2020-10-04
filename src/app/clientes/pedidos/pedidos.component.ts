@@ -298,31 +298,33 @@ export class PedidosComponent implements OnInit {
       buttons: [{
         text: 'Alterar Pedido',
         role: 'create',
-        icon: 'list',
+        icon: 'create-outline',
         handler: () => {
           this.alterar(pedido, cliente_id, nomecliente);
         }
       }, {
         text: 'Excluir Pedido',
-        icon: 'create',
+        icon: 'trash-outline',
         handler: () => {
           this.apagarPedido(pedido)
         }
       }, {
         text: 'Duplicar Pedido',
-        icon: 'albums',
+        icon: 'copy-outline',
         handler: () => {
           this.duplicarPedido(pedido)
         }
-      }, {
-        text: 'Enviar Email',
-        icon: 'close-circle',
-        handler: () => {
-          let pedidodata = JSON.stringify(pedido);
-          this.sendEmail(pedido, cliente_id);
-          // this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
-        }
-      }]
+       },
+      // {
+      //   text: 'Enviar Email',
+      //   icon: 'close-circle',
+      //   handler: () => {
+      //     let pedidodata = JSON.stringify(pedido);
+      //     this.sendEmail(pedido, cliente_id);
+      //     // this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
+      //   }
+      // }
+    ]
 
     });
     await actionSheet.present();
@@ -331,39 +333,6 @@ export class PedidosComponent implements OnInit {
   sendEmail(pedido, cliente_id) {
     this.getItems(pedido);
 
-    // this.emailComposer.getClients().then((apps: []) => {
-    //   // Returns an array of configured email clients for the device
-    //   this.emailComposer.hasClient().then((isValid: boolean) => {
-    //     if (isValid) {
-    //       // Now we know we have a valid email client configured
-    //       // Not specifying an app will return true if at least one email client is configured
-    //       this.emailComposer.hasAccount().then((isValid: boolean) => {
-    //         if (isValid) {
-    //           // Now we know we have a valid email account configured
-    //           this.emailComposer.isAvailable().then((available: boolean) => {
-    //             if (available) {
-    //               // Now we know we can send an email, calls hasClient and hasAccount
-    //               // Not specifying an app will return true if at least one email client is configured
-    //             }
-
-    //           });
-    //         }
-    //       });
-    //     }
-    //   });
-    // });
-
-
-    // let email = {
-    //   to: 'gumeni79@gmail.com',
-    //   cc: 'vladimir.bognar.1979@gmail.com',
-    //   subject: 'Cordova Icons',
-    //   body: 'How are you? Nice greetings from Leipzig',
-    //   isHtml: false
-    // }
-
-    // // Send a text message using default options
-    // this.emailComposer.open(email);
   }
   getItems(pedido) {
     let pedido_id;

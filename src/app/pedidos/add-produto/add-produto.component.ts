@@ -18,6 +18,7 @@ export class AddProdutoComponent implements OnInit {
   tabelas: any;
   page_limit = 50;
   increaseItems = 50;
+  pagina = 0;
   produtoEscolhido: any;
   @Input() pedido: any;
   @Input() itens: any;
@@ -33,12 +34,10 @@ export class AddProdutoComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('filtro', this.filtro);
     this.produtoInit(this.filtro);
   }
 
-  async presentConfirm() {
-    console.log('Alert Shown Method Accessed!');
+  async presentConfirm() {   
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
       message: 'Problema ao Carregar a Consulta Tente novamente.',
@@ -56,7 +55,7 @@ export class AddProdutoComponent implements OnInit {
 
     const alert = await this.alertCtrl.create({
       header: 'Atenção!',
-      message: 'Nenhum Produto Located as Filter Used',
+      message: 'Nenhum Produto Localizado com o Filtro Utilizado',
       buttons: [
         {
           text: 'OK',
@@ -90,13 +89,12 @@ export class AddProdutoComponent implements OnInit {
     loading.present();
 
 
-    this.ListaProdutos(filtro).then(res => {
+    this.ListaProdutos(filtro, this.pagina, this.page_limit).then(res => {
       let produtos;
-      produtos = res;
-      console.log('res' ,res['length']);
-    if (res['length']) {
+      produtos = res; 
+      if (res['length']) {
         produtos.sort(this.compare);
-        this.listaProdutosDataservice = produtos.map((produto, index) => {
+        this.listaProdutos = produtos.map((produto, index) => {
           var p;
           p = produto;
           p.precotabela = "";
@@ -107,26 +105,25 @@ export class AddProdutoComponent implements OnInit {
               if (res && res.precotabela) {
                 p.precotabela = self.toNumber(res.precotabela);
               }
-              if (index == produtos.length - 1) {
-                this.pushClients(this.page_limit);
-                loading.dismiss();
-              }
+              // if (index == produtos.length - 1) {
+              //   this.pushClients(this.page_limit);
+              //   loading.dismiss();
+              // }
               return p;
             });
           return p;
 
         });
-      
+
       }
       else {
-        this.listaProdutosDataservice = [];
-        this.pushClients(this.page_limit);
-        loading.dismiss();
+        // this.listaProdutos  = [];
+        // this.pushClients(this.page_limit)
         this.ErrorConfirm();
-      }    
+      }
+      loading.dismiss();
     },
-      err => {
-        console.log('eror', err, this.filtro);
+      err => {       
         loading.dismiss();
         this.presentConfirm();
       })
@@ -139,7 +136,7 @@ export class AddProdutoComponent implements OnInit {
   pushClients(page_limit) {
     this.listaProdutos = this.listaProdutosDataservice.slice(0, page_limit);
   }
-  async ListaProdutos(filtro) {
+  async ListaProdutos(filtro, pagina, page_limit) {
     var DB_Produto = await this.db.produto;
 
     if (
@@ -385,20 +382,49 @@ export class AddProdutoComponent implements OnInit {
       DB_Produto = this.db.produto
         .where('produtoempromocao')
         .equals(filtro.produtoempromocao);
-    }
-    console.log('profduc', DB_Produto.toArray());
+    }   
     return new Promise((resolve, reject) => {
-      return resolve(DB_Produto.toArray());
+      return resolve(DB_Produto.offset(pagina * page_limit)
+        .limit(page_limit).toArray());
     })
 
   }
+
   loadMore($event) {
+    let self = this;
     return new Promise((resolve) => {
       setTimeout(() => {
-        if (this.listaProdutosDataservice.length > this.page_limit + this.increaseItems) {
-          this.page_limit = this.page_limit + this.increaseItems;
-          this.pushClients(this.page_limit);
-        }
+        // if (self.listaProdutosDataservice.length > self.page_limit + self.increaseItems) {
+        //   self.page_limit = self.page_limit + self.increaseItems;
+        //   self.pushProducts(self.page_limit);
+        // }
+        this.pagina++;
+
+        this.ListaProdutos(this.filtro, this.pagina, this.page_limit).then(res => {
+          let produtos;
+          produtos = res;
+
+
+          let templistaProdutos = produtos.map((produto, index) => {
+            var p;
+            p = produto;
+            p.precotabela = "";
+            self.db.produto_tabela.where('[produto_id+tabela_id]')
+              .equals([p.produto_id, self.tabela_id.toString()])
+              .first()
+              .then((res) => {
+                if (res && res.precotabela) {
+                  p.precotabela = self.toNumber(res.precotabela);
+                }
+                return p;
+              });
+            return p;
+
+          });
+
+          this.listaProdutos = this.listaProdutos.concat(templistaProdutos);
+          this.listaProdutos.sort(this.compare);      
+        })
 
         $event.target.complete();
         resolve();
@@ -417,8 +443,7 @@ export class AddProdutoComponent implements OnInit {
 
       if (typeof p === "object") {
         this.WarningAlert(p);
-      } else {
-        console.log('produto-------', produto);
+      } else {   
         self.produtoEscolhido = {
           codigo_produto: produto.produto_id,
           dados_adicionais: produto.dados_adicionais,
@@ -467,8 +492,7 @@ export class AddProdutoComponent implements OnInit {
           text: 'OK',
           role: 'cancel',
           cssClass: 'button button-assertive',
-          handler: () => {
-            console.log(p);
+          handler: () => {       
             this.produtoEscolhido = p;
             this.confirmarProduto(this.produtoEscolhido);
           }
@@ -619,6 +643,7 @@ export class AddProdutoComponent implements OnInit {
         if (data['data']) {
           this.filtro = data['data'].filtro;
           this.tabela_id = data['data'].tabela_id;
+          this.pagina = 0;
           this.produtoInit(this.filtro);
 
         }

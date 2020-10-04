@@ -93,7 +93,12 @@ export class FiltroComponent implements OnInit {
     if (tipopesquisa) {
       this.filtro.tipopesquisa = tipopesquisa;
     }
-    this.filtro.cli_razaosocial = cli_razaosocial.toUpperCase();
+   
+    if(cli_razaosocial){
+      this.filtro.cli_razaosocial = cli_razaosocial.toUpperCase();
+    }else {
+      delete this.filtro.cli_razaosocial;
+    }
     if (apenasClientesAtraso) {
       this.filtro.cli_totaltitulosvencidos = "0.00";
     }
