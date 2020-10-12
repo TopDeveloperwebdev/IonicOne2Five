@@ -81,6 +81,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
     this.loadingStart.present();
 
     self.cliente_id = self.route.snapshot.params['cliente_id'];
+
     self.user = await this.dbService.table('usuario').toArray();
     this.pedido_valor_minimo = self.user[0].valor_minimo_pedido;
     this.valor_minimo_obrigatorio = true;
@@ -89,6 +90,10 @@ export class CadastroComponent implements OnInit, OnDestroy {
     this.condicoes = await this.dbService.table('condicoe').toArray();
     this.formas = await this.dbService.table('forma').toArray();
     this.tabelas = await this.dbService.table('tabela').toArray();
+    if (this.cliente_id) {
+      this.cliente = await this.db.clientes.where('cli_id').equals(Number(this.cliente_id)).first();
+    }
+    console.log('asdf', this.cliente);
     this.tabela_id = this.tabelas[0].tabela_id;
     this.tipos = [
       { codigo: "P", nome: "Pedido" },
@@ -225,13 +230,13 @@ export class CadastroComponent implements OnInit, OnDestroy {
 
     this.dbService.table('pedido').where('cliente_id').equals(Number(cliente_id)).toArray().then(res => {
 
-      this.pedidos = res.map(function (pedido) {
-        if (!pedido.hasOwnProperty('enviado')) {
-          pedido.enviado = 'S';
-        }
-        return pedido;
+      this.pedidos = res.filter(function (pedido) {
+        return pedido.hasOwnProperty('enviado') && pedido.enviado == 'N';
+        // if (pedido.hasOwnProperty('enviado') && pedido.enviado == 'N') {
+        //   pedido.enviado = 'S';
+        // }
+        // return pedido;
       });
-
     })
 
 
@@ -549,7 +554,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
       .then(() => {
         let itensCount = 0;
         console.log('itens2', itens);
-        itens.map((value) => {          
+        itens.map((value) => {
           var itempedido;
           let id = self.guid();
           itempedido = {
@@ -681,11 +686,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
     }
   }
   limiteDisponivel(cliente) {
-    return (
-      cliente.cli_limitecredito -
-      cliente.cli_totaltitulosvencidos -
-      cliente.cli_totaltitulosavencer
-    ).toFixed(2);
+    return (Number(cliente.cli_limitecredito) - (Number(cliente.cli_totaltitulosvencidos) + Number(cliente.cli_totaltitulosavencer))).toFixed(2);
   }
 
   calculateLimit(cliente, pedidos) {
@@ -693,6 +694,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
     const limitpedidos = this.totalPedidos(pedidos);
 
     if (limitcliente) {
+      console.log('asdffff', limitcliente, limitpedidos);
       return Number(limitcliente) - Number(limitpedidos);
     }
 

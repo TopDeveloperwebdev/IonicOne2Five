@@ -17,7 +17,6 @@
             <ion-item class="item" (click)="detalhes(produto);">
                 <div class="item-div">
                     <div class="detail-item">
-
                         <div [class]="{'balanced': produto.produtoempromocao == 'S', 'assertive': produto.produtoemfalta == 'S', 'positive': produto.produtonovo == 'S'}">
                             {{produto.descricaoproduto}}</div>
                         <!-- <ion-row>
@@ -25,9 +24,7 @@
                             {{produto.dados_adicionais}}
                         </small>
                         </ion-row> -->
-
                     </div>
-
                     <div>
                         <span style="font-size: 18px; color: #aaa !important;" *ngIf="produto.produtoembalagem && produto.produtoembalagem > 1">
                             <small class="item-note-label">Unitário: </small>

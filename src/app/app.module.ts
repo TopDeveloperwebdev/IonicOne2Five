@@ -15,6 +15,9 @@ import {NgxMaskIonicModule} from 'ngx-mask-ionic';
 import { CurrencyMaskModule } from "ng2-currency-mask";
 import {DatePipe} from '@angular/common';
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
+
+
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -25,7 +28,7 @@ import { EmailComposer } from '@ionic-native/email-composer/ngx';
     HttpClientModule,
     NgxCurrencyModule,
     NgxMaskIonicModule.forRoot(),
-    CurrencyMaskModule
+    CurrencyMaskModule,  
 
   ],
   providers: [
