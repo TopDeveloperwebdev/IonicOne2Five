@@ -23,7 +23,7 @@
   </h4>
   <ion-list>
     <ion-item-sliding *ngFor="let pedido of pedidos">
-      <ion-item class="item" (click)="opcoes(pedido, cliente_id, nomecliente)">
+      <ion-item class="item" (click)="opcoes(pedido, cliente_id, nomecliente ,pdf)">
         <ion-row>
           <p>
             Entrega em:
@@ -42,6 +42,81 @@
       >
     </ion-item-sliding>
   </ion-list>
+
+  <div style="position: absolute; left: -1000px; top: 0;">
+  <kendo-pdf-export #pdf paperSize="A4" margin="30px">
+    <div class="download-area">
+      <div id="header-area">
+        <div class="logo">
+          <img src="../assets/img/LOGO_APP.png" style="width: 70px" />
+        </div>
+        <div class="title">Orçamento de Pedido de Compra</div>
+      </div>
+      <div class="detail">
+        <div>
+          Olá {{ cliente.cli_fantasia }}, estamos encaminhando o orcamento do
+          seu pedido de compra.
+        </div>
+        <div>Vendedor : {{ usuario.vendedor_nome }}</div>
+        <div>Prazo : {{ condicoes.descricao_condicao }}</div>
+        <div>Forma Pagamento : {{ formas.descricaoformapagamento }}</div>
+        <div>Data Orcamento: {{ selectedPedido.data_gravacao }}</div>
+      </div>
+      <table id="printable-area">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Produto</th>
+            <th>Quant</th>
+            <th>R$Unit</th>
+            <th>R$Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let iten of itens">
+            <td>{{ iten.codigo_produto }}</td>
+            <td>
+              <div>
+                <div>
+                  {{ iten.descricao }}
+                </div>
+                <!-- <div>
+                <a href="{{ iten.http_img_1 }}">IMAGE1</a>
+                <a href="{{ iten.http_img_2 }}">IMAGE2</a>
+                <a href="{{ iten.http_img_3 }}">IMAGE3</a>
+                <a href="{{ iten.http_img_4 }}">IMAGE4</a>
+                <a href="{{ iten.http_img_5 }}">IMAGE5</a>
+                <a href="{{ iten.http_img_6 }}">IMAGE6</a>
+              </div> -->
+              </div>
+            </td>
+            <td>{{ iten.quantidade }}</td>
+            <td>{{ (iten.valor_total_item / iten.quantidade).toFixed(2) }}</td>
+            <td>{{ iten.valor_total_item }}</td>
+          </tr>
+          <tr
+            style="
+              border-top: 2px solid #54a5e3;
+              font-size: 9px;
+              border-bottom: 2px solid #54a5e3;
+            "
+          >
+            <td>Total</td>
+            <td></td>
+
+            <td>{{calcQuant()}}</td>
+            <td></td>
+            <td>{{calcValor_total_item()}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="detail">
+        <div>Atenciosamente,</div>
+        <div>Equipe {{ usuario.vendedor_empresa }}</div>
+      </div>
+    </div>
+  </kendo-pdf-export>
+  </div>  
 </ion-content>
 <button
   (click)="cadastro(cliente_id, nomecliente)"

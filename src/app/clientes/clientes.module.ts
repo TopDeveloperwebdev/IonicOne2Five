@@ -14,7 +14,8 @@ import { FiltroComponent } from './filtro/filtro.component';
 import { MotiCadastroComponent } from './motivonaovenda/cadastro/cadastro.component';
 import { FiltroPedidosComponent } from './filtro-pedidos/filtro-pedidos.component';
 import { naovendaListaComponent } from './motivonaovenda/lista/lista.component';
-import { NgxMaskIonicModule} from 'ngx-mask-ionic'
+import { NgxMaskIonicModule} from 'ngx-mask-ionic';
+import { PDFExportModule } from '@progress/kendo-angular-pdf-export';
 @NgModule({
   imports: [
     CommonModule,
@@ -22,7 +23,8 @@ import { NgxMaskIonicModule} from 'ngx-mask-ionic'
     ReactiveFormsModule,
     IonicModule,
     ClientesPageRoutingModule,
-    NgxMaskIonicModule
+    NgxMaskIonicModule,
+    PDFExportModule
   ],
   declarations: [
     ClientesPage, 

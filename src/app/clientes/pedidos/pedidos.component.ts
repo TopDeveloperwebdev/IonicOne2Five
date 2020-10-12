@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
 import { ActionSheetController, NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
@@ -6,6 +6,7 @@ import { FiltroComponent } from '../../pedidos/filtro/filtro.component';
 import { ConexaoService } from '../../services/conexao.service';
 import { dataService } from '../../services/data.service';
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
+import { exportPDF, Group } from '@progress/kendo-drawing';
 
 @Component({
   selector: 'app-pedidos',
@@ -13,6 +14,7 @@ import { EmailComposer } from '@ionic-native/email-composer/ngx';
   styleUrls: ['./pedidos.component.scss'],
 })
 export class PedidosComponent implements OnInit {
+
   pedidos = [];
 
   filtro = {};
@@ -25,6 +27,7 @@ export class PedidosComponent implements OnInit {
   condicoes: any;
   formas: any;
   usuario: any;
+  
   constructor(
     public route: ActivatedRoute,
     public dbService: DBService,
@@ -45,7 +48,7 @@ export class PedidosComponent implements OnInit {
     this.condicoes = {};
     this.formas = {};
   }
-
+  
   async ionViewDidEnter() {
 
     this.cliente_id = this.route.snapshot.params['cliente_id'];
@@ -364,8 +367,9 @@ export class PedidosComponent implements OnInit {
       s4()
     );
   }
-  async opcoes(pedido, cliente_id, nomecliente) {
-
+  async opcoes(pedido, cliente_id, nomecliente ,pdfComponent: any) {
+    
+     this.export(pdfComponent);
     const actionSheet = await this.actionSheetController.create({
       header: 'Opções',
       cssClass: 'my-custom-class',
@@ -393,9 +397,8 @@ export class PedidosComponent implements OnInit {
         text: 'Enviar Email',
         icon: 'close-circle',
         handler: () => {
-          let pedidodata = JSON.stringify(pedido);
           this.selectedPedido = pedido;
-
+          this.getItems(pedido);
           this.sendEmail(pedido, cliente_id);
           // this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
         }
@@ -472,8 +475,49 @@ export class PedidosComponent implements OnInit {
   }
   generatePDF() {
 
-
+    
+  
 
 
   }
+
+  calcQuant() {
+    let quantidade = 0, valor_total_item = 0;
+    if (this.itens) {
+      this.itens.forEach(iten => {
+        quantidade += Number(iten.quantidade);
+        valor_total_item += Number(iten.valor_total_item);
+      });
+    }
+
+    return quantidade.toFixed(2);
+
+  }
+  calcValor_total_item() {
+    let valor_total_item = 0;
+    if (this.itens) {
+      this.itens.forEach(iten => {
+        valor_total_item += Number(iten.valor_total_item);
+      });
+    }
+
+    return valor_total_item.toFixed(2);
+
+  }
+  public export(pdfComponent: any): void {
+    pdfComponent.export().then((group: Group) => exportPDF(group)).then((dataUri) => {        
+        const base64  = dataUri.replace('data:application/pdf;base64,', '');
+        const fileObject = this.dataURLtoFile(dataUri, 'test');
+        console.log(base64, fileObject);
+    });
+  }
+
+  public dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type:mime});
+}
 }
