@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DBService } from '../../services/DB.service';
 import { ActionSheetController, NavController, ModalController, ToastController, LoadingController, AlertController } from '@ionic/angular';
@@ -27,7 +27,7 @@ export class PedidosComponent implements OnInit {
   condicoes: any;
   formas: any;
   usuario: any;
-  
+
   constructor(
     public route: ActivatedRoute,
     public dbService: DBService,
@@ -48,7 +48,7 @@ export class PedidosComponent implements OnInit {
     this.condicoes = {};
     this.formas = {};
   }
-  
+
   async ionViewDidEnter() {
 
     this.cliente_id = this.route.snapshot.params['cliente_id'];
@@ -367,9 +367,9 @@ export class PedidosComponent implements OnInit {
       s4()
     );
   }
-  async opcoes(pedido, cliente_id, nomecliente ,pdfComponent: any) {
-    
-     this.export(pdfComponent);
+  async opcoes(pedido, cliente_id, nomecliente, pdfComponent: any) {
+
+
     const actionSheet = await this.actionSheetController.create({
       header: 'Opções',
       cssClass: 'my-custom-class',
@@ -398,8 +398,7 @@ export class PedidosComponent implements OnInit {
         icon: 'close-circle',
         handler: () => {
           this.selectedPedido = pedido;
-          this.getItems(pedido);
-          this.sendEmail(pedido, cliente_id);
+          this.getItems(pedido, cliente_id, pdfComponent);
           // this.navCtl.navigateForward(['pedidos/message', { 'pedido': pedidodata, 'cliente_id': cliente_id }]);
         }
       }
@@ -409,11 +408,8 @@ export class PedidosComponent implements OnInit {
     await actionSheet.present();
   }
 
-  sendEmail(pedido, cliente_id) {
-    this.getItems(pedido);
 
-  }
-  getItems(pedido) {
+  getItems(pedido, cliente_id, pdfComponent: any) {
     let pedido_id;
     if (isNaN(pedido.pedido_id)) {
       pedido_id = pedido.cod_pedido_mob;
@@ -424,7 +420,7 @@ export class PedidosComponent implements OnInit {
       this.itens = res;
       setTimeout(() => {
         console.log('this', document.getElementById('printable-area'))
-        this.generatePDF();
+        this.export(pdfComponent);
       }, 10);
 
     })
@@ -473,13 +469,7 @@ export class PedidosComponent implements OnInit {
     });
 
   }
-  generatePDF() {
 
-    
-  
-
-
-  }
 
   calcQuant() {
     let quantidade = 0, valor_total_item = 0;
@@ -505,19 +495,33 @@ export class PedidosComponent implements OnInit {
 
   }
   public export(pdfComponent: any): void {
-    pdfComponent.export().then((group: Group) => exportPDF(group)).then((dataUri) => {        
-        const base64  = dataUri.replace('data:application/pdf;base64,', '');
-        const fileObject = this.dataURLtoFile(dataUri, 'test');
-        console.log(base64, fileObject);
+    pdfComponent.export().then((group: Group) => exportPDF(group)).then((dataUri) => {
+      console.log('dataUri', dataUri);
+      const base64 = dataUri.replace('data:application/pdf;base64,', '');         
+      
+      let email = {
+        to: this.cliente.cli_email,
+        attachments: ["base64:data.pdf//" + base64],
+        subject: 'Cordova Icons',
+        body: 'How are you? Nice greetings from Leipzig',
+        isHtml: true
+      }
+      //  email.attachments.push(fileObject);
+
+      // Send a text message using default options
+      this.emailComposer.open(email);
+      //  console.log(base64, fileObject);
+
+
     });
   }
 
   public dataURLtoFile(dataurl, filename) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--){
-        u8arr[n] = bstr.charCodeAt(n);
+      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
     }
-    return new File([u8arr], filename, {type:mime});
-}
+    return new File([u8arr], filename, { type: mime });
+  }
 }
