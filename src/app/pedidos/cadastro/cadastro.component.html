@@ -1,43 +1,46 @@
 <ion-header class="bar-assertive ">
-    <ion-buttons>
-        <ion-button slot="start" (click)="voltar()">
-            <ion-icon name="arrow-back" style="font-size: 1.8rem;"></ion-icon>
-        </ion-button>
-    </ion-buttons>
-    <ion-title>Cadastro de Pedidos</ion-title>
+  <ion-buttons>
+    <ion-button slot="start" (click)="voltar()">
+      <ion-icon name="arrow-back" style="font-size: 1.8rem;"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+  <ion-title>Cadastro de Pedidos</ion-title>
 </ion-header>
 
 <ion-content style="background: #f0f0f0;">
-    <h4 class="assertive padding">
-        {{nomecliente}}
-        <div *ngIf="cliente" style="color: grey;">
-            <small>
+  <h4 class="assertive padding">
+    {{nomecliente}}
+    <div *ngIf="cliente" style="color: grey;">
+      <small>
         Limite de crédito: {{cliente.trava_limite_credito ? cliente.cli_limitecredito : 'sem limite'}}<br>
-        <span *ngIf="calculateLimit(cliente , pedidos) < 0">Limite disponível:
+        <span *ngIf="calculateLimit(cliente , notPedidos) < 0">Limite disponível:
           {{ cliente.trava_limite_credito ? '0.00':'sem limite' }}</span>
-        <span *ngIf="calculateLimit(cliente , pedidos) >= 0">Limite disponível:
-          {{ cliente.trava_limite_credito ? (calculateLimit(cliente , pedidos)).toFixed(2):'sem limite' }}</span>
+        <span *ngIf="calculateLimit(cliente , notPedidos) >= 0">Limite disponível:
+          {{ cliente.trava_limite_credito ? (calculateLimit(cliente , notPedidos)).toFixed(2):'sem limite' }}</span>
       </small>
-        </div>
-    </h4>
-
-    <div *ngIf="cliente" style="font-size: 7pt; color: grey; line-height: 10pt; font-weight: 500; padding: 4px 12px; border-bottom: 1px solid lightgrey; margin: 0 4px;">
-        Total de Pedidos: {{totalPedidos(pedidos) | currency:'R$' : 'symbol'}}<br> Títulos à vencer: {{cliente.cli_totaltitulosavencer}}
-        <br> Títulos vencidos: {{cliente.cli_totaltitulosvencidos}}<br>
     </div>
+  </h4>
 
-    <form name="formPedido" #formPedido="ngForm" novalidate id="formPedido">
-        <h4 class="assertive padding">Capa</h4>
-        <div class="list list-inset">
-            <label class="item item-input">
+  <div *ngIf="cliente"
+    style="font-size: 7pt; color: grey; line-height: 10pt; font-weight: 500; padding: 4px 12px; border-bottom: 1px solid lightgrey; margin: 0 4px;">
+    Valor Minimo Pedido: {{MinimunOrder() | currency:'R$' : 'symbol'}}<br>
+    Total de Pedidos: {{totalPedidos(notPedidos) | currency:'R$' : 'symbol'}}<br> Títulos à vencer:
+    {{cliente.cli_totaltitulosavencer}}
+    <br> Títulos vencidos: {{cliente.cli_totaltitulosvencidos}}<br>
+  </div>
+
+  <form name="formPedido" #formPedido="ngForm" novalidate id="formPedido">
+    <h4 class="assertive padding">Capa</h4>
+    <div class="list list-inset">
+      <label class="item item-input">
         <label style="font-size: 12px;">Data de Entrega:</label>
-            <!-- <i class="icon ion-search placeholder-icon"></i> -->
-            <ion-input type="date" name="cli_endereco" [(ngModel)]="pedido.data_entrega" required>
-            </ion-input>
-            </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
+        <!-- <i class="icon ion-search placeholder-icon"></i> -->
+        <ion-input type="date" name="cli_endereco" [(ngModel)]="pedido.data_entrega" required>
+        </ion-input>
+      </label>
+    </div>
+    <div class="list list-inset">
+      <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
         <select [(ngModel)]="pedido.codigo_condicao_pagto" name="codigo_condicao_pagto" (change)="setPedidoMinimo()">
           <option value="">Selecione a Forma de Pagto</option>
@@ -45,9 +48,9 @@
             {{condicao.descricao_condicao}}</option>
         </select>
       </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
+    </div>
+    <div class="list list-inset">
+      <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
 
         <select [(ngModel)]="pedido.codigo_forma_pagto" name="codigo_forma_pagto">
@@ -56,9 +59,9 @@
             {{forma.descricaoformapagamento}}</option>
         </select>
       </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
+    </div>
+    <div class="list list-inset">
+      <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
 
         <select [(ngModel)]="pedido.tipo_pedido" required name="tipo_pedido">
@@ -67,9 +70,9 @@
             {{tipo.nome}}</option>
         </select>
       </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
+    </div>
+    <div class="list list-inset">
+      <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
 
         <select [(ngModel)]="pedido.codigo_tabela_preco" required name="codigo_tabela_preco"
@@ -79,55 +82,57 @@
             {{tabela.descricaotabela}}</option>
         </select>
       </label>
-        </div>
-        <div class="list list-inset">
-            <label class="item item-input">
+    </div>
+    <div class="list list-inset">
+      <label class="item item-input">
         <!-- <i class="icon ion-search placeholder-icon"></i> -->
         <textarea [(ngModel)]="pedido.observacao" rows="5" placeholder="Observações" name="observacao"></textarea>
       </label>
-        </div>
-        <div class="item-toggle">
-            Urgente
-            <label class="toggle toggle-assertive">
+    </div>
+    <div class="item-toggle">
+      Urgente
+      <label class="toggle toggle-assertive">
         <input type="checkbox" [(ngModel)]="pedido.urgente" name="urgente">
         <div class="track">
           <div class="handle"></div>
         </div>
       </label>
-        </div>
-        <h4 class="assertive padding">Itens</h4>
-        <div class="padding">
-            <button class="button button-block button-light" (click)="addProdutoModal()">
+    </div>
+    <h4 class="assertive padding">Itens</h4>
+    <div class="padding">
+      <button class="button button-block button-light" (click)="addProdutoModal()">
         Adicionar Item
       </button>
-            <ion-list>
-                <ion-item-sliding *ngFor="let item of itens ; let i = index">
-                    <ion-item class="item">
-                        <div>
-                            {{item.descricao}}
-                            <div>
-                                <p>Quantidade: {{item.quantidade}}</p>
-                            </div>
-                            <div>
-                                <p>Valor: {{item.valor_total_item| currency:"R$":"symbol"}}</p>
-                            </div>
-                        </div>
+      <ion-list>
+        <ion-item-sliding *ngFor="let item of itens ; let i = index">
+          <ion-item class="item">
+            <div>
+              {{item.descricao}}
+              <div>
+                <p>Quantidade: {{item.quantidade}}</p>
+              </div>
+              <div>
+                <p>Valor: {{item.valor_total_item| currency:"R$":"symbol"}}</p>
+              </div>
+            </div>
 
-                    </ion-item>
-                    <ion-item-options side="end">
-                        <ion-item-option class="button-positive" (click)="alterarProdutoPedido(item , i)">Alterar</ion-item-option>
-                        <ion-item-option class="button-assertive" color="danger" (click)="apagarProdutoPedido(i)">Apagar
-                        </ion-item-option>
-                    </ion-item-options>
-                </ion-item-sliding>
-            </ion-list>
-            <h4 class="assertive" *ngIf="valor_pedido_minimo > 0">Valor mínimo do pedido: {{valor_pedido_minimo | currency:"R$":"symbol"}}</h4>
-            <h4>Total do Pedido: {{pedido.total_pedido | currency:"R$":"symbol"}}</h4>
-            <button class="button button-full button-assertive" (click)="salvar(pedido ,itens)" [disabled]="!formPedido.valid || itens.length === 0" type="submit">
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option class="button-positive" (click)="alterarProdutoPedido(item , i)">Alterar</ion-item-option>
+            <ion-item-option class="button-assertive" color="danger" (click)="apagarProdutoPedido(i)">Apagar
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+      <h4 class="assertive" *ngIf="valor_pedido_minimo > 0">Valor mínimo do pedido:
+        {{valor_pedido_minimo | currency:"R$":"symbol"}}</h4>
+      <h4>Total do Pedido: {{pedido.total_pedido | currency:"R$":"symbol"}}</h4>
+      <button class="button button-full button-assertive" (click)="salvar(pedido ,itens)"
+        [disabled]="!formPedido.valid || itens.length === 0" type="submit">
         <i class="icon ion-checkmark"></i>
         Salvar
       </button>
 
-        </div>
-    </form>
+    </div>
+  </form>
 </ion-content>

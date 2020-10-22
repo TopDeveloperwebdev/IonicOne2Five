@@ -11,7 +11,7 @@ import { DBService } from '../../services/DB.service';
 })
 export class ListaComponent implements OnInit {
 
-  clientes = [];
+  clientes: any;
   clientesDataservice: any;
   usuario: any;
   page_limit = 50;
@@ -31,8 +31,10 @@ export class ListaComponent implements OnInit {
   }
   ngOnInit() {
     this.filtro = {};
+    this.clientes = [];
     this.clientsInit(this.filtro);
   }
+
   async clientsInit(filtro) {
     const loading = await this.loadCtrl.create({
       message: 'Aguarde!'
@@ -42,65 +44,84 @@ export class ListaComponent implements OnInit {
     this.usuario = usertemp[0];
 
     this.clientesDataservice = [];
-
     this.filterItems(filtro, this.pagina, this.page_limit).then(res => {
-      this.clientes = res;    
+      this.clientes = res;  
+      this.clientes.sort(this.compare);  
       loading.dismiss();
     });
   }
+
+  compare(a, b) {
+    // Use toUpperCase() to ignore character casing
+    const bandA = a.cli_razaosocial.toUpperCase();
+    const bandB = b.cli_razaosocial.toUpperCase();
+
+    let comparison = 0;
+    if (bandA > bandB) {
+      comparison = 1;
+    } else if (bandA < bandB) {
+      comparison = -1;
+    }
+    return comparison;
+  }
   async filterItems(filtro, pagina, limite) {
 
-    return this.db.clientes.orderBy('cli_razaosocial').offset(pagina * limite)
-      .limit(limite).toArray().then(res => {
-        return res.filter(function (where) {
-          let cli_razaosocial = true;
-          let cli_totaltitulosvencidos = true;
-          let categoria_id = true;
-          let atividade_id = true;
-          let responsavel_id = true;
-          let dia_visita = true;
+    let DB_clients = await this.db.clientes;
+     console.log('total clientlength' , await this.db.clientes.orderBy('cli_razaosocial').toArray());
+    let cli_razaosocial = true;
+    let cli_totaltitulosvencidos = true;
+    let categoria_id = true;
+    let atividade_id = true;
+    let responsavel_id = true;
+    let dia_visita = true;
 
-          if (filtro.hasOwnProperty('cli_razaosocial')) {
 
-            if (filtro.tipopesquisa == "2") {
-              var str = new RegExp('^' + filtro.cli_razaosocial, 'i');
-              cli_razaosocial = str.test(where.cli_razaosocial)
-            } else {
-              var str = new RegExp(filtro.cli_razaosocial);
+    DB_clients = this.db.clientes
+      .filter( (where) => {
+        if (filtro.hasOwnProperty('cli_razaosocial')) {
 
-              cli_razaosocial = str.test(where.cli_razaosocial);
+          if (filtro.tipopesquisa == "2") {
+            var str = new RegExp('^' + filtro.cli_razaosocial, 'i');
+            cli_razaosocial = str.test(where.cli_razaosocial)
+          } else {
+            var str = new RegExp(filtro.cli_razaosocial);
 
-            }
-          }
-
-          if (filtro.hasOwnProperty('cli_totaltitulosvencidos')) {
-            cli_totaltitulosvencidos = (where.cli_totaltitulosvencidos != filtro.cli_totaltitulosvencidos);
-          }
-
-          if (filtro.hasOwnProperty('categoria_id')) {
-            categoria_id = (where.categoria_id == filtro.categoria_id);
+            cli_razaosocial = str.test(where.cli_razaosocial);
 
           }
+        }
 
-          if (filtro.hasOwnProperty('atividade_id')) {
+        if (filtro.hasOwnProperty('cli_totaltitulosvencidos')) {
+          cli_totaltitulosvencidos = (where.cli_totaltitulosvencidos != filtro.cli_totaltitulosvencidos);
+        }
 
-            atividade_id = (where.atividade_id == filtro.atividade_id);
-          }
+        if (filtro.hasOwnProperty('categoria_id')) {
+          categoria_id = (where.categoria_id == filtro.categoria_id);
 
-          if (filtro.hasOwnProperty('responsavel_id')) {
-            responsavel_id = (where.responsavel_id == filtro.responsavel_id);
-          }
+        }
 
-          if (filtro.hasOwnProperty('dia_visita')) {
+        if (filtro.hasOwnProperty('atividade_id')) {
 
-            dia_visita = (where.dia_visita == filtro.dia_visita);
+          atividade_id = (where.atividade_id == filtro.atividade_id);
+        }
 
-          }
+        if (filtro.hasOwnProperty('responsavel_id')) {
+          responsavel_id = (where.responsavel_id == filtro.responsavel_id);
+        }
 
-          return (cli_razaosocial && cli_totaltitulosvencidos && atividade_id && categoria_id && responsavel_id && dia_visita)
+        if (filtro.hasOwnProperty('dia_visita')) {
 
-        });
-      })
+          dia_visita = (where.dia_visita == filtro.dia_visita);
+
+        }
+        return (cli_razaosocial && cli_totaltitulosvencidos && atividade_id && categoria_id && responsavel_id && dia_visita)
+      });
+
+    return new Promise((resolve, reject) => {
+      return resolve(DB_clients.offset(pagina * limite)
+        .limit(limite).toArray());
+    })
+
   }
   // pushClients(page_limit) {
 
@@ -110,10 +131,11 @@ export class ListaComponent implements OnInit {
     return new Promise((resolve) => {
       setTimeout(() => {
         this.pagina++;
-         
+
         this.filterItems(this.filtro, this.pagina, this.page_limit).then(res => {
-          this.clientes = this.clientes.concat(res);          
-        })      
+          this.clientes = this.clientes.concat(res);
+          this.clientes.sort(this.compare); 
+        })
         $event.target.complete();
         resolve();
       }, 500);
@@ -172,7 +194,7 @@ export class ListaComponent implements OnInit {
       .then((data) => {
         if (data['data']) {
           this.filtro = data['data']; // Here's your selected user!    
-          this.pagina = 0;       
+          this.pagina = 0;
           this.clientsInit(this.filtro);
         }
 

@@ -27,7 +27,7 @@ export class PedidosComponent implements OnInit {
   condicoes: any;
   formas: any;
   usuario: any;
-
+  notPedidos: any;
   constructor(
     public route: ActivatedRoute,
     public dbService: DBService,
@@ -60,7 +60,7 @@ export class PedidosComponent implements OnInit {
     this.usuario = usertemp[0];
     this.condicoes = await this.db.condicoe.where('vendedor_id').equals(Number(this.usuario.vendedor_id)).first();
     this.formas = await this.db.forma.where('vendedor_id').equals(Number(this.usuario.vendedor_id)).first();
-    console.log('asdfasdf', this.condicoes, this.formas);
+    console.log('asdfasdf', this.usuario);
   }
   ngOnInit() {
 
@@ -94,6 +94,7 @@ export class PedidosComponent implements OnInit {
   async listaPedidos(cliente_id) {
     const self = this;
     self.pedidos = [];
+    self.notPedidos = [];
     return this.dbService.table('pedido').toArray().then(res => {
       return res.filter(function (where) {
         return where.cliente_id === Number(self.cliente_id);
@@ -102,6 +103,9 @@ export class PedidosComponent implements OnInit {
       self.pedidos = pedidos.map(function (pedido) {
         if (!pedido.hasOwnProperty('enviado')) {
           pedido.enviado = 'S';
+        }
+        if (pedido.enviado == "N") {
+          self.notPedidos.push(pedido);
         }
         return pedido;
       });
@@ -274,21 +278,23 @@ export class PedidosComponent implements OnInit {
     var valor_pedido;
     valor_pedido = parseFloat(pedido.total_pedido);
     var limite;
+    let currentCredits = this.calculateLimit(this.cliente);
 
-
-    if (this.cliente.credito_bloqueado === "S") {
-      self.pedidosConfirm();
+    if (pedido.tipo_pedido != 'O' && this.cliente.credito_bloqueado === "S") {
+      this.alertConfirm("Atenção!", "Cliente com crédito bloqueado! Não será possivel cadastrar pedidos.");
       loading.dismiss();
     }
     else {
       limite = this.cliente && this.cliente.trava_limite_credito ? this.limiteDisponivel(this.cliente) : false;
+
       var valor_outros_pedidos;
       valor_outros_pedidos = JSON.parse(localStorage.getItem('totalPedidos'));
 
-      if (limite != false && limite - valor_pedido - valor_outros_pedidos < 0) {
+      if (pedido.tipo_pedido != 'O' && limite != false && currentCredits - valor_pedido < 0) {
         this.alertConfirm("Atenção!", "Cliente sem limite de crédito.");
         loading.dismiss();
-      } else {
+      }
+      else {
         var novo_pedido_id = this.guid();
         var novoPedido;
         var id_pedido;
@@ -330,6 +336,15 @@ export class PedidosComponent implements OnInit {
   }
   limiteDisponivel(cliente) {
     return (Number(cliente.cli_limitecredito) - (Number(cliente.cli_totaltitulosvencidos) + Number(cliente.cli_totaltitulosavencer))).toFixed(2);
+  }
+  calculateLimit(cliente) {
+    const limitcliente = this.limiteDisponivel(cliente);
+    const limitpedidos = this.totalPedidos(this.notPedidos);
+
+    if (limitcliente) {
+      return Number(limitcliente) - Number(limitpedidos);
+    }
+
   }
   async alertConfirm(header, message) {
     const alert = await this.alertCtrl.create({
@@ -376,26 +391,26 @@ export class PedidosComponent implements OnInit {
       buttons: [{
         text: 'Alterar Pedido',
         role: 'create',
-        icon: 'create-outline',
+        icon: 'create',
         handler: () => {
           this.alterar(pedido, cliente_id, nomecliente);
         }
       }, {
         text: 'Excluir Pedido',
-        icon: 'trash-outline',
+        icon: 'trash',
         handler: () => {
           this.apagarPedido(pedido)
         }
       }, {
         text: 'Duplicar Pedido',
-        icon: 'copy-outline',
+        icon: 'copy',
         handler: () => {
           this.duplicarPedido(pedido)
         }
       },
       {
         text: 'Enviar Email',
-        icon: 'close-circle',
+        icon: 'at',
         handler: () => {
           this.selectedPedido = pedido;
           this.getItems(pedido, cliente_id, pdfComponent);
@@ -497,13 +512,13 @@ export class PedidosComponent implements OnInit {
   public export(pdfComponent: any): void {
     pdfComponent.export().then((group: Group) => exportPDF(group)).then((dataUri) => {
       console.log('dataUri', dataUri);
-      const base64 = dataUri.replace('data:application/pdf;base64,', '');         
-      
+      const base64 = dataUri.replace('data:application/pdf;base64,', '');
+
       let email = {
         to: this.cliente.cli_email,
         attachments: ["base64:data.pdf//" + base64],
-        subject: 'Cordova Icons',
-        body: 'How are you? Nice greetings from Leipzig',
+        subject: 'Orçamento de compra',
+        body: 'Prezado cliente , em anexo PDF do seu orcamento de compra. Obrigado',
         isHtml: true
       }
       //  email.attachments.push(fileObject);

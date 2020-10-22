@@ -15,7 +15,7 @@ import { FiltroComponent } from './filtro/filtro.component';
 import {NgxMaskIonicModule} from 'ngx-mask-ionic';
 import { CurrencyMaskModule } from "ng2-currency-mask";
 import {MessageComponent} from './message/message.component';
-
+import { PDFExportModule } from '@progress/kendo-angular-pdf-export';
 @NgModule({
   imports: [
     CommonModule,
@@ -23,7 +23,8 @@ import {MessageComponent} from './message/message.component';
     IonicModule,
     PedidosPageRoutingModule,
     NgxMaskIonicModule,
-    CurrencyMaskModule
+    CurrencyMaskModule,
+    PDFExportModule
   ],
   declarations: [PedidosPage,MessageComponent, CadastroComponent, DetalhesProdutoComponent,AddProdutoComponent,ConfirmaProdutoComponent ,FiltroComponent],
 

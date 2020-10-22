@@ -41,7 +41,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
   user: any;
   tabela_id: any;
   filtro = {};
-
+  notPedidos : any;
   backButtonSubscription: Subscription;
 
   private unsubscribeAll$ = new Subject<any>();
@@ -84,6 +84,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
 
     self.user = await this.dbService.table('usuario').toArray();
     this.pedido_valor_minimo = self.user[0].valor_minimo_pedido;
+    ;
     this.valor_minimo_obrigatorio = true;
     this.valor_pedido_minimo = 0;
     this.mostrar_pedido_minimo = false;
@@ -104,7 +105,8 @@ export class CadastroComponent implements OnInit, OnDestroy {
     self.nomecliente = self.route.snapshot.params['nomecliente'];
     self.cliente_id = self.route.snapshot.params['cliente_id'];
     let is = self.route.snapshot.params['is'];
-
+    this.itens = [];
+    self.listaPedidos(self.cliente_id);
     if (is == 'create') {
       this.createPedidos();
     } else {
@@ -122,7 +124,9 @@ export class CadastroComponent implements OnInit, OnDestroy {
 
     document.removeEventListener('backbutton', this.backButtonBehavior);
   }
-
+  MinimunOrder() {
+    return Number(this.pedido_valor_minimo).toFixed(2);
+  }
   backButtonBehavior(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -139,8 +143,16 @@ export class CadastroComponent implements OnInit, OnDestroy {
     }
 
     pedido.data_entrega = dataHora[0];
-
-
+    this.db.clientes
+      .where('cli_id')
+      .equals(Number(self.cliente_id))
+      .first()
+      .then(res => {
+        if (pedido.tipo_pedido != 'O' && res.credito_bloqueado === "S") {
+          self.pedidosConfirm();
+          self.loadingStart.dismiss();
+        }
+      })
     pedido.urgente = pedido.urgente == "S" ? true : false;
     let pedido_id;
 
@@ -187,7 +199,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
         self.pedido.codigo_tabela_preco = self.tabelas[0].tabela_id;
         self.cliente = res;
 
-        self.listaPedidos(self.cliente_id);
+     
 
         if (res.formapagto_id == null) {
           self.pedido.codigo_condicao_pagto = self.condicoes[0].condicao_id;
@@ -227,17 +239,30 @@ export class CadastroComponent implements OnInit, OnDestroy {
     return foramteDate;
   }
   async listaPedidos(cliente_id) {
+    let self = this;
+    this.pedidos = [];
+    self.notPedidos = [];
 
     this.dbService.table('pedido').where('cliente_id').equals(Number(cliente_id)).toArray().then(res => {
+      console.log('epedidoall' , res);
+      res.map(function (pedido) {
+        let p = pedido;
+      
+        if(pedido.enviado == "N"){
+     
+          self.notPedidos.push(pedido);
+        
+        }
+        if (!pedido.hasOwnProperty("enviado")) {
+          p.enviado = "S";
+        }
+      
+        self.pedidos.push(p);
 
-      this.pedidos = res.filter(function (pedido) {
-        return pedido.hasOwnProperty('enviado') && pedido.enviado == 'N';
-        // if (pedido.hasOwnProperty('enviado') && pedido.enviado == 'N') {
-        //   pedido.enviado = 'S';
-        // }
-        // return pedido;
       });
+      console.log('notPedidos' , self.notPedidos);
     })
+
 
 
   }
@@ -431,6 +456,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
     await alert.present();
   }
   async alertConfirm(header, message) {
+    
     const alert = await this.alertCtrl.create({
       header: header,
       message: message,
@@ -478,14 +504,14 @@ export class CadastroComponent implements OnInit, OnDestroy {
   }
 
   totalPedidos(filtro) {
-
+    console.log('asdff' , filtro);
     if (typeof filtro != "undefined" && filtro.length > 0) {
       var total = 0.0;
       for (var i in filtro) {
         total += parseFloat(filtro[i].total_pedido);
       }
 
-
+      
       return total.toFixed(2);
     } else {
       return 0;
@@ -654,26 +680,24 @@ export class CadastroComponent implements OnInit, OnDestroy {
     var limite;
     limite = this.cliente && this.cliente.trava_limite_credito ? this.limiteDisponivel(this.cliente) : false;
     var valor_outros_pedidos;
-    valor_outros_pedidos = JSON.parse(localStorage.getItem('totalPedidos'));
+    let currentCredits = this.calculateLimit(this.cliente, this.pedidos);
 
     var posOptions = {
       timeout: 5000,
       maximumAge: 3000,
       enableHighAccuracy: true
     };
-
-    if (limite != false && limite - valor_pedido - valor_outros_pedidos < 0) {
+    
+    if (pedido.tipo_pedido != 'O' && limite != false && currentCredits - valor_pedido < 0) {
       this.alertConfirm("Atenção!", "Cliente sem limite de crédito.");
     }
-    else if (valor_pedido < valor_min_pedido.toFixed(2) && this.valor_minimo_obrigatorio == true) {
-      this.alertConfirm("Atenção!", "O valor minimo para fechar o pedido deve ser de R$");
-
+    else if (valor_pedido < valor_min_pedido.toFixed(2)) {
+      this.alertConfirm("Atenção!", "O valor minimo para fechar o pedido deve ser de R$" + valor_min_pedido.toFixed(2));
     } else if (valor_pedido < valor_min_pedido.toFixed(2) && this.valor_minimo_obrigatorio == false) {
-      this.alertConfirm2('Atenção!', 'O pedido vai ser gravado com valor inferior ao minimo de R$ " + valor_min_pedido.toFixed(2)', pedido, itens);
+      this.alertConfirm2('Atenção!', 'O pedido vai ser gravado com valor inferior ao minimo de R$' +  valor_min_pedido.toFixed(2), pedido, itens);
     } else {
-
-      this.geolocation.getCurrentPosition(posOptions).then(position => {
-
+     
+      this.geolocation.getCurrentPosition(posOptions).then(position => {       
         this.gravarPedido(
           pedido,
           itens,
@@ -681,6 +705,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
           position.coords.longitude
         );
       }).catch(function (error) {
+
         this.gravarPedido(pedido, itens, null, null);
       })
     }
@@ -691,10 +716,9 @@ export class CadastroComponent implements OnInit, OnDestroy {
 
   calculateLimit(cliente, pedidos) {
     const limitcliente = this.limiteDisponivel(cliente);
-    const limitpedidos = this.totalPedidos(pedidos);
-
-    if (limitcliente) {
-      console.log('asdffff', limitcliente, limitpedidos);
+    const limitpedidos = this.totalPedidos(this.notPedidos);    
+    if (limitcliente) {     
+      console.log('limitcliente' , limitcliente , limitpedidos ,Number(limitcliente) - Number(limitpedidos));
       return Number(limitcliente) - Number(limitpedidos);
     }
 
